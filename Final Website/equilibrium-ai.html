@@ -1,0 +1,1459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Equilibrium AI — Agentic Assignment Platform</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+      screens: { 'xs': '480px' },
+    }
+  }
+}
+</script>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; overflow: hidden; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: #020617; color: #e2e8f0; -webkit-font-smoothing: antialiased; }
+
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(148,163,184,0.15); border-radius: 10px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(148,163,184,0.3); }
+
+  .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(24px) saturate(1.2); -webkit-backdrop-filter: blur(24px) saturate(1.2); border: 1px solid rgba(255,255,255,0.07); }
+  .glass-card { background: rgba(255,255,255,0.04); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); transition: all 0.35s cubic-bezier(0.4,0,0.2,1); }
+  .glass-card:hover { background: rgba(255,255,255,0.065); border-color: rgba(255,255,255,0.15); transform: translateY(-2px) scale(1.005); box-shadow: 0 20px 60px -15px rgba(0,0,0,0.5), 0 0 40px -10px rgba(6,182,212,0.08); }
+
+  .glow-cyan { box-shadow: 0 0 25px rgba(6,182,212,0.12), 0 0 80px rgba(6,182,212,0.04); }
+  .glow-amber { box-shadow: 0 0 25px rgba(245,158,11,0.12), 0 0 80px rgba(245,158,11,0.04); }
+  .glow-emerald { box-shadow: 0 0 25px rgba(16,185,129,0.12), 0 0 80px rgba(16,185,129,0.04); }
+  .glow-magenta { box-shadow: 0 0 25px rgba(217,70,239,0.15), 0 0 80px rgba(217,70,239,0.06); }
+
+  @keyframes attrition-pulse { 0%, 100% { border-color: rgba(245,158,11,0.35); box-shadow: 0 0 25px rgba(245,158,11,0.08); } 50% { border-color: rgba(245,158,11,0.6); box-shadow: 0 0 40px rgba(245,158,11,0.18), 0 0 80px rgba(245,158,11,0.06); } }
+  .attrition-banner { animation: attrition-pulse 2.5s ease-in-out infinite; }
+
+  @keyframes conflict-pulse { 0%, 100% { border-color: rgba(217,70,239,0.25); box-shadow: 0 0 20px rgba(217,70,239,0.08); } 50% { border-color: rgba(217,70,239,0.5); box-shadow: 0 0 35px rgba(217,70,239,0.15); } }
+  .conflict-card { animation: conflict-pulse 3s ease-in-out infinite; }
+  .conflict-icon-bg { background: linear-gradient(135deg, rgba(217,70,239,0.15), rgba(217,70,239,0.05)); border: 1px solid rgba(217,70,239,0.25); }
+
+  .deploy-btn { position: relative; overflow: hidden; }
+  .deploy-btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 60%; height: 100%; background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.12) 50%, transparent 70%); transition: left 0.6s ease; pointer-events: none; }
+  .deploy-btn:hover::before { left: 120%; }
+
+  @keyframes footer-slide-up { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .deploy-footer { animation: footer-slide-up 0.5s cubic-bezier(0.16,1,0.3,1) both; animation-delay: 0.3s; }
+
+  @keyframes toast-in { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  @keyframes toast-out { from { transform: translateX(0); opacity: 1; } to { transform: translateX(120%); opacity: 0; } }
+  .toast-enter { animation: toast-in 0.5s cubic-bezier(0.16,1,0.3,1) both; }
+  .toast-exit { animation: toast-out 0.4s cubic-bezier(0.7,0,0.84,0) both; }
+
+  @keyframes success-ripple { 0% { transform: scale(0.8); opacity: 0.6; } 100% { transform: scale(2.5); opacity: 0; } }
+  .success-ripple { animation: success-ripple 1s ease-out both; }
+
+  @keyframes deploy-progress { 0% { width: 0%; } 100% { width: 100%; } }
+  .deploy-progress-bar { animation: deploy-progress 1.8s cubic-bezier(0.4,0,0.2,1) both; }
+
+  @keyframes check-draw { 0% { stroke-dashoffset: 24; } 100% { stroke-dashoffset: 0; } }
+  .check-animate { stroke-dasharray: 24; stroke-dashoffset: 24; animation: check-draw 0.4s ease-out 0.2s both; }
+
+  .progress-track { background: rgba(255,255,255,0.06); border-radius: 999px; overflow: hidden; height: 6px; }
+  .progress-fill { height: 100%; border-radius: 999px; transition: width 1.2s cubic-bezier(0.4,0,0.2,1); position: relative; }
+  .progress-fill::after { content: ''; position: absolute; inset: 0; border-radius: 999px; background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.25) 50%, transparent 100%); background-size: 200% 100%; animation: shimmer 2.5s infinite; }
+
+  .progress-cyan { background: linear-gradient(90deg, #06b6d4, #22d3ee); box-shadow: 0 0 12px rgba(6,182,212,0.5); }
+  .progress-emerald { background: linear-gradient(90deg, #10b981, #34d399); box-shadow: 0 0 12px rgba(16,185,129,0.5); }
+  .progress-amber { background: linear-gradient(90deg, #f59e0b, #fbbf24); box-shadow: 0 0 12px rgba(245,158,11,0.5); }
+  .progress-rose { background: linear-gradient(90deg, #f43f5e, #fb7185); box-shadow: 0 0 12px rgba(244,63,94,0.5); }
+
+  @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+  @keyframes pulse-glow { 0%, 100% { opacity: 1; box-shadow: 0 0 8px rgba(6,182,212,0.3); } 50% { opacity: 0.7; box-shadow: 0 0 20px rgba(6,182,212,0.5); } }
+  @keyframes fade-in-up { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes scan-line { 0% { top: -2px; } 100% { top: 100%; } }
+  @keyframes orbit { 0% { transform: rotate(0deg) translateX(28px) rotate(0deg); } 100% { transform: rotate(360deg) translateX(28px) rotate(-360deg); } }
+  @keyframes typing-cursor { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  @keyframes count-up { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .count-animate { animation: count-up 0.4s ease-out both; }
+
+  /* Drawer slide */
+  @keyframes drawer-in { from { transform: translateX(100%); } to { transform: translateX(0); } }
+  @keyframes drawer-out { from { transform: translateX(0); } to { transform: translateX(100%); } }
+  .drawer-enter { animation: drawer-in 0.35s cubic-bezier(0.16,1,0.3,1) both; }
+  .drawer-exit { animation: drawer-out 0.3s cubic-bezier(0.7,0,0.84,0) both; }
+
+  /* Modal fade */
+  @keyframes modal-fade-in { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes modal-fade-out { from { opacity: 1; } to { opacity: 0; } }
+  .modal-bg-enter { animation: modal-fade-in 0.25s ease-out both; }
+  .modal-bg-exit { animation: modal-fade-out 0.2s ease-in both; }
+
+  .animate-pulse-glow { animation: pulse-glow 2.5s ease-in-out infinite; }
+  .animate-fade-in { animation: fade-in-up 0.6s ease-out both; }
+  .typing-cursor::after { content: '▊'; animation: typing-cursor 1s step-end infinite; color: #06b6d4; margin-left: 2px; font-size: 0.85em; }
+
+  .toggle-track { width: 40px; height: 22px; border-radius: 999px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1); position: relative; cursor: pointer; transition: all 0.3s ease; }
+  .toggle-track.active { background: rgba(6,182,212,0.2); border-color: rgba(6,182,212,0.4); box-shadow: 0 0 15px rgba(6,182,212,0.2); }
+  .toggle-knob { width: 16px; height: 16px; border-radius: 50%; background: #475569; position: absolute; top: 2px; left: 2px; transition: all 0.3s cubic-bezier(0.4,0,0.2,1); }
+  .toggle-track.active .toggle-knob { transform: translateX(18px); background: #22d3ee; box-shadow: 0 0 8px rgba(34,211,238,0.6); }
+
+  .heat-cell { border-radius: 4px; transition: all 0.3s ease; cursor: default; }
+  .heat-cell:hover { transform: scale(1.25); z-index: 10; }
+  .metric-pill { transition: all 0.3s ease; }
+  .metric-pill:hover { transform: translateY(-1px); }
+  .trail-line { position: absolute; left: 17px; top: 36px; bottom: 0; width: 1px; background: linear-gradient(to bottom, rgba(6,182,212,0.2), transparent); }
+  .scan-container { position: relative; overflow: hidden; }
+  .scan-container::before { content: ''; position: absolute; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(6,182,212,0.3), transparent); z-index: 5; animation: scan-line 5s linear infinite; pointer-events: none; }
+
+  .stagger > *:nth-child(1) { animation-delay: 0.05s; }
+  .stagger > *:nth-child(2) { animation-delay: 0.1s; }
+  .stagger > *:nth-child(3) { animation-delay: 0.15s; }
+  .stagger > *:nth-child(4) { animation-delay: 0.2s; }
+  .stagger > *:nth-child(5) { animation-delay: 0.25s; }
+
+  /* Tooltip */
+  .tt { position: relative; }
+  .tt .tt-text { visibility: hidden; opacity: 0; position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); white-space: nowrap; padding: 5px 10px; border-radius: 8px; font-size: 10px; font-weight: 500; color: #e2e8f0; background: rgba(15,23,42,0.95); border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(12px); z-index: 70; transition: opacity 0.2s, visibility 0.2s; pointer-events: none; }
+  .tt .tt-text::after { content:''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 5px solid transparent; border-top-color: rgba(255,255,255,0.1); }
+  .tt:hover .tt-text { visibility: visible; opacity: 1; }
+
+  /* Match bar for drawer */
+  .match-bar { height: 4px; border-radius: 999px; position: relative; }
+  .match-bar-fill { height: 100%; border-radius: 999px; transition: width 0.8s ease; }
+
+  /* Agent Fleet Explainability */
+  .agent-hex { position: relative; cursor: pointer; transition: all 0.3s ease-out; }
+  .agent-hex:hover { transform: translateY(-3px) scale(1.04); z-index: 65; }
+  .agent-hex .agent-inspect { visibility: hidden; opacity: 0; position: fixed; width: 300px; padding: 16px; border-radius: 16px; background: rgba(8,12,30,0.96); backdrop-filter: blur(30px) saturate(1.4); -webkit-backdrop-filter: blur(30px) saturate(1.4); border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 30px 80px -12px rgba(0,0,0,0.8), 0 0 50px rgba(6,182,212,0.1), 0 0 1px rgba(255,255,255,0.1); z-index: 200; transition: opacity 0.3s ease-out, visibility 0.3s ease-out, transform 0.3s ease-out; pointer-events: none; }
+  .agent-hex:hover .agent-inspect { visibility: visible; opacity: 1; pointer-events: auto; }
+  .agent-hex.computing { animation: agent-compute 1.5s ease-in-out infinite; }
+  @keyframes agent-compute { 0%, 100% { box-shadow: 0 0 8px var(--agent-color-glow), 0 0 20px var(--agent-color-glow); border-color: var(--agent-color); } 50% { box-shadow: 0 0 16px var(--agent-color-glow), 0 0 40px var(--agent-color-glow), 0 0 60px var(--agent-color-glow); border-color: var(--agent-color); } }
+  .agent-hex .status-dot { width: 6px; height: 6px; border-radius: 50%; position: absolute; top: 4px; right: 4px; }
+  .agent-hex .status-dot.active { background: #34d399; box-shadow: 0 0 8px rgba(52,211,153,0.8); animation: pulse-glow 2s ease-in-out infinite; }
+
+  /* Heatmap interactive */
+  .heat-cell { position: relative; }
+  .heat-cell-interactive { cursor: pointer; transition: all 0.25s ease; }
+  .heat-cell-interactive:hover { transform: scale(1.35); z-index: 10; border: 1px solid rgba(255,255,255,0.3); }
+  .heat-cell-interactive.selected { border: 1.5px solid #f43f5e; box-shadow: 0 0 8px rgba(244,63,94,0.5); }
+
+  /* Agent edit modal inputs */
+  .agent-edit-input { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 8px 10px; font-size: 11px; color: #e2e8f0; width: 100%; outline: none; transition: border-color 0.2s ease; font-family: 'Inter', system-ui, sans-serif; resize: vertical; }
+  .agent-edit-input:focus { border-color: rgba(6,182,212,0.5); box-shadow: 0 0 12px rgba(6,182,212,0.1); }
+  .agent-edit-input.mono { font-family: 'SF Mono', 'Fira Code', monospace; color: #c4b5fd; }
+
+  /* Responsive: hide sidebar on small screens */
+  @media (max-width: 1024px) {
+    .sidebar-desktop { display: none; }
+    .main-split { flex-direction: column; }
+    .main-split > section { width: 100% !important; }
+  }
+  @media (max-width: 768px) {
+    .header-pills { display: none; }
+    .banner-tiers { display: none !important; }
+    .deploy-stats { display: none; }
+    .deploy-footer .deploy-btn { font-size: 11px; padding: 8px 14px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ Background Ambient Glows ═══ -->
+<div class="fixed inset-0 pointer-events-none" style="z-index:0;">
+  <div class="absolute w-[900px] h-[900px] rounded-full" style="top:-20%; left:-10%; background: radial-gradient(circle, rgba(6,182,212,0.07) 0%, transparent 70%); filter: blur(80px);"></div>
+  <div class="absolute w-[800px] h-[800px] rounded-full" style="bottom:-25%; right:-10%; background: radial-gradient(circle, rgba(139,92,246,0.06) 0%, transparent 70%); filter: blur(80px);"></div>
+  <div class="absolute w-[500px] h-[500px] rounded-full" style="top:40%; left:50%; transform:translateX(-50%); background: radial-gradient(circle, rgba(16,185,129,0.03) 0%, transparent 70%); filter: blur(60px);"></div>
+  <div class="absolute inset-0 opacity-[0.015]" style="background-image: linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 60px 60px;"></div>
+</div>
+
+<!-- ═══ App Shell ═══ -->
+<div class="relative h-screen flex flex-col" style="z-index:1;">
+
+  <!-- ═══ Header ═══ -->
+  <header class="glass h-[60px] flex items-center justify-between px-4 md:px-6 flex-shrink-0" style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+    <div class="flex items-center gap-3 md:gap-4">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center relative" style="background: linear-gradient(135deg, rgba(6,182,212,0.2), rgba(139,92,246,0.15)); border: 1px solid rgba(6,182,212,0.25);">
+          <i data-lucide="hexagon" class="w-4 h-4 text-cyan-400"></i>
+          <div class="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400" style="box-shadow: 0 0 8px rgba(52,211,153,0.7);"></div>
+        </div>
+        <div>
+          <h1 class="text-[15px] font-bold tracking-tight text-white">Equilibrium<span class="text-cyan-400 ml-0.5">AI</span></h1>
+          <p class="text-[10px] text-slate-500 leading-none -mt-px">Agentic Assignment Platform</p>
+        </div>
+      </div>
+      <div class="h-7 w-px bg-white/5 mx-1 hidden md:block"></div>
+      <!-- Search — LIVE -->
+      <div class="tt hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl text-slate-500 cursor-pointer hover:border-white/15 transition-all" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);" onclick="document.getElementById('search-input').focus()">
+        <i data-lucide="search" class="w-3.5 h-3.5"></i>
+        <input id="search-input" type="text" placeholder="Search 4,000+ clients, advisors, accounts..." class="bg-transparent text-[11px] text-slate-300 outline-none w-48 placeholder-slate-600">
+        <span class="text-[9px] px-1.5 py-0.5 rounded-md bg-white/5 text-slate-600 font-mono">⌘K</span>
+        <span class="tt-text">Global search across all regions and portfolios</span>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2 md:gap-3">
+      <!-- Metric Pills -->
+      <div class="header-pills flex items-center gap-3">
+        <div class="metric-pill tt flex items-center gap-2.5 px-4 py-2 rounded-xl" style="background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.15);">
+          <i data-lucide="trending-up" class="w-3.5 h-3.5 text-emerald-400"></i>
+          <div>
+            <div class="text-[9px] text-slate-500 uppercase tracking-wider font-medium leading-none">Total AUM</div>
+            <div class="text-sm font-bold text-white mt-0.5 flex items-center gap-1.5">$4.2B <span class="text-[10px] font-semibold text-emerald-400 flex items-center"><i data-lucide="arrow-up-right" class="w-2.5 h-2.5"></i>+3.1%</span></div>
+          </div>
+          <span class="tt-text">Total assets under management across Pacific NW region</span>
+        </div>
+        <div class="metric-pill tt flex items-center gap-2.5 px-4 py-2 rounded-xl" style="background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.15);">
+          <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-amber-400"></i>
+          <div>
+            <div class="text-[9px] text-slate-500 uppercase tracking-wider font-medium leading-none">At-Risk Retention</div>
+            <div class="text-sm font-bold text-white mt-0.5 flex items-center gap-1.5">12% <span class="text-[10px] font-semibold text-amber-400 flex items-center"><i data-lucide="arrow-down-right" class="w-2.5 h-2.5"></i>−1.4%</span></div>
+          </div>
+          <span class="tt-text">Clients with >60% churn probability in 90 days</span>
+        </div>
+        <div class="metric-pill tt flex items-center gap-2.5 px-4 py-2 rounded-xl glow-cyan" style="background: rgba(6,182,212,0.06); border: 1px solid rgba(6,182,212,0.2);">
+          <i data-lucide="brain" class="w-3.5 h-3.5 text-cyan-400"></i>
+          <div>
+            <div class="text-[9px] text-slate-500 uppercase tracking-wider font-medium leading-none">AI Optimization</div>
+            <div class="text-sm font-bold text-white mt-0.5 flex items-center gap-1.5">
+              <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-60"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-400"></span></span>
+              Active
+            </div>
+          </div>
+          <span class="tt-text">equilibrium-v3.2 processing Wilson attrition event</span>
+        </div>
+      </div>
+
+      <div class="h-7 w-px bg-white/5 mx-1 hidden md:block"></div>
+
+      <!-- Notification bell — LIVE -->
+      <button class="tt relative w-9 h-9 rounded-xl flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/5 transition-all" style="background:rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);" onclick="showNotifications()">
+        <i data-lucide="bell" class="w-4 h-4"></i>
+        <div class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500" style="box-shadow: 0 0 6px rgba(244,63,94,0.6);"></div>
+        <span class="tt-text">3 unread notifications</span>
+      </button>
+
+      <!-- USER PROFILE — Alex Morgan -->
+      <div class="tt flex items-center gap-2.5 cursor-pointer pl-2" onclick="showUserProfile()">
+        <div class="hidden md:block text-right">
+          <div class="text-[11px] font-semibold text-slate-200 leading-tight">Alex Morgan</div>
+          <div class="text-[9px] text-slate-500 leading-tight">North Region Lead</div>
+        </div>
+        <div class="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold" style="background: linear-gradient(135deg, #06b6d4, #8b5cf6); border: 2px solid rgba(255,255,255,0.15);">AM</div>
+        <span class="tt-text">View profile & settings</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══ Body ═══ -->
+  <div class="flex-1 flex overflow-hidden">
+
+    <!-- ═══ Sidebar ═══ -->
+    <aside class="sidebar-desktop w-[280px] flex-shrink-0 glass flex flex-col overflow-y-auto p-5 gap-5" style="border-right: 1px solid rgba(255,255,255,0.06);">
+      <div class="flex items-center gap-2.5 animate-fade-in">
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background: rgba(139,92,246,0.12); border: 1px solid rgba(139,92,246,0.2);">
+          <i data-lucide="flask-conical" class="w-4 h-4 text-violet-400"></i>
+        </div>
+        <div>
+          <h2 class="text-[13px] font-semibold text-white">Scenario Sandbox</h2>
+          <p class="text-[10px] text-slate-500">What-if simulation engine</p>
+        </div>
+      </div>
+
+      <!-- ═══ SCENARIO SELECTOR ═══ -->
+      <div class="glass-card rounded-2xl p-4 space-y-3 animate-fade-in" style="animation-delay:0.1s;">
+        <div class="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">Active Scenarios</div>
+        <div class="flex items-center justify-between scenario-row cursor-pointer rounded-lg px-2 py-1.5 transition-all" data-scenario="attrition" data-agents="persona,governance,sentiment" onclick="selectScenario(this)">
+          <div class="flex items-center gap-2.5">
+            <i data-lucide="user-minus" class="w-3.5 h-3.5 text-amber-400"></i>
+            <div><div class="text-[12px] font-medium text-slate-200">Advisor Attrition</div><div class="text-[10px] text-slate-500">Simulate 2 RM departures</div></div>
+          </div>
+          <div class="toggle-track active" onclick="event.stopPropagation(); this.classList.toggle('active')"><div class="toggle-knob"></div></div>
+        </div>
+        <div class="flex items-center justify-between scenario-row cursor-pointer rounded-lg px-2 py-1.5 transition-all" data-scenario="rebalance" data-agents="capacity,governance,persona" onclick="selectScenario(this)">
+          <div class="flex items-center gap-2.5">
+            <i data-lucide="git-branch" class="w-3.5 h-3.5 text-cyan-400"></i>
+            <div><div class="text-[12px] font-medium text-slate-200">Regional Rebalance</div><div class="text-[10px] text-slate-500">Holistic capacity optimization</div></div>
+          </div>
+          <div class="toggle-track" onclick="event.stopPropagation(); this.classList.toggle('active')"><div class="toggle-knob"></div></div>
+        </div>
+        <div class="flex items-center justify-between scenario-row cursor-pointer rounded-lg px-2 py-1.5 transition-all" data-scenario="growth" data-agents="persona,capacity,sentiment" onclick="selectScenario(this)">
+          <div class="flex items-center gap-2.5">
+            <i data-lucide="zap" class="w-3.5 h-3.5 text-emerald-400"></i>
+            <div><div class="text-[12px] font-medium text-slate-200">Growth Injection</div><div class="text-[10px] text-slate-500">+50 HNW client influx</div></div>
+          </div>
+          <div class="toggle-track" onclick="event.stopPropagation(); this.classList.toggle('active')"><div class="toggle-knob"></div></div>
+        </div>
+      </div>
+
+      <!-- ═══ AGENT FLEET — INTERACTIVE EXPLAINABILITY ═══ -->
+      <div class="glass-card rounded-2xl p-4 animate-fade-in" style="animation-delay:0.15s;">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center gap-2"><i data-lucide="bot" class="w-3.5 h-3.5 text-cyan-400"></i><span class="text-[12px] font-semibold text-slate-200">Agent Fleet</span></div>
+          <span class="flex items-center gap-1.5 text-[9px] px-2 py-0.5 rounded-full font-semibold" style="background:rgba(6,182,212,0.08); border:1px solid rgba(6,182,212,0.2); color:#22d3ee;">
+            <span class="relative flex h-1.5 w-1.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-60"></span><span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-cyan-400"></span></span>
+            4 Active
+          </span>
+        </div>
+        <div class="grid grid-cols-2 gap-2.5" id="agent-fleet"></div>
+        <div class="mt-3 pt-3 flex items-center gap-2" style="border-top:1px solid rgba(255,255,255,0.04);">
+          <i data-lucide="info" class="w-3 h-3 text-slate-600"></i>
+          <span class="text-[9px] text-slate-600">Hover to inspect &bull; Click to edit config</span>
+        </div>
+      </div>
+
+      <!-- ═══ ATTRITION RISK MATRIX — AUM vs ENGAGEMENT ═══ -->
+      <div class="glass-card rounded-2xl p-4 animate-fade-in" style="animation-delay:0.2s;">
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2"><i data-lucide="flame" class="w-3.5 h-3.5 text-rose-400"></i><span class="text-[12px] font-semibold text-slate-200">Attrition Risk Matrix</span></div>
+          <span class="text-[9px] px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20 font-medium">Live</span>
+        </div>
+        <div class="text-[10px] text-slate-400 mb-3">Client churn probability — AUM tier vs. engagement level</div>
+
+        <!-- Y-axis label -->
+        <div class="flex gap-1.5">
+          <div class="flex flex-col items-center justify-center" style="width:14px;">
+            <span class="text-[8px] text-slate-600 font-medium uppercase tracking-wider" style="writing-mode:vertical-lr; transform:rotate(180deg);">AUM Tier</span>
+          </div>
+          <!-- Row labels + grid -->
+          <div class="flex-1">
+            <!-- Column headers (Engagement) -->
+            <div class="flex gap-0" style="margin-left:44px; margin-bottom:3px;">
+              <span class="text-[8px] text-slate-600 font-medium text-center flex-1">Dormant</span>
+              <span class="text-[8px] text-slate-600 font-medium text-center flex-1">Low</span>
+              <span class="text-[8px] text-slate-600 font-medium text-center flex-1">Medium</span>
+              <span class="text-[8px] text-slate-600 font-medium text-center flex-1">Active</span>
+              <span class="text-[8px] text-slate-600 font-medium text-center flex-1">Power</span>
+            </div>
+            <div class="space-y-1" id="heatmap"></div>
+          </div>
+        </div>
+
+        <!-- X-axis label -->
+        <div class="text-center mt-2" style="margin-left:44px;">
+          <span class="text-[8px] text-slate-600 font-medium uppercase tracking-wider">Engagement Level &rarr;</span>
+        </div>
+
+        <!-- Legend -->
+        <div class="flex items-center justify-between mt-2.5 pt-2" style="border-top:1px solid rgba(255,255,255,0.04);">
+          <span class="text-[9px] text-slate-500">Low churn</span>
+          <div class="flex gap-0.5"><div class="w-4 h-1.5 rounded-full" style="background:rgba(16,185,129,0.5);"></div><div class="w-4 h-1.5 rounded-full" style="background:rgba(16,185,129,0.8);"></div><div class="w-4 h-1.5 rounded-full" style="background:rgba(245,158,11,0.6);"></div><div class="w-4 h-1.5 rounded-full" style="background:rgba(244,63,94,0.6);"></div><div class="w-4 h-1.5 rounded-full" style="background:rgba(244,63,94,0.9);"></div></div>
+          <span class="text-[9px] text-slate-500">High churn</span>
+        </div>
+
+        <!-- Summary stats -->
+        <div id="heatmap-summary" class="grid grid-cols-3 gap-2 mt-2.5 pt-2" style="border-top:1px solid rgba(255,255,255,0.04);"></div>
+
+        <!-- Detail panel on click -->
+        <div id="heatmap-detail" class="mt-2.5 rounded-xl p-3" style="display:none; background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.08);">
+          <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center gap-2"><i data-lucide="crosshair" class="w-3 h-3 text-cyan-400"></i><span class="text-[10px] font-semibold text-white" id="heatmap-detail-title">Cell Detail</span></div>
+            <button onclick="document.getElementById('heatmap-detail').style.display='none'; selectedHeatCell=null; renderHeatmap();" class="text-slate-600 hover:text-white transition-colors"><i data-lucide="x" class="w-3 h-3"></i></button>
+          </div>
+          <div class="grid grid-cols-2 gap-x-3 gap-y-1.5 text-[10px] mb-2.5">
+            <div><span class="text-slate-500">AUM Tier:</span> <span class="text-white font-semibold" id="hm-segment">—</span></div>
+            <div><span class="text-slate-500">Engagement:</span> <span class="text-white font-semibold" id="hm-period">—</span></div>
+            <div><span class="text-slate-500">Churn Risk:</span> <span class="font-bold" id="hm-risk" style="color:#f43f5e;">—</span></div>
+            <div><span class="text-slate-500">Clients:</span> <span class="text-white font-semibold" id="hm-clients">—</span></div>
+            <div><span class="text-slate-500">AUM at Risk:</span> <span class="text-amber-400 font-semibold" id="hm-aum">—</span></div>
+            <div><span class="text-slate-500">Avg Tenure:</span> <span class="text-slate-300" id="hm-tenure">—</span></div>
+          </div>
+          <div class="rounded-lg p-2 mb-2" style="background:rgba(6,182,212,0.04); border:1px solid rgba(6,182,212,0.1);">
+            <div class="flex items-center gap-1.5 mb-1"><i data-lucide="sparkles" class="w-2.5 h-2.5 text-cyan-400"></i><span class="text-[9px] font-bold text-cyan-400 uppercase tracking-wider">AI Insight</span></div>
+            <p class="text-[10px] text-slate-400 leading-relaxed" id="hm-insight">—</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-[9px] text-slate-500 flex-shrink-0">Override risk:</span>
+            <input type="range" id="hm-risk-slider" min="0" max="100" value="50" class="flex-1 h-1 appearance-none rounded-full" style="background:linear-gradient(90deg, #10b981, #f59e0b, #f43f5e); accent-color:#22d3ee; cursor:pointer;" oninput="adjustRiskCell(this.value)">
+            <span class="text-[10px] font-mono font-bold" id="hm-risk-slider-val" style="color:#22d3ee; min-width:32px; text-align:right;">50%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ PROJECTED IMPACT — DYNAMIC ═══ -->
+      <div class="glass-card rounded-2xl p-4 animate-fade-in" style="animation-delay:0.25s;" id="projected-impact-card">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2"><i data-lucide="target" class="w-3.5 h-3.5 text-emerald-400"></i><span class="text-[12px] font-semibold text-slate-200">Projected Impact</span></div>
+          <span class="text-[9px] px-2 py-0.5 rounded-full font-medium" id="impact-scenario-badge" style="background:rgba(6,182,212,0.08); border:1px solid rgba(6,182,212,0.15); color:#67e8f9;">Baseline</span>
+        </div>
+        <div class="space-y-3" id="projected-impact-bars">
+          <div><div class="flex justify-between items-center mb-1"><span class="text-[11px] text-slate-400">Retention Improvement</span><span class="text-[11px] font-bold text-emerald-400" id="pi-retention">+8.3%</span></div><div class="progress-track"><div class="progress-fill progress-emerald" style="width:83%" id="pi-retention-bar"></div></div></div>
+          <div><div class="flex justify-between items-center mb-1"><span class="text-[11px] text-slate-400">Revenue Capture</span><span class="text-[11px] font-bold text-cyan-400" id="pi-revenue">+$12.4M</span></div><div class="progress-track"><div class="progress-fill progress-cyan" style="width:74%" id="pi-revenue-bar"></div></div></div>
+          <div><div class="flex justify-between items-center mb-1"><span class="text-[11px] text-slate-400">Capacity Efficiency</span><span class="text-[11px] font-bold text-violet-400" id="pi-capacity">+14.7%</span></div><div class="progress-track"><div class="progress-fill" style="width:91%; background: linear-gradient(90deg, #8b5cf6, #a78bfa); box-shadow: 0 0 12px rgba(139,92,246,0.5);" id="pi-capacity-bar"></div></div></div>
+        </div>
+        <div class="mt-3 pt-2 text-[9px] text-slate-600 italic flex items-center gap-1.5" style="border-top:1px solid rgba(255,255,255,0.04);">
+          <i data-lucide="refresh-cw" class="w-2.5 h-2.5"></i>
+          <span id="impact-update-note">Updates dynamically with scenario & risk changes</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ═══ Main Content ═══ -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+
+      <!-- ATTRITION BANNER -->
+      <div class="flex-shrink-0 mx-3 md:mx-5 mt-3 md:mt-4 mb-0 animate-fade-in">
+        <div class="attrition-banner rounded-2xl px-4 md:px-5 py-3 flex items-center justify-between backdrop-blur-2xl flex-wrap gap-3" style="background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.35);">
+          <div class="flex items-center gap-3 md:gap-4">
+            <div class="relative flex-shrink-0">
+              <div class="w-9 md:w-10 h-9 md:h-10 rounded-xl flex items-center justify-center" style="background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.3);"><i data-lucide="user-minus" class="w-4 md:w-5 h-4 md:h-5 text-amber-400"></i></div>
+              <div class="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-amber-400" style="animation: pulse-glow 1.5s ease-in-out infinite; box-shadow: 0 0 10px rgba(245,158,11,0.8);"></div>
+            </div>
+            <div>
+              <div class="flex items-center gap-2 mb-0.5">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-amber-400 px-2 py-0.5 rounded-full" style="background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.25);">ATTRITION ALERT</span>
+                <span class="text-[10px] text-slate-500 font-mono">10:04:08 UTC</span>
+              </div>
+              <p class="text-[12px] md:text-[13px] text-slate-200 font-medium">
+                Senior Advisor <span class="text-amber-300 font-semibold">James Wilson</span>
+                <span class="text-slate-500 mx-1">&bull;</span>Region: North
+                <span class="text-slate-500 mx-1">&bull;</span>
+                <span class="text-white font-bold">142 Clients</span> (<span class="text-amber-300 font-bold">$840M AUM</span>) Pending Re-assignment
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2.5 flex-shrink-0">
+            <div class="banner-tiers flex items-center gap-3 px-3 py-1.5 rounded-xl" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);">
+              <div class="text-center"><div class="text-[9px] text-slate-500 uppercase tracking-wider">Diamond</div><div class="text-[14px] font-bold text-amber-400">12</div></div>
+              <div class="w-px h-7 bg-white/5"></div>
+              <div class="text-center"><div class="text-[9px] text-slate-500 uppercase tracking-wider">Gold</div><div class="text-[14px] font-bold text-slate-200">48</div></div>
+              <div class="w-px h-7 bg-white/5"></div>
+              <div class="text-center"><div class="text-[9px] text-slate-500 uppercase tracking-wider">Standard</div><div class="text-[14px] font-bold text-slate-400">82</div></div>
+            </div>
+            <button onclick="runScenario()" class="px-4 py-2 rounded-xl text-[11px] font-semibold text-white flex items-center gap-2 transition-all hover:scale-[1.03] active:scale-[0.97]" style="background: linear-gradient(135deg, rgba(245,158,11,0.25), rgba(245,158,11,0.1)); border: 1px solid rgba(245,158,11,0.35); box-shadow: 0 0 20px rgba(245,158,11,0.1);">
+              <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i>
+              Activate Response
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ Main Split View ═══ -->
+      <div class="flex-1 flex overflow-hidden main-split">
+
+      <!-- Left: RM Capacity Hub -->
+      <section class="w-[55%] flex flex-col p-3 md:p-5 overflow-hidden">
+        <div class="flex items-center justify-between mb-3 md:mb-4 animate-fade-in">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, rgba(6,182,212,0.12), rgba(6,182,212,0.04)); border: 1px solid rgba(6,182,212,0.18);"><i data-lucide="users" class="w-[18px] h-[18px] text-cyan-400"></i></div>
+            <div>
+              <h2 class="text-[14px] md:text-[15px] font-bold text-white">Relationship Manager Hub</h2>
+              <p class="text-[10px] md:text-[11px] text-slate-500">Click any RM card for drill-down &bull; 5 RMs active</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button class="tt flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium text-slate-400 hover:text-white hover:bg-white/5 transition-colors" style="background:rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);" onclick="showFilterTooltip()">
+              <i data-lucide="sliders-horizontal" class="w-3 h-3"></i>Filters
+              <span class="tt-text">Filter by capacity, risk, specialization, AUM tier</span>
+            </button>
+            <button class="tt flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-cyan-400 hover:text-cyan-300 transition-colors" style="background:rgba(6,182,212,0.08); border: 1px solid rgba(6,182,212,0.2);">
+              <i data-lucide="sparkles" class="w-3 h-3"></i>4 Suggestions
+              <span class="tt-text">AI-generated optimization suggestions ready for review</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto space-y-3 pr-1 stagger" id="rm-cards"></div>
+
+        <!-- GOVERNANCE CARD — COLLAPSIBLE -->
+        <div class="flex-shrink-0 mt-3 animate-fade-in" style="animation-delay:0.4s;" id="governance-panel">
+          <div class="conflict-card rounded-2xl backdrop-blur-2xl overflow-hidden" style="background: rgba(217,70,239,0.04); border: 1px solid rgba(217,70,239,0.25);">
+            <div class="flex items-center justify-between px-4 py-3 cursor-pointer select-none group" onclick="toggleGovernance()">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg flex items-center justify-center conflict-icon-bg flex-shrink-0"><i data-lucide="shield-check" class="w-4 h-4" style="color: #d946ef;"></i></div>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <h3 class="text-[13px] font-semibold text-white">Governance & Conflict Resolution</h3>
+                  <span class="flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold" style="background: rgba(217,70,239,0.1); border: 1px solid rgba(217,70,239,0.25); color: #d946ef;"><i data-lucide="alert-triangle" class="w-2.5 h-2.5"></i>1 CONFLICT</span>
+                  <span class="flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold" style="background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2); color: #34d399;"><i data-lucide="check-circle-2" class="w-2.5 h-2.5"></i>RESOLVED</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="text-[10px] text-slate-500 hidden lg:inline">Apex Holdings §4.7.2</span>
+                <div class="w-6 h-6 rounded-md flex items-center justify-center group-hover:bg-white/5" style="border: 1px solid rgba(255,255,255,0.06);"><i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 transition-transform duration-300" id="governance-chevron-icon"></i></div>
+              </div>
+            </div>
+            <div id="governance-body" style="max-height: 0; overflow: hidden; transition: max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1);">
+              <div class="px-4 pb-4 pt-1" style="border-top: 1px solid rgba(217,70,239,0.1);">
+                <div class="rounded-xl p-3.5 mb-4 mt-3" style="background: rgba(217,70,239,0.04); border: 1px solid rgba(217,70,239,0.12);">
+                  <div class="flex items-center gap-2 mb-2"><i data-lucide="alert-triangle" class="w-3.5 h-3.5" style="color: #d946ef;"></i><span class="text-[11px] font-bold uppercase tracking-wider" style="color: #d946ef;">Internal Policy Violation — Rule §4.7.2</span></div>
+                  <p class="text-[12px] text-slate-300 leading-relaxed"><span class="text-white font-semibold">Client A</span> (Robert Hayes — <span class="text-fuchsia-300">CEO</span>, Apex Holdings, $24M AUM) and <span class="text-white font-semibold">Client B</span> (Sandra Voss — <span class="text-fuchsia-300">COO</span>, Apex Holdings, $18M AUM) <span class="text-amber-300 font-medium">cannot be assigned to the same RM</span> per information barrier policy.</p>
+                </div>
+                <div class="flex items-center gap-2 mb-3"><i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-400"></i><span class="text-[10px] font-bold uppercase tracking-wider text-emerald-400">AI Resolution: Split-Assignment Protocol</span></div>
+                <div class="grid grid-cols-1 md:grid-cols-[1fr,auto,1fr] gap-3 items-center">
+                  <div class="rounded-xl p-3" style="background: rgba(6,182,212,0.05); border: 1px solid rgba(6,182,212,0.15);">
+                    <div class="flex items-center gap-2.5 mb-2"><div class="w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-bold" style="background: rgba(217,70,239,0.12); border: 1px solid rgba(217,70,239,0.25); color: #d946ef;">RH</div><div><div class="text-[12px] font-semibold text-white">Robert Hayes</div><div class="text-[10px] text-slate-500">CEO, Apex Holdings</div></div></div>
+                    <div class="flex items-center gap-1.5 mb-1.5"><i data-lucide="arrow-right" class="w-3 h-3 text-cyan-400"></i><span class="text-[10px] text-slate-400">Assigned to:</span></div>
+                    <div class="flex items-center gap-2 p-2 rounded-lg" style="background: rgba(6,182,212,0.08); border: 1px solid rgba(6,182,212,0.15);"><div class="w-7 h-7 rounded-md flex items-center justify-center text-[9px] font-bold" style="background: rgba(6,182,212,0.15); border: 1px solid rgba(6,182,212,0.3); color: #22d3ee;">SC</div><div><div class="text-[11px] font-semibold text-cyan-300">Sarah Chen</div><div class="text-[9px] text-slate-500">UHNW Specialist</div></div><span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-md" style="background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.25); color:#34d399;">96%</span></div>
+                  </div>
+                  <div class="hidden md:flex flex-col items-center gap-1 px-1">
+                    <div class="w-px h-5" style="background: linear-gradient(to bottom, transparent, rgba(217,70,239,0.3));"></div>
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center" style="background: rgba(217,70,239,0.1); border: 1px solid rgba(217,70,239,0.3); box-shadow: 0 0 15px rgba(217,70,239,0.1);"><i data-lucide="shield-check" class="w-3.5 h-3.5" style="color: #d946ef;"></i></div>
+                    <div class="w-px h-5" style="background: linear-gradient(to bottom, rgba(217,70,239,0.3), transparent);"></div>
+                    <div class="text-[8px] font-bold uppercase tracking-wider" style="color: #d946ef;">Firewall</div>
+                  </div>
+                  <div class="rounded-xl p-3" style="background: rgba(16,185,129,0.05); border: 1px solid rgba(16,185,129,0.15);">
+                    <div class="flex items-center gap-2.5 mb-2"><div class="w-8 h-8 rounded-lg flex items-center justify-center text-[10px] font-bold" style="background: rgba(217,70,239,0.12); border: 1px solid rgba(217,70,239,0.25); color: #d946ef;">SV</div><div><div class="text-[12px] font-semibold text-white">Sandra Voss</div><div class="text-[10px] text-slate-500">COO, Apex Holdings</div></div></div>
+                    <div class="flex items-center gap-1.5 mb-1.5"><i data-lucide="arrow-right" class="w-3 h-3 text-emerald-400"></i><span class="text-[10px] text-slate-400">Assigned to:</span></div>
+                    <div class="flex items-center gap-2 p-2 rounded-lg" style="background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.15);"><div class="w-7 h-7 rounded-md flex items-center justify-center text-[9px] font-bold" style="background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); color: #34d399;">DO</div><div><div class="text-[11px] font-semibold text-emerald-300">David Okonkwo</div><div class="text-[9px] text-slate-500">Family Office Lead</div></div><span class="ml-auto text-[10px] font-bold px-1.5 py-0.5 rounded-md" style="background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.25); color:#34d399;">91%</span></div>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between mt-4 pt-3" style="border-top: 1px solid rgba(255,255,255,0.04);">
+                  <div class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-400"></i><span class="text-[11px] text-emerald-400 font-medium">Information barrier enforced — 100% compliant</span></div>
+                  <div class="flex items-center gap-1.5 text-[10px] text-slate-500"><i data-lucide="clock" class="w-3 h-3"></i>Resolved in 0.34s</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right: Agent Reasoning -->
+      <section class="w-[45%] flex flex-col p-3 md:p-5 md:pl-0 overflow-hidden">
+        <div class="glass-card rounded-2xl flex flex-col h-full overflow-hidden scan-container animate-fade-in" style="animation-delay:0.15s;">
+          <div class="flex items-center justify-between px-4 md:px-5 py-3 md:py-4 flex-shrink-0" style="border-bottom: 1px solid rgba(255,255,255,0.06);">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-lg flex items-center justify-center relative" style="background: linear-gradient(135deg, rgba(6,182,212,0.15), rgba(139,92,246,0.12)); border: 1px solid rgba(6,182,212,0.2);">
+                <i data-lucide="brain" class="w-4 h-4 text-cyan-400"></i>
+                <div class="absolute w-1.5 h-1.5 rounded-full bg-cyan-400" style="animation: orbit 3s linear infinite; box-shadow: 0 0 6px rgba(6,182,212,0.8);"></div>
+              </div>
+              <div>
+                <h2 class="text-[13px] font-semibold text-white">Agent Reasoning Trail</h2>
+                <p class="text-[10px] text-slate-500">Wilson Attrition — Live Response</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-medium" style="background: rgba(6,182,212,0.08); border: 1px solid rgba(6,182,212,0.2); color: #22d3ee;">
+                <span class="relative flex h-1.5 w-1.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-60"></span><span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-cyan-400"></span></span>
+                Processing
+              </div>
+              <!-- AUDIT TRAIL BUTTON -->
+              <button class="tt w-7 h-7 rounded-lg flex items-center justify-center text-slate-500 hover:text-white hover:bg-white/5 transition-colors" style="background:rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);" onclick="showAuditTrail()">
+                <i data-lucide="file-check" class="w-3 h-3"></i>
+                <span class="tt-text">View audit trail & export compliance log</span>
+              </button>
+            </div>
+          </div>
+          <div class="flex items-center justify-between px-4 md:px-5 py-2 text-[10px] flex-shrink-0" style="background: rgba(255,255,255,0.015); border-bottom: 1px solid rgba(255,255,255,0.04);">
+            <div class="flex items-center gap-3 md:gap-4">
+              <span class="text-slate-500">Session <span class="text-cyan-400/70 font-mono">#EQ-2847</span></span>
+              <span class="text-slate-500 hidden md:inline">Event <span class="text-amber-400/70 font-mono">ATTR-WILSON-N</span></span>
+              <span class="text-slate-500 hidden lg:inline">Model <span class="text-slate-400 font-mono">equilibrium-v3.2</span></span>
+            </div>
+            <div class="flex items-center gap-1.5 text-slate-500"><i data-lucide="clock" class="w-3 h-3"></i><span>Elapsed: <span id="elapsed-time" class="text-slate-400 font-mono">00:04:32</span></span></div>
+          </div>
+          <div class="flex-1 overflow-y-auto px-4 md:px-5 py-4" id="logic-trail"></div>
+          <div class="flex items-center gap-2 md:gap-3 px-4 md:px-5 py-3 flex-shrink-0" style="border-top: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.015);">
+            <button onclick="runScenario()" class="flex-1 py-2.5 rounded-xl text-[12px] font-semibold flex items-center justify-center gap-2 text-white transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]" style="background: linear-gradient(135deg, rgba(6,182,212,0.2), rgba(139,92,246,0.12)); border: 1px solid rgba(6,182,212,0.25); box-shadow: 0 0 30px rgba(6,182,212,0.1);" id="run-btn">
+              <i data-lucide="play" class="w-3.5 h-3.5"></i>
+              <span id="run-btn-text">Run Scenario</span>
+            </button>
+            <button class="tt py-2.5 px-4 rounded-xl text-[12px] font-medium flex items-center justify-center gap-2 text-slate-400 hover:text-white transition-colors" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);" onclick="showAuditTrail()">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i>Export
+              <span class="tt-text">Export reasoning log as CSV/PDF</span>
+            </button>
+          </div>
+        </div>
+      </section>
+    </div><!-- end split view -->
+    </main>
+  </div><!-- end body -->
+
+  <!-- ═══ DEPLOY FOOTER ═══ -->
+  <div class="deploy-footer flex-shrink-0 relative" style="z-index: 40;" id="deploy-footer">
+    <div class="px-4 md:px-6 py-3 flex items-center justify-between backdrop-blur-2xl" style="background: rgba(255,255,255,0.04); border-top: 1px solid rgba(255,255,255,0.08); box-shadow: 0 -8px 40px rgba(0,0,0,0.3);">
+      <div class="deploy-stats flex items-center gap-4 md:gap-5">
+        <div class="flex items-center gap-2"><div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.2);"><i data-lucide="git-merge" class="w-3.5 h-3.5 text-cyan-400"></i></div><div><div class="text-[10px] text-slate-500">Pending</div><div class="text-[13px] font-bold text-white">142</div></div></div>
+        <div class="w-px h-8 bg-white/5"></div>
+        <div class="flex items-center gap-2"><div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2);"><i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-400"></i></div><div><div class="text-[10px] text-slate-500">Compliance</div><div class="text-[13px] font-bold text-emerald-400">100%</div></div></div>
+        <div class="w-px h-8 bg-white/5"></div>
+        <!-- PROJECTED IMPACT PREVIEW -->
+        <div class="flex items-center gap-2"><div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2);"><i data-lucide="trending-up" class="w-3.5 h-3.5 text-emerald-400"></i></div><div><div class="text-[10px] text-slate-500">AUM Retention</div><div class="text-[13px] font-bold text-emerald-400" id="impact-aum">+4.2%</div></div></div>
+        <div class="w-px h-8 bg-white/5"></div>
+        <div class="flex items-center gap-2"><div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.2);"><i data-lucide="heart-pulse" class="w-3.5 h-3.5 text-cyan-400"></i></div><div><div class="text-[10px] text-slate-500">Burnout Risk</div><div class="text-[13px] font-bold text-cyan-400" id="impact-burnout">−15%</div></div></div>
+      </div>
+      <div class="flex items-center gap-2 md:gap-3" id="deploy-btn-zone">
+        <button class="tt hidden md:flex px-4 py-2.5 rounded-xl text-[11px] font-medium text-slate-400 hover:text-white items-center gap-2 transition-all" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);" onclick="showAuditTrail()">
+          <i data-lucide="file-text" class="w-3.5 h-3.5"></i>Review Summary
+          <span class="tt-text">Preview full assignment report before deploying</span>
+        </button>
+        <button onclick="deployAssignments()" id="deploy-btn" class="deploy-btn px-4 md:px-6 py-2.5 rounded-xl text-[11px] md:text-[12px] font-bold text-white flex items-center gap-2 md:gap-2.5 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer" style="background: linear-gradient(135deg, #06b6d4, #2563eb); box-shadow: 0 0 30px rgba(6,182,212,0.3), 0 0 60px rgba(37,99,235,0.15), inset 0 1px 0 rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.15);">
+          <i data-lucide="zap" class="w-4 h-4"></i>
+          <span class="hidden md:inline">Commit & Deploy Optimized Assignments</span>
+          <span class="md:hidden">Deploy</span>
+          <i data-lucide="arrow-right" class="w-3.5 h-3.5 opacity-60 hidden md:block"></i>
+        </button>
+      </div>
+    </div>
+    <div id="deploy-progress-track" class="absolute bottom-0 left-0 right-0 h-[3px]" style="background: rgba(255,255,255,0.03); display: none;">
+      <div id="deploy-progress-fill" class="h-full rounded-full" style="background: linear-gradient(90deg, #06b6d4, #2563eb, #10b981); box-shadow: 0 0 12px rgba(6,182,212,0.5);"></div>
+    </div>
+  </div>
+
+</div><!-- end app shell -->
+
+<!-- ═══ SUCCESS TOAST ═══ -->
+<div id="success-toast" class="fixed top-6 right-4 md:right-6 z-[100]" style="display: none; max-width: 460px;">
+  <div class="rounded-2xl p-[1px] backdrop-blur-2xl" style="background: linear-gradient(135deg, rgba(16,185,129,0.4), rgba(6,182,212,0.2), rgba(16,185,129,0.3));">
+    <div class="rounded-2xl px-5 py-4" style="background: rgba(2,6,23,0.92); backdrop-filter: blur(24px);">
+      <div class="flex items-start gap-3.5">
+        <div class="relative flex-shrink-0 mt-0.5">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.3); box-shadow: 0 0 20px rgba(16,185,129,0.2);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4" class="check-animate"/><circle cx="12" cy="12" r="10" opacity="0.3"/></svg>
+          </div>
+          <div class="absolute inset-0 rounded-xl success-ripple" style="border: 2px solid rgba(16,185,129,0.3);"></div>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 mb-1"><h4 class="text-[13px] font-bold text-emerald-300">Deployment Successful</h4><span class="text-[9px] font-mono px-1.5 py-0.5 rounded-md" style="background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.2); color: #34d399;">LIVE</span></div>
+          <p class="text-[12px] text-slate-300 leading-relaxed mb-3"><span class="text-white font-semibold">142 clients</span> re-assigned across <span class="text-white font-semibold">5 relationship managers</span>. Regional sync complete.</p>
+          <div class="space-y-1.5">
+            <div class="flex items-center gap-2"><i data-lucide="users" class="w-3 h-3 text-cyan-400"></i><span class="text-[11px] text-slate-400">Assignment matrix deployed to RM dashboards</span><i data-lucide="check" class="w-3 h-3 text-emerald-400 ml-auto"></i></div>
+            <div class="flex items-center gap-2"><i data-lucide="shield-check" class="w-3 h-3 text-emerald-400"></i><span class="text-[11px] text-slate-400">Compliance log exported — audit ref <span class="font-mono text-slate-300">#CL-48291</span></span><i data-lucide="check" class="w-3 h-3 text-emerald-400 ml-auto"></i></div>
+            <div class="flex items-center gap-2"><i data-lucide="mail" class="w-3 h-3 text-violet-400"></i><span class="text-[11px] text-slate-400">Client transition playbooks sent to RM inboxes</span><i data-lucide="check" class="w-3 h-3 text-emerald-400 ml-auto"></i></div>
+          </div>
+        </div>
+        <button onclick="dismissToast()" class="w-6 h-6 rounded-md flex items-center justify-center text-slate-500 hover:text-white transition-colors flex-shrink-0" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);"><i data-lucide="x" class="w-3 h-3"></i></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ RM DRILL-DOWN DRAWER ═══ -->
+<div id="rm-drawer-backdrop" class="fixed inset-0 z-[80]" style="display:none;">
+  <div class="absolute inset-0 bg-black/50" onclick="closeDrawer()"></div>
+  <div id="rm-drawer" class="absolute top-0 right-0 h-full w-full max-w-md overflow-y-auto" style="background: rgba(8,12,30,0.97); backdrop-filter: blur(40px); border-left: 1px solid rgba(255,255,255,0.08);">
+    <div id="rm-drawer-content" class="p-6"></div>
+  </div>
+</div>
+
+<!-- ═══ AUDIT TRAIL MODAL ═══ -->
+<div id="audit-modal-backdrop" class="fixed inset-0 z-[90] flex items-center justify-center p-4" style="display:none;">
+  <div class="absolute inset-0 bg-black/60" onclick="closeAuditModal()"></div>
+  <div id="audit-modal" class="relative rounded-2xl w-full max-w-lg max-h-[80vh] overflow-y-auto" style="background: rgba(8,12,30,0.97); backdrop-filter: blur(40px); border: 1px solid rgba(255,255,255,0.1);">
+    <div id="audit-modal-content" class="p-6"></div>
+  </div>
+</div>
+
+<!-- ═══ AGENT EDIT MODAL ═══ -->
+<div id="agent-edit-backdrop" class="fixed inset-0 z-[95] flex items-center justify-center p-4" style="display:none;">
+  <div class="absolute inset-0 bg-black/60" onclick="closeAgentEdit()"></div>
+  <div id="agent-edit-modal" class="relative rounded-2xl w-full max-w-md max-h-[85vh] overflow-y-auto" style="background: rgba(8,12,30,0.97); backdrop-filter: blur(40px); border: 1px solid rgba(255,255,255,0.1);">
+    <div id="agent-edit-content" class="p-6"></div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════════════════
+const rmData = [
+  { name: 'Sarah Chen', title: 'Senior Vice President', avatar: 'SC', clients: 47, capacity: 55, aum: '$142M', rating: 4.9, specialties: ['UHNW', 'Estate Planning', 'Mandarin'], compatibility: 98, color: 'cyan', risk: false, suggestion: 'Assign 3 Mandarin-speaking HNW prospects — 98% lifestyle compatibility detected.', matchClients: ['Wei Zhang ($4.2M)', 'Lin Fang ($2.8M)', 'Mei Xu ($6.1M)'],
+    persona: { language: 96, riskProfile: 95, lifestyle: 92, geography: 88, portfolioFit: 97, tenure: 90 }, bio: 'Fluent in Mandarin & English. 12yr UHNW track record. Golf enthusiast. Stanford MBA. Pebble Beach club member.', topClients: [{name:'Wei Zhang', aum:'$4.2M', match:98, reason:'Mandarin + tech portfolio + golf'},{name:'Lin Fang', aum:'$2.8M', match:96, reason:'Cultural affinity + estate planning need'},{name:'Robert Hayes', aum:'$24M', match:96, reason:'UHNW tier + governance-split assignment'}]},
+  { name: 'Marcus Johnson', title: 'Vice President', avatar: 'MJ', clients: 52, capacity: 50, aum: '$198M', rating: 4.7, specialties: ['Commercial', 'Lending', 'Treasury'], compatibility: 87, color: 'amber', risk: true, suggestion: 'Over-capacity alert: Redistribute 4 low-engagement accounts to reduce churn risk.', matchClients: ['Apex Corp ($12M)', 'Sterling LLC ($8.4M)'],
+    persona: { language: 82, riskProfile: 90, lifestyle: 74, geography: 91, portfolioFit: 88, tenure: 85 }, bio: 'Commercial banking specialist. 8yr tenure. CFA charterholder. Strong treasury & lending relationships.', topClients: [{name:'Apex Corp', aum:'$12M', match:88, reason:'Commercial lending expertise'},{name:'Sterling LLC', aum:'$8.4M', match:85, reason:'Treasury management alignment'}]},
+  { name: 'Priya Patel', title: 'Relationship Manager II', avatar: 'PP', clients: 31, capacity: 55, aum: '$89M', rating: 4.8, specialties: ['Digital-First', 'Tech Founders', 'ESG'], compatibility: 95, color: 'emerald', risk: false, suggestion: 'High synergy: 6 recently onboarded tech founders match advisor profile perfectly.', matchClients: ['NovaTech ($3.1M)', 'CloudPeak ($5.7M)', 'DataForge ($2.2M)'],
+    persona: { language: 90, riskProfile: 88, lifestyle: 95, geography: 85, portfolioFit: 94, tenure: 78 }, bio: 'Digital-native advisor. ESG specialist. YC alumni network. 4yr tenure, fastest-growing book in region.', topClients: [{name:'NovaTech', aum:'$3.1M', match:95, reason:'Tech founder + ESG mandate'},{name:'CloudPeak', aum:'$5.7M', match:93, reason:'SaaS portfolio + growth stage'}]},
+  { name: 'David Okonkwo', title: 'Senior RM', avatar: 'DO', clients: 44, capacity: 50, aum: '$156M', rating: 4.6, specialties: ['Cross-Border', 'Family Office', 'Philanthropy'], compatibility: 91, color: 'cyan', risk: false, suggestion: 'Transfer 3 international clients for language/cultural alignment with family offices.', matchClients: ['Adeyemi Family ($18M)', 'Osei Trust ($7.2M)'],
+    persona: { language: 94, riskProfile: 87, lifestyle: 86, geography: 92, portfolioFit: 91, tenure: 88 }, bio: 'Cross-border specialist. Fluent in French & Yoruba. 10yr family office experience. Philanthropy advisory certified.', topClients: [{name:'Adeyemi Family', aum:'$18M', match:94, reason:'Cross-border + family office + language'},{name:'Sandra Voss', aum:'$18M', match:91, reason:'Governance-split + family office tier'}]},
+  { name: 'Emily Rodriguez', title: 'Associate VP', avatar: 'ER', clients: 38, capacity: 50, aum: '$112M', rating: 4.5, specialties: ['Retirement', 'Wealth Transfer', 'Insurance'], compatibility: 76, color: 'amber', risk: true, suggestion: 'At-risk segment: 4 retiree clients flagged for proactive retention outreach.', matchClients: ['Thompson Estate ($9.4M)', 'Rivera Family ($4.1M)'],
+    persona: { language: 85, riskProfile: 78, lifestyle: 70, geography: 82, portfolioFit: 75, tenure: 80 }, bio: 'Retirement planning specialist. CLU/ChFC certified. 6yr tenure. Strong insurance & annuity relationships.', topClients: [{name:'Thompson Estate', aum:'$9.4M', match:80, reason:'Retirement + wealth transfer need'},{name:'Rivera Family', aum:'$4.1M', match:76, reason:'Insurance portfolio alignment'}]},
+];
+
+const agentFleet = [
+  { id: 'persona', name: 'Persona Matcher', status: 'active', icon: 'cpu', color: '#22d3ee', colorGlow: 'rgba(6,182,212,0.35)',
+    fn: 'Optimal RM-to-Client matching based on social synergy, communication style, and lifestyle affinity.',
+    lineage: 'CRM Profiles, Language Preferences, Lifestyle Tags, Social Graph, Meeting History',
+    algo: 'Vector Embeddings & Cosine Similarity (dim=768, HNSW index, top-k=5)' },
+  { id: 'governance', name: 'Governance Sentinel', status: 'active', icon: 'shield-check', color: '#d946ef', colorGlow: 'rgba(217,70,239,0.35)',
+    fn: 'Real-time enforcement of information barriers, conflict-of-interest rules, and regulatory policies.',
+    lineage: 'Policy Engine §4.x, Corporate Registry, Beneficial Ownership DB, Compliance Ruleset v2.4',
+    algo: 'Constraint Satisfaction (SAT solver) + Graph-based Conflict Detection' },
+  { id: 'capacity', name: 'Capacity Balancer', status: 'active', icon: 'scale', color: '#34d399', colorGlow: 'rgba(16,185,129,0.35)',
+    fn: 'Workload optimization across RM book ensuring no advisor exceeds burnout thresholds.',
+    lineage: 'RM Utilization Logs, Calendar Density, AUM-per-Client Ratios, Historical Throughput',
+    algo: 'Constraint-based Linear Programming (MILP, Gurobi solver, ≤90% cap)' },
+  { id: 'sentiment', name: 'Sentiment Predictor', status: 'active', icon: 'brain', color: '#fbbf24', colorGlow: 'rgba(245,158,11,0.35)',
+    fn: 'Predicts client churn probability and relationship health using behavioral signals.',
+    lineage: 'Call Transcripts, NPS Scores, Transaction Velocity, Email Sentiment, Meeting Cadence',
+    algo: 'Transformer Ensemble (BERT-fin + LSTM temporal) — Monte Carlo 10k runs' },
+];
+
+const logicTrail = [
+  { step: 1, title: 'Attrition Event Received', detail: 'Senior Advisor James Wilson (Region: North) departure confirmed. Initiating emergency reassignment protocol for 142 client relationships totaling $840M AUM.', status: 'complete', time: '10:04:08', color: '#fbbf24' },
+  { step: 2, title: 'Scanning Attrition Impact', detail: '12 High-Value \'Diamond\' Tier clients identified ($540M combined AUM). 48 Gold Tier clients ($220M). 82 Standard accounts ($80M). Prioritizing Diamond Tier for warm handoff sequences.', status: 'complete', time: '10:04:12', color: '#34d399' },
+  { step: 3, title: 'Filtering for Language/Lifestyle Alignment', detail: 'Matching 4 Diamond clients to Sarah Chen — shared Golf Club membership (Pebble Beach), Tech-sector portfolio overlap, Mandarin bilingual preference. Compatibility: 96-98%.', status: 'complete', time: '10:04:15', color: '#34d399' },
+  { step: 4, title: 'Optimizing for Capacity', detail: 'Balancing workload across Marcus Thorne (+22 clients, capacity 74/80) and David Vane (+18 clients, capacity 62/70). Ensuring no advisor exceeds 90% utilization post-reassignment.', status: 'complete', time: '10:04:18', color: '#34d399' },
+  { step: 5, title: 'CONFLICT DETECTED: Portfolio Governance Flag', detail: 'Apex Holdings — CEO (Robert Hayes, $24M) and COO (Sandra Voss, $18M) flagged under §4.7.2 Information Barrier Policy. Same-RM assignment BLOCKED. Initiating split-assignment resolution...', status: 'conflict', time: '10:04:21', color: '#d946ef' },
+  { step: 6, title: 'Conflict Resolution Executed', detail: 'Split-assignment protocol applied: Hayes → Sarah Chen (UHNW, 96% match). Voss → David Okonkwo (Family Office, 91% match). Information barrier enforced. Compliance: 100%.', status: 'success', time: '10:04:22', color: '#34d399' },
+  { step: 7, title: 'Retention Probability Modeling', detail: 'Monte Carlo simulation (10,000 runs) on full 142-client reassignment. Projected 90-day retention: 95.1%. Confidence interval: [93.2%, 96.8%]. Revenue preservation: $812M of $840M.', status: 'success', time: '10:04:25', color: '#22d3ee' },
+  { step: 8, title: 'Generating Transition Playbooks...', detail: 'Creating personalized handoff scripts for each Diamond Tier client. Scheduling intro calls. Preparing compliance documentation for all 142 transfers. ETA: 45 seconds...', status: 'active', time: '10:04:27', color: '#22d3ee' },
+];
+
+// ═══════════════════════════════════════════════════
+//  RENDER FUNCTIONS
+// ═══════════════════════════════════════════════════
+
+// ═══ HEATMAP DATA & RENDER ═══
+// Rows = AUM tiers (high to low), Cols = Engagement levels (low to high)
+const aumTiers = [
+  { label: 'UHNW',     tag: '$10M+',    shortLabel: 'UHNW' },
+  { label: 'HNW',      tag: '$1M–10M',  shortLabel: 'HNW' },
+  { label: 'Affluent',  tag: '$250K–1M', shortLabel: 'Afflu' },
+  { label: 'Mass Affluent', tag: '$100K–250K', shortLabel: 'MassA' },
+  { label: 'Retail',    tag: '<$100K',   shortLabel: 'Retail' },
+];
+const engagementLevels = ['Dormant','Low','Medium','Active','Power'];
+
+// Risk data: [row][col] — high-AUM + dormant = very high risk; low-AUM + power = low risk
+// Each cell: { risk, clients, aum, tenure }
+const heatmapData = [
+  // UHNW row: few clients, massive AUM, dormant = catastrophic
+  { risk:0.92, clients:2,  aum:'$48M',  tenure:'12yr' },{ risk:0.68, clients:3,  aum:'$36M',  tenure:'9yr' },{ risk:0.35, clients:4,  aum:'$52M',  tenure:'14yr' },{ risk:0.12, clients:5,  aum:'$71M',  tenure:'16yr' },{ risk:0.05, clients:3,  aum:'$64M',  tenure:'18yr' },
+  // HNW row
+  { risk:0.85, clients:6,  aum:'$22M',  tenure:'8yr' },{ risk:0.62, clients:12, aum:'$41M',  tenure:'7yr' },{ risk:0.38, clients:18, aum:'$58M',  tenure:'10yr' },{ risk:0.15, clients:22, aum:'$74M',  tenure:'11yr' },{ risk:0.08, clients:14, aum:'$52M',  tenure:'13yr' },
+  // Affluent row
+  { risk:0.72, clients:14, aum:'$8.2M', tenure:'5yr' },{ risk:0.55, clients:28, aum:'$14M',  tenure:'6yr' },{ risk:0.30, clients:35, aum:'$22M',  tenure:'7yr' },{ risk:0.18, clients:40, aum:'$28M',  tenure:'8yr' },{ risk:0.10, clients:20, aum:'$16M',  tenure:'9yr' },
+  // Mass Affluent row
+  { risk:0.60, clients:22, aum:'$3.8M', tenure:'3yr' },{ risk:0.48, clients:38, aum:'$6.2M', tenure:'4yr' },{ risk:0.25, clients:52, aum:'$9.4M', tenure:'5yr' },{ risk:0.12, clients:48, aum:'$8.8M', tenure:'6yr' },{ risk:0.06, clients:18, aum:'$3.2M', tenure:'7yr' },
+  // Retail row: many clients, low AUM, less at stake
+  { risk:0.45, clients:30, aum:'$1.8M', tenure:'2yr' },{ risk:0.32, clients:55, aum:'$3.4M', tenure:'2yr' },{ risk:0.18, clients:72, aum:'$5.2M', tenure:'3yr' },{ risk:0.08, clients:60, aum:'$4.4M', tenure:'4yr' },{ risk:0.03, clients:25, aum:'$1.6M', tenure:'5yr' },
+];
+
+const heatmapInsights = [
+  // UHNW
+  'CRITICAL: 2 dormant UHNW clients represent $48M AUM at extreme churn risk. Immediate personal outreach by Sarah Chen recommended.',
+  'High-value relationships cooling — schedule quarterly review dinners. Language/lifestyle re-match may be needed.',
+  'Healthy cadence. Monitor for signs of competitor solicitation given portfolio size.',
+  'Strong engagement. These clients are well-matched and satisfied — protect with proactive estate planning touchpoints.',
+  'Power users deeply embedded. Lowest churn segment — consider for referral program.',
+  // HNW
+  'Dormant HNW segment at 85% risk — 6 clients ($22M) haven\'t had RM contact in 90+ days. Trigger re-engagement playbook.',
+  'Low engagement trending toward dormant. Cross-sell opportunity: introduce digital wealth tools to increase touchpoints.',
+  'Moderate engagement — stable but not growing. Recommend lifestyle event invitations to deepen relationship.',
+  'Well-engaged HNW book. Capacity Balancer confirms these clients are optimally distributed across RMs.',
+  'Highly active HNW clients — strong retention. Use as benchmark for engagement scoring model.',
+  // Affluent
+  'Dormant affluent clients are high-volume churn contributors. Batch re-engagement campaign recommended.',
+  'Low engagement affluent segment — digital-first strategy (Priya Patel) could improve touchpoint frequency.',
+  'Median risk zone. AI recommends shifting 8 clients to better-matched RMs for lifestyle alignment.',
+  'Good engagement. These clients respond well to quarterly portfolio reviews — maintain current cadence.',
+  'Power users at affluent tier — strong candidates for AUM growth / tier upgrade pathway.',
+  // Mass Affluent
+  'Dormant mass-affluent — lower AUM impact but high volume. Consider automated nurture sequences.',
+  'Low engagement mass-affluent — digital channel preference detected. Route to Priya Patel\'s digital-first book.',
+  'Average engagement. Sentiment Predictor shows stable 90-day outlook for this cohort.',
+  'Active mass-affluent book performing well. No action needed — monitor for tier upgrade signals.',
+  'Power users at this tier are rare — flag for personalized tier-upgrade review.',
+  // Retail
+  'Dormant retail accounts — lowest priority but watch for batch attrition patterns.',
+  'Low engagement retail — automated channels sufficient. No RM intervention needed.',
+  'Standard retail engagement. Governance Sentinel confirms compliance — no flags.',
+  'Active retail clients — good digital adoption. Potential upsell to mass-affluent tier.',
+  'Highly engaged retail — minimal churn risk. Monitor for organic AUM growth.',
+];
+
+let selectedHeatCell = null;
+
+function getHeatColor(r) {
+  if (r < 0.15) return `rgba(16,185,129,${0.25 + r*2})`;
+  if (r < 0.30) return `rgba(16,185,129,${0.3 + r})`;
+  if (r < 0.50) return `rgba(245,158,11,${0.2 + r*0.7})`;
+  if (r < 0.70) return `rgba(244,63,94,${0.15 + r*0.5})`;
+  return `rgba(244,63,94,${0.35 + r*0.5})`;
+}
+
+function getRiskLabel(r) {
+  if (r < 0.15) return { text:'Very Low', color:'#34d399' };
+  if (r < 0.30) return { text:'Low', color:'#34d399' };
+  if (r < 0.50) return { text:'Medium', color:'#fbbf24' };
+  if (r < 0.70) return { text:'High', color:'#fb923c' };
+  if (r < 0.85) return { text:'Very High', color:'#f43f5e' };
+  return { text:'Critical', color:'#ef4444' };
+}
+
+function renderHeatmap() {
+  const grid = document.getElementById('heatmap');
+  const COLS = 5;
+  let html = '';
+  for (let row = 0; row < aumTiers.length; row++) {
+    const tier = aumTiers[row];
+    html += `<div class="flex items-center gap-1.5">`;
+    html += `<div class="flex-shrink-0 text-right pr-1" style="width:40px;">
+      <div class="text-[9px] font-semibold text-slate-400 leading-tight">${tier.shortLabel}</div>
+      <div class="text-[7px] text-slate-600 leading-tight">${tier.tag}</div>
+    </div>`;
+    html += `<div class="flex-1 grid grid-cols-5 gap-1">`;
+    for (let col = 0; col < COLS; col++) {
+      const idx = row * COLS + col;
+      const d = heatmapData[idx];
+      const sel = selectedHeatCell === idx;
+      const rl = getRiskLabel(d.risk);
+      html += `<div class="heat-cell heat-cell-interactive rounded-md flex items-center justify-center ${sel ? 'selected' : ''}" style="background:${getHeatColor(d.risk)}; height:26px; position:relative;" title="${tier.label} / ${engagementLevels[col]}: ${(d.risk*100).toFixed(0)}% churn risk" onclick="inspectHeatCell(${idx})">
+        <span class="text-[8px] font-bold" style="color:${d.risk > 0.5 ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.5)'}; text-shadow: 0 1px 3px rgba(0,0,0,0.5);">${(d.risk*100).toFixed(0)}</span>
+      </div>`;
+    }
+    html += `</div></div>`;
+  }
+  grid.innerHTML = html;
+
+  // Summary stats
+  const totalClients = heatmapData.reduce((s,d) => s + d.clients, 0);
+  const highRiskClients = heatmapData.filter(d => d.risk >= 0.5).reduce((s,d) => s + d.clients, 0);
+  const critCells = heatmapData.filter(d => d.risk >= 0.7).length;
+  document.getElementById('heatmap-summary').innerHTML = `
+    <div class="text-center"><div class="text-[9px] text-slate-500">Total Clients</div><div class="text-[13px] font-bold text-white">${totalClients}</div></div>
+    <div class="text-center"><div class="text-[9px] text-slate-500">At-Risk (>50%)</div><div class="text-[13px] font-bold text-amber-400">${highRiskClients}</div></div>
+    <div class="text-center"><div class="text-[9px] text-slate-500">Critical Cells</div><div class="text-[13px] font-bold text-rose-400">${critCells}</div></div>`;
+}
+
+function inspectHeatCell(idx) {
+  selectedHeatCell = idx;
+  const COLS = 5;
+  const d = heatmapData[idx];
+  const row = Math.floor(idx / COLS), col = idx % COLS;
+  const tier = aumTiers[row], eng = engagementLevels[col];
+  const rl = getRiskLabel(d.risk);
+
+  const detail = document.getElementById('heatmap-detail');
+  detail.style.display = 'block';
+  document.getElementById('heatmap-detail-title').textContent = `${tier.label} × ${eng}`;
+  document.getElementById('hm-segment').textContent = `${tier.label} (${tier.tag})`;
+  document.getElementById('hm-period').textContent = eng;
+  document.getElementById('hm-risk').textContent = `${(d.risk*100).toFixed(0)}% — ${rl.text}`;
+  document.getElementById('hm-risk').style.color = rl.color;
+  document.getElementById('hm-clients').textContent = d.clients + ' clients';
+  document.getElementById('hm-aum').textContent = d.aum;
+  document.getElementById('hm-tenure').textContent = d.tenure + ' avg';
+  document.getElementById('hm-insight').textContent = heatmapInsights[idx];
+  document.getElementById('hm-risk-slider').value = Math.round(d.risk * 100);
+  document.getElementById('hm-risk-slider-val').textContent = (d.risk*100).toFixed(0) + '%';
+  renderHeatmap();
+  lucide.createIcons();
+}
+
+function adjustRiskCell(val) {
+  if (selectedHeatCell === null) return;
+  const v = parseInt(val);
+  heatmapData[selectedHeatCell].risk = v / 100;
+  const rl = getRiskLabel(v / 100);
+  document.getElementById('hm-risk-slider-val').textContent = v + '%';
+  document.getElementById('hm-risk').textContent = `${v}% — ${rl.text}`;
+  document.getElementById('hm-risk').style.color = rl.color;
+  renderHeatmap();
+  updateProjectedImpact();
+}
+
+function renderAgentFleet() {
+  document.getElementById('agent-fleet').innerHTML = agentFleet.map((a, idx) => `
+    <div class="agent-hex rounded-2xl p-3 animate-fade-in" id="agent-${a.id}" data-agent-id="${a.id}" data-idx="${idx}" style="background:rgba(255,255,255,0.025); border:1px solid rgba(255,255,255,0.06); --agent-color:${a.color}; --agent-color-glow:${a.colorGlow};" onmouseenter="positionInspect(this)" onclick="openAgentEdit(${idx})">
+      <!-- Status dot -->
+      <div class="status-dot ${a.status==='active'?'active':''}"></div>
+      <!-- Icon -->
+      <div class="w-9 h-9 rounded-xl flex items-center justify-center mx-auto mb-2" style="background:${a.color}15; border:1px solid ${a.color}30; box-shadow: 0 0 12px ${a.color}15;">
+        <i data-lucide="${a.icon}" class="w-4 h-4" style="color:${a.color}"></i>
+      </div>
+      <div class="text-[10px] font-semibold text-center text-slate-300 leading-tight">${a.name}</div>
+      <div class="flex items-center justify-center gap-1 mt-1.5">
+        <div class="w-1.5 h-1.5 rounded-full ${a.status==='active'?'animate-pulse-glow':''}" style="background:${a.status==='active'?a.color:'#475569'}; ${a.status==='active'?'box-shadow: 0 0 6px '+a.color+'80':''}"></div>
+        <span class="text-[9px] uppercase tracking-wider font-medium" style="color:${a.status==='active'?a.color:'#475569'}">${a.status==='active'?'Active':'Idle'}</span>
+      </div>
+      <div class="text-center mt-1.5"><span class="text-[8px] text-slate-600 flex items-center justify-center gap-1"><i data-lucide="pencil" class="w-2 h-2"></i>Click to edit</span></div>
+      <!-- INSPECT OVERLAY — Hover Deep-Dive (positioned via JS) -->
+      <div class="agent-inspect">
+        <div class="flex items-center gap-2 mb-3">
+          <div class="w-6 h-6 rounded-lg flex items-center justify-center" style="background:${a.color}20; border:1px solid ${a.color}35;"><i data-lucide="${a.icon}" class="w-3 h-3" style="color:${a.color}"></i></div>
+          <div class="flex-1"><div class="text-[11px] font-bold text-white">${a.name}</div></div>
+          <span class="text-[8px] px-1.5 py-0.5 rounded-md" style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); color:#94a3b8;">Click to edit</span>
+        </div>
+        <div class="space-y-2.5">
+          <div>
+            <div class="flex items-center gap-1.5 mb-1"><i data-lucide="zap" class="w-2.5 h-2.5 text-cyan-400"></i><span class="text-[9px] font-bold uppercase tracking-wider text-cyan-400">Function</span></div>
+            <p class="text-[10px] text-slate-400 leading-relaxed">${a.fn}</p>
+          </div>
+          <div style="border-top:1px solid rgba(255,255,255,0.05); padding-top:8px;">
+            <div class="flex items-center gap-1.5 mb-1"><i data-lucide="database" class="w-2.5 h-2.5 text-emerald-400"></i><span class="text-[9px] font-bold uppercase tracking-wider text-emerald-400">Data Lineage</span></div>
+            <p class="text-[10px] text-slate-400 leading-relaxed">${a.lineage}</p>
+          </div>
+          <div style="border-top:1px solid rgba(255,255,255,0.05); padding-top:8px;">
+            <div class="flex items-center gap-1.5 mb-1"><i data-lucide="binary" class="w-2.5 h-2.5" style="color:#a78bfa;"></i><span class="text-[9px] font-bold uppercase tracking-wider" style="color:#a78bfa;">Algorithmic Backbone</span></div>
+            <p class="text-[10px] leading-relaxed font-mono" style="color:#c4b5fd; background:rgba(139,92,246,0.06); border:1px solid rgba(139,92,246,0.12); border-radius:8px; padding:6px 8px;">${a.algo}</p>
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+// Position inspect tooltip to center of viewport so it's always visible
+function positionInspect(el) {
+  const tooltip = el.querySelector('.agent-inspect');
+  if (!tooltip) return;
+  const rect = el.getBoundingClientRect();
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const tw = 300;
+  // Place to the right of sidebar if room, else center
+  let left = rect.right + 12;
+  if (left + tw > vw - 20) left = Math.max(20, (vw - tw) / 2);
+  let top = rect.top;
+  if (top + 280 > vh) top = Math.max(20, vh - 300);
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = top + 'px';
+}
+
+// ═══════════════════════════════════════════════════
+//  SCENARIO → AGENT LIVE TRACE + PROJECTED IMPACT
+// ═══════════════════════════════════════════════════
+const scenarioImpact = {
+  baseline:   { retention: {val:'+8.3%', pct:83}, revenue: {val:'+$12.4M', pct:74}, capacity: {val:'+14.7%', pct:91}, label:'Baseline' },
+  attrition:  { retention: {val:'+5.1%', pct:51}, revenue: {val:'+$8.2M',  pct:49}, capacity: {val:'+22.3%', pct:95}, label:'Attrition Response' },
+  rebalance:  { retention: {val:'+9.7%', pct:97}, revenue: {val:'+$14.8M', pct:88}, capacity: {val:'+18.1%', pct:98}, label:'Regional Rebalance' },
+  growth:     { retention: {val:'+6.4%', pct:64}, revenue: {val:'+$21.6M', pct:96}, capacity: {val:'+11.2%', pct:72}, label:'Growth Injection' },
+};
+
+let activeScenario = null;
+function selectScenario(el) {
+  document.querySelectorAll('.scenario-row').forEach(r => r.style.background = '');
+  document.querySelectorAll('.agent-hex').forEach(a => a.classList.remove('computing'));
+
+  const scenario = el.dataset.scenario;
+  const agentIds = el.dataset.agents.split(',');
+
+  if (activeScenario === scenario) {
+    activeScenario = null;
+    el.style.background = '';
+    animateProjectedImpact('baseline');
+    return;
+  }
+
+  activeScenario = scenario;
+  el.style.background = 'rgba(255,255,255,0.04)';
+
+  agentIds.forEach((id, i) => {
+    setTimeout(() => {
+      const agentEl = document.getElementById('agent-' + id.trim());
+      if (agentEl) agentEl.classList.add('computing');
+    }, i * 200);
+  });
+
+  animateProjectedImpact(scenario);
+}
+
+function animateProjectedImpact(scenarioKey) {
+  const data = scenarioImpact[scenarioKey] || scenarioImpact.baseline;
+  const badge = document.getElementById('impact-scenario-badge');
+  badge.textContent = data.label;
+  const badgeColors = {
+    baseline:  {bg:'rgba(6,182,212,0.08)',border:'rgba(6,182,212,0.15)',color:'#67e8f9'},
+    attrition: {bg:'rgba(245,158,11,0.08)',border:'rgba(245,158,11,0.15)',color:'#fbbf24'},
+    rebalance: {bg:'rgba(6,182,212,0.08)',border:'rgba(6,182,212,0.15)',color:'#22d3ee'},
+    growth:    {bg:'rgba(16,185,129,0.08)',border:'rgba(16,185,129,0.15)',color:'#34d399'},
+  };
+  const bc = badgeColors[scenarioKey] || badgeColors.baseline;
+  badge.style.background = bc.bg; badge.style.borderColor = bc.border; badge.style.color = bc.color;
+
+  // Animate bars
+  const retEl = document.getElementById('pi-retention');
+  const revEl = document.getElementById('pi-revenue');
+  const capEl = document.getElementById('pi-capacity');
+  const retBar = document.getElementById('pi-retention-bar');
+  const revBar = document.getElementById('pi-revenue-bar');
+  const capBar = document.getElementById('pi-capacity-bar');
+
+  [retEl, revEl, capEl].forEach(e => { e.classList.add('count-animate'); setTimeout(()=>e.classList.remove('count-animate'), 400); });
+
+  retEl.textContent = data.retention.val; retBar.style.width = data.retention.pct + '%';
+  revEl.textContent = data.revenue.val; revBar.style.width = data.revenue.pct + '%';
+  capEl.textContent = data.capacity.val; capBar.style.width = data.capacity.pct + '%';
+
+  document.getElementById('impact-update-note').textContent = scenarioKey === 'baseline' ? 'Updates dynamically with scenario & risk changes' : `Computed for "${data.label}" scenario`;
+}
+
+function updateProjectedImpact() {
+  // Recalculate based on average heatmap risk
+  const avgRisk = heatmapData.reduce((a,d) => a+d.risk, 0) / heatmapData.length;
+  const base = scenarioImpact[activeScenario || 'baseline'];
+  const riskFactor = 1 - (avgRisk - 0.35); // baseline avg risk ~0.35
+  const adjRetPct = Math.min(100, Math.max(10, Math.round(base.retention.pct * riskFactor)));
+  const adjRevPct = Math.min(100, Math.max(10, Math.round(base.revenue.pct * riskFactor)));
+  const adjCapPct = Math.min(100, Math.max(10, Math.round(base.capacity.pct * riskFactor)));
+
+  document.getElementById('pi-retention').textContent = '+' + (adjRetPct/10).toFixed(1) + '%';
+  document.getElementById('pi-retention-bar').style.width = adjRetPct + '%';
+  document.getElementById('pi-revenue').textContent = '+$' + (adjRevPct * 0.168).toFixed(1) + 'M';
+  document.getElementById('pi-revenue-bar').style.width = adjRevPct + '%';
+  document.getElementById('pi-capacity').textContent = '+' + (adjCapPct * 0.16).toFixed(1) + '%';
+  document.getElementById('pi-capacity-bar').style.width = adjCapPct + '%';
+
+  document.getElementById('impact-update-note').textContent = 'Recalculated — risk grade adjustment applied';
+  [document.getElementById('pi-retention'), document.getElementById('pi-revenue'), document.getElementById('pi-capacity')].forEach(e => { e.classList.add('count-animate'); setTimeout(()=>e.classList.remove('count-animate'), 400); });
+}
+
+// ═══════════════════════════════════════════════════
+//  AGENT EDIT MODAL
+// ═══════════════════════════════════════════════════
+function openAgentEdit(idx) {
+  const a = agentFleet[idx];
+  document.getElementById('agent-edit-content').innerHTML = `
+    <div class="flex items-center justify-between mb-5">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:${a.color}15; border:1px solid ${a.color}30; box-shadow: 0 0 15px ${a.color}20;">
+          <i data-lucide="${a.icon}" class="w-5 h-5" style="color:${a.color}"></i>
+        </div>
+        <div>
+          <h2 class="text-[14px] font-bold text-white">Edit Agent Configuration</h2>
+          <p class="text-[10px] text-slate-500">${a.name} — ${a.id.toUpperCase()}</p>
+        </div>
+      </div>
+      <button onclick="closeAgentEdit()" class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/5 transition-colors" style="border:1px solid rgba(255,255,255,0.08);"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
+    </div>
+
+    <div class="space-y-4">
+      <!-- Agent Name -->
+      <div>
+        <label class="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1.5 block">Agent Name</label>
+        <input type="text" id="edit-agent-name" value="${a.name}" class="agent-edit-input">
+      </div>
+
+      <!-- Function -->
+      <div>
+        <div class="flex items-center gap-1.5 mb-1.5"><i data-lucide="zap" class="w-3 h-3 text-cyan-400"></i><label class="text-[10px] font-bold uppercase tracking-wider text-cyan-400">Function</label></div>
+        <textarea id="edit-agent-fn" class="agent-edit-input" rows="3">${a.fn}</textarea>
+      </div>
+
+      <!-- Data Lineage -->
+      <div>
+        <div class="flex items-center gap-1.5 mb-1.5"><i data-lucide="database" class="w-3 h-3 text-emerald-400"></i><label class="text-[10px] font-bold uppercase tracking-wider text-emerald-400">Data Lineage</label></div>
+        <textarea id="edit-agent-lineage" class="agent-edit-input" rows="2">${a.lineage}</textarea>
+        <p class="text-[9px] text-slate-600 mt-1">Comma-separated data sources</p>
+      </div>
+
+      <!-- Algorithm -->
+      <div>
+        <div class="flex items-center gap-1.5 mb-1.5"><i data-lucide="binary" class="w-3 h-3" style="color:#a78bfa;"></i><label class="text-[10px] font-bold uppercase tracking-wider" style="color:#a78bfa;">Algorithmic Backbone</label></div>
+        <textarea id="edit-agent-algo" class="agent-edit-input mono" rows="2">${a.algo}</textarea>
+      </div>
+
+      <!-- Status Toggle -->
+      <div class="flex items-center justify-between p-3 rounded-xl" style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06);">
+        <div>
+          <div class="text-[11px] font-semibold text-slate-300">Agent Status</div>
+          <div class="text-[9px] text-slate-500">Toggle active/idle state</div>
+        </div>
+        <div class="toggle-track ${a.status==='active'?'active':''}" id="edit-agent-status" onclick="this.classList.toggle('active')"><div class="toggle-knob"></div></div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex gap-2 mt-5">
+      <button onclick="saveAgentEdit(${idx})" class="flex-1 py-2.5 rounded-xl text-[12px] font-semibold flex items-center justify-center gap-2 text-white transition-all hover:scale-[1.02]" style="background:linear-gradient(135deg, rgba(6,182,212,0.25), rgba(139,92,246,0.15)); border:1px solid rgba(6,182,212,0.3); box-shadow: 0 0 20px rgba(6,182,212,0.1);">
+        <i data-lucide="check" class="w-3.5 h-3.5"></i>Save Changes
+      </button>
+      <button onclick="closeAgentEdit()" class="py-2.5 px-4 rounded-xl text-[12px] font-medium text-slate-400 hover:text-white transition-colors" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08);">Cancel</button>
+    </div>
+  `;
+
+  const backdrop = document.getElementById('agent-edit-backdrop');
+  const modal = document.getElementById('agent-edit-modal');
+  backdrop.style.display = 'flex';
+  backdrop.querySelector('.absolute').classList.add('modal-bg-enter');
+  modal.classList.add('drawer-enter');
+  setTimeout(() => lucide.createIcons(), 50);
+}
+
+function saveAgentEdit(idx) {
+  const a = agentFleet[idx];
+  a.name = document.getElementById('edit-agent-name').value;
+  a.fn = document.getElementById('edit-agent-fn').value;
+  a.lineage = document.getElementById('edit-agent-lineage').value;
+  a.algo = document.getElementById('edit-agent-algo').value;
+  a.status = document.getElementById('edit-agent-status').classList.contains('active') ? 'active' : 'idle';
+  closeAgentEdit();
+  renderAgentFleet();
+  lucide.createIcons();
+  // Flash the card to confirm save
+  setTimeout(() => {
+    const el = document.getElementById('agent-' + a.id);
+    if (el) {
+      el.style.boxShadow = '0 0 25px ' + a.colorGlow + ', 0 0 50px ' + a.colorGlow;
+      setTimeout(() => { el.style.boxShadow = ''; }, 800);
+    }
+  }, 100);
+}
+
+function closeAgentEdit() {
+  const backdrop = document.getElementById('agent-edit-backdrop');
+  const modal = document.getElementById('agent-edit-modal');
+  const bg = backdrop.querySelector('.absolute');
+  modal.classList.remove('drawer-enter');
+  modal.classList.add('drawer-exit');
+  bg.classList.remove('modal-bg-enter');
+  bg.classList.add('modal-bg-exit');
+  setTimeout(() => { backdrop.style.display = 'none'; modal.classList.remove('drawer-exit'); bg.classList.remove('modal-bg-exit'); }, 300);
+}
+
+function getCompBadge(score) {
+  const c = score >= 90 ? {bg:'rgba(16,185,129,0.1)',border:'rgba(16,185,129,0.25)',text:'#34d399'} : score >= 80 ? {bg:'rgba(6,182,212,0.1)',border:'rgba(6,182,212,0.25)',text:'#22d3ee'} : {bg:'rgba(245,158,11,0.1)',border:'rgba(245,158,11,0.25)',text:'#fbbf24'};
+  return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold" style="background:${c.bg}; border:1px solid ${c.border}; color:${c.text};"><i data-lucide="target" class="w-3 h-3"></i>${score}%</span>`;
+}
+
+function renderRMCards() {
+  const container = document.getElementById('rm-cards');
+  const colorMap = {
+    cyan:    {avatarBg:'rgba(6,182,212,0.12)',avatarBorder:'rgba(6,182,212,0.25)',barClass:'progress-cyan',accent:'#22d3ee',accentBg:'rgba(6,182,212,0.06)',accentBorder:'rgba(6,182,212,0.2)'},
+    amber:   {avatarBg:'rgba(245,158,11,0.12)',avatarBorder:'rgba(245,158,11,0.25)',barClass:'progress-amber',accent:'#fbbf24',accentBg:'rgba(245,158,11,0.06)',accentBorder:'rgba(245,158,11,0.2)'},
+    emerald: {avatarBg:'rgba(16,185,129,0.12)',avatarBorder:'rgba(16,185,129,0.25)',barClass:'progress-emerald',accent:'#34d399',accentBg:'rgba(16,185,129,0.06)',accentBorder:'rgba(16,185,129,0.2)'},
+  };
+  container.innerHTML = rmData.map((rm, idx) => {
+    const c = colorMap[rm.color];
+    const pct = Math.min(Math.round((rm.clients/rm.capacity)*100), 100);
+    const isOver = rm.clients > rm.capacity;
+    const barClass = isOver ? 'progress-rose' : c.barClass;
+    return `
+    <div class="glass-card rounded-2xl p-4 md:p-5 animate-fade-in cursor-pointer" style="animation-delay:${idx*0.07}s;" onclick="openDrawer(${idx})">
+      <div class="flex items-start justify-between mb-3 md:mb-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 md:w-11 h-10 md:h-11 rounded-xl flex items-center justify-center text-[12px] md:text-[13px] font-bold tracking-wide" style="background:${c.avatarBg}; border:1px solid ${c.avatarBorder}; color:${c.accent};">${rm.avatar}</div>
+          <div><h3 class="text-[13px] md:text-[14px] font-semibold text-white">${rm.name}</h3><p class="text-[10px] md:text-[11px] text-slate-500">${rm.title} &bull; ★ ${rm.rating}</p></div>
+        </div>
+        <div class="flex items-center gap-2">
+          ${rm.risk ? `<span class="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold animate-pulse-glow" style="background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.25); color:#fbbf24;"><i data-lucide="alert-triangle" class="w-3 h-3"></i>At Risk</span>` : ''}
+          ${getCompBadge(rm.compatibility)}
+        </div>
+      </div>
+      <div class="grid grid-cols-3 gap-2 mb-3 md:mb-4">
+        <div class="text-center py-2 px-1 rounded-xl" style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04);"><div class="text-[9px] text-slate-500 uppercase tracking-wider">Clients</div><div class="text-[14px] md:text-[15px] font-bold text-white mt-0.5">${rm.clients}<span class="text-[10px] text-slate-500 font-normal">/${rm.capacity}</span></div></div>
+        <div class="text-center py-2 px-1 rounded-xl" style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04);"><div class="text-[9px] text-slate-500 uppercase tracking-wider">AUM</div><div class="text-[14px] md:text-[15px] font-bold text-white mt-0.5">${rm.aum}</div></div>
+        <div class="text-center py-2 px-1 rounded-xl" style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.04);"><div class="text-[9px] text-slate-500 uppercase tracking-wider">Match</div><div class="text-[14px] md:text-[15px] font-bold mt-0.5" style="color:${c.accent}">${rm.compatibility}%</div></div>
+      </div>
+      <div class="mb-3"><div class="flex items-center justify-between mb-1.5"><span class="text-[10px] text-slate-500 uppercase tracking-wider font-medium">Capacity</span><span class="text-[11px] font-bold ${isOver?'text-rose-400':'text-slate-300'}">${pct}%</span></div><div class="progress-track"><div class="progress-fill ${barClass}" style="width:${pct}%"></div></div></div>
+      <div class="flex flex-wrap gap-1.5 mb-3">${rm.specialties.map(s=>`<span class="text-[10px] px-2.5 py-0.5 rounded-full text-slate-400" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);">${s}</span>`).join('')}</div>
+      <div class="rounded-xl p-3 flex items-start gap-2.5" style="background:${c.accentBg}; border:1px solid ${c.accentBorder};">
+        <i data-lucide="sparkles" class="w-3.5 h-3.5 flex-shrink-0 mt-0.5" style="color:${c.accent};"></i>
+        <div class="min-w-0"><div class="text-[9px] font-bold uppercase tracking-wider mb-1" style="color:${c.accent};">AI Optimization Insight</div><p class="text-[11px] text-slate-300 leading-relaxed">${rm.suggestion}</p>
+          ${rm.matchClients.length ? `<div class="flex flex-wrap gap-1 mt-2">${rm.matchClients.map(cl=>`<span class="text-[9px] px-2 py-0.5 rounded-md font-mono" style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); color:${c.accent};">${cl}</span>`).join('')}</div>` : ''}
+        </div>
+      </div>
+      <div class="mt-3 flex items-center justify-between pt-2" style="border-top: 1px solid rgba(255,255,255,0.04);">
+        <span class="text-[10px] text-slate-500 flex items-center gap-1"><i data-lucide="mouse-pointer-click" class="w-3 h-3"></i>Click for persona deep-dive</span>
+        <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-600"></i>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function getStepIcon(status) {
+  if (status === 'complete') return `<i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>`;
+  if (status === 'warning') return `<i data-lucide="alert-triangle" class="w-4 h-4 text-amber-400"></i>`;
+  if (status === 'conflict') return `<i data-lucide="shield-alert" class="w-4 h-4" style="color:#d946ef;"></i>`;
+  if (status === 'success') return `<i data-lucide="sparkles" class="w-4 h-4 text-cyan-400"></i>`;
+  return `<div class="w-4 h-4 border-2 border-cyan-400/50 border-t-cyan-400 rounded-full" style="animation: spin 1s linear infinite;"></div>`;
+}
+
+function renderLogicTrail(entries) {
+  const container = document.getElementById('logic-trail');
+  container.innerHTML = entries.map((e, i) => {
+    const isActive = e.status === 'active', isConflict = e.status === 'conflict';
+    const titleColor = isConflict ? 'color:#d946ef;' : isActive ? 'color:#67e8f9;' : 'color:#e2e8f0;';
+    const detailColor = isConflict ? 'text-fuchsia-200/80' : isActive ? 'text-slate-300' : 'text-slate-500';
+    const iconBg = isConflict ? 'background:rgba(217,70,239,0.12); border:1px solid rgba(217,70,239,0.3);' : `background:${e.color}12; border:1px solid ${e.color}25;`;
+    const rowExtra = isConflict ? 'background:rgba(217,70,239,0.04); border:1px solid rgba(217,70,239,0.12); border-radius:12px; padding:8px 10px; margin-bottom:4px;' : isActive ? 'border-radius:12px; padding:4px;' : '';
+    return `
+    <div class="relative flex gap-3 pb-5 animate-fade-in ${isActive?'animate-pulse-glow':''}" style="animation-delay:${i*0.06}s; ${rowExtra}">
+      ${i < entries.length-1 && !isConflict ? '<div class="trail-line"></div>' : ''}
+      <div class="flex-shrink-0 w-[34px] h-[34px] rounded-lg flex items-center justify-center" style="${iconBg}">${getStepIcon(e.status)}</div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center justify-between mb-1">
+          <h4 class="text-[12px] font-semibold" style="${titleColor}">${isConflict ? '<span style="color:#d946ef;" class="font-mono mr-1">!!</span>' : `<span class="text-slate-600 font-mono mr-1">0${e.step}.</span>`}${e.title}${isActive?'<span class="typing-cursor"></span>':''}</h4>
+          <span class="text-[9px] font-mono px-1.5 py-0.5 rounded-md flex-shrink-0 ml-2" style="background:rgba(255,255,255,0.03); color:${isConflict?'#d946ef':e.time==='—'?'#22d3ee':'#64748b'};">${e.time}</span>
+        </div>
+        <p class="text-[11px] leading-relaxed ${detailColor}">${e.detail}</p>
+      </div>
+    </div>`;
+  }).join('');
+  container.scrollTop = container.scrollHeight;
+}
+
+// ═══════════════════════════════════════════════════
+//  RM DRILL-DOWN DRAWER
+// ═══════════════════════════════════════════════════
+function openDrawer(idx) {
+  const rm = rmData[idx];
+  const p = rm.persona;
+  const colorMap = {cyan:'#22d3ee',amber:'#fbbf24',emerald:'#34d399'};
+  const accent = colorMap[rm.color];
+  const dims = [
+    {label:'Language Match',val:p.language,color:'#22d3ee'},
+    {label:'Risk Profile',val:p.riskProfile,color:'#34d399'},
+    {label:'Lifestyle Fit',val:p.lifestyle,color:'#a78bfa'},
+    {label:'Geography',val:p.geography,color:'#fbbf24'},
+    {label:'Portfolio Fit',val:p.portfolioFit,color:'#22d3ee'},
+    {label:'Tenure Stability',val:p.tenure,color:'#34d399'},
+  ];
+
+  document.getElementById('rm-drawer-content').innerHTML = `
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-[16px] font-bold text-white">RM Deep-Dive</h2>
+      <button onclick="closeDrawer()" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/5 transition-colors" style="border: 1px solid rgba(255,255,255,0.08);"><i data-lucide="x" class="w-4 h-4"></i></button>
+    </div>
+    <div class="flex items-center gap-4 mb-6">
+      <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-lg font-bold" style="background:${accent}20; border:2px solid ${accent}40; color:${accent};">${rm.avatar}</div>
+      <div><h3 class="text-[15px] font-bold text-white">${rm.name}</h3><p class="text-[11px] text-slate-400">${rm.title} &bull; ★ ${rm.rating} &bull; ${rm.clients}/${rm.capacity} clients</p><p class="text-[11px] text-slate-500 mt-1">${rm.bio}</p></div>
+    </div>
+    <div class="rounded-2xl p-4 mb-5" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);">
+      <div class="flex items-center gap-2 mb-4"><i data-lucide="radar" class="w-4 h-4 text-cyan-400"></i><h4 class="text-[12px] font-bold text-white uppercase tracking-wider">Persona Match Breakdown</h4></div>
+      <div class="space-y-3">
+        ${dims.map(d => `
+        <div>
+          <div class="flex justify-between items-center mb-1"><span class="text-[11px] text-slate-400">${d.label}</span><span class="text-[11px] font-bold" style="color:${d.color}">${d.val}%</span></div>
+          <div class="match-bar" style="background:rgba(255,255,255,0.06);"><div class="match-bar-fill" style="width:${d.val}%; background:${d.color}; box-shadow: 0 0 8px ${d.color}60;"></div></div>
+        </div>`).join('')}
+      </div>
+      <div class="mt-4 pt-3 flex items-center justify-between" style="border-top:1px solid rgba(255,255,255,0.05);">
+        <span class="text-[11px] text-slate-400">Overall Compatibility</span>
+        <span class="text-[16px] font-black" style="color:${accent}; text-shadow: 0 0 20px ${accent}60;">${rm.compatibility}%</span>
+      </div>
+    </div>
+    <div class="rounded-2xl p-4" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);">
+      <div class="flex items-center gap-2 mb-4"><i data-lucide="users" class="w-4 h-4 text-emerald-400"></i><h4 class="text-[12px] font-bold text-white uppercase tracking-wider">AI-Assigned Clients</h4></div>
+      <div class="space-y-2.5">
+        ${rm.topClients.map(cl => `
+        <div class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-white/[0.02] transition-colors" style="border:1px solid rgba(255,255,255,0.04);">
+          <div class="flex-1"><div class="text-[12px] font-semibold text-white">${cl.name} <span class="text-slate-500 font-normal">${cl.aum}</span></div><div class="text-[10px] text-slate-500 mt-0.5">${cl.reason}</div></div>
+          <span class="text-[11px] font-bold px-2 py-0.5 rounded-md" style="background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.2); color:#34d399;">${cl.match}%</span>
+        </div>`).join('')}
+      </div>
+    </div>`;
+
+  const backdrop = document.getElementById('rm-drawer-backdrop');
+  const drawer = document.getElementById('rm-drawer');
+  backdrop.style.display = 'block';
+  backdrop.querySelector('.absolute').classList.add('modal-bg-enter');
+  drawer.classList.remove('drawer-exit');
+  drawer.classList.add('drawer-enter');
+  setTimeout(() => lucide.createIcons(), 50);
+}
+
+function closeDrawer() {
+  const backdrop = document.getElementById('rm-drawer-backdrop');
+  const drawer = document.getElementById('rm-drawer');
+  const bg = backdrop.querySelector('.absolute');
+  drawer.classList.remove('drawer-enter');
+  drawer.classList.add('drawer-exit');
+  bg.classList.remove('modal-bg-enter');
+  bg.classList.add('modal-bg-exit');
+  setTimeout(() => { backdrop.style.display = 'none'; bg.classList.remove('modal-bg-exit'); }, 300);
+}
+
+// ═══════════════════════════════════════════════════
+//  AUDIT TRAIL MODAL
+// ═══════════════════════════════════════════════════
+function showAuditTrail() {
+  const entries = logicTrail;
+  document.getElementById('audit-modal-content').innerHTML = `
+    <div class="flex items-center justify-between mb-5">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:rgba(6,182,212,0.1); border:1px solid rgba(6,182,212,0.2);"><i data-lucide="file-check" class="w-4 h-4 text-cyan-400"></i></div>
+        <div><h2 class="text-[14px] font-bold text-white">Audit Trail — Compliance Export</h2><p class="text-[10px] text-slate-500">Session #EQ-2847 &bull; Event ATTR-WILSON-N</p></div>
+      </div>
+      <button onclick="closeAuditModal()" class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/5 transition-colors" style="border:1px solid rgba(255,255,255,0.08);"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
+    </div>
+    <div class="rounded-xl p-3 mb-4" style="background:rgba(6,182,212,0.04); border:1px solid rgba(6,182,212,0.12);">
+      <div class="grid grid-cols-3 gap-3 text-center">
+        <div><div class="text-[9px] text-slate-500 uppercase">Decisions</div><div class="text-[14px] font-bold text-cyan-400">${entries.length}</div></div>
+        <div><div class="text-[9px] text-slate-500 uppercase">Conflicts</div><div class="text-[14px] font-bold" style="color:#d946ef;">1</div></div>
+        <div><div class="text-[9px] text-slate-500 uppercase">Compliance</div><div class="text-[14px] font-bold text-emerald-400">100%</div></div>
+      </div>
+    </div>
+    <div class="rounded-xl overflow-hidden mb-4" style="border:1px solid rgba(255,255,255,0.06);">
+      <div class="px-3 py-2 text-[10px] font-semibold text-slate-400 uppercase tracking-wider grid grid-cols-[60px,1fr,70px]" style="background:rgba(255,255,255,0.02); border-bottom:1px solid rgba(255,255,255,0.04);">
+        <span>Time</span><span>Decision</span><span class="text-right">Status</span>
+      </div>
+      ${entries.map(e => {
+        const sc = e.status === 'conflict' ? 'color:#d946ef' : e.status === 'warning' ? 'color:#fbbf24' : e.status === 'active' ? 'color:#22d3ee' : 'color:#34d399';
+        return `<div class="px-3 py-2 grid grid-cols-[60px,1fr,70px] items-center text-[11px]" style="border-bottom:1px solid rgba(255,255,255,0.03);">
+          <span class="font-mono text-slate-500 text-[10px]">${e.time}</span>
+          <span class="text-slate-300">${e.title}</span>
+          <span class="text-right text-[10px] font-semibold uppercase" style="${sc}">${e.status}</span>
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="flex gap-2">
+      <button onclick="alert('PDF export initiated — audit ref #CL-48291')" class="flex-1 py-2.5 rounded-xl text-[11px] font-semibold flex items-center justify-center gap-2 text-white transition-all hover:scale-[1.02]" style="background:linear-gradient(135deg, rgba(6,182,212,0.2), rgba(139,92,246,0.12)); border:1px solid rgba(6,182,212,0.25);"><i data-lucide="file-text" class="w-3.5 h-3.5"></i>Export PDF</button>
+      <button onclick="alert('CSV downloaded — 8 decision records exported')" class="flex-1 py-2.5 rounded-xl text-[11px] font-semibold flex items-center justify-center gap-2 text-white transition-all hover:scale-[1.02]" style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);"><i data-lucide="table" class="w-3.5 h-3.5"></i>Export CSV</button>
+    </div>`;
+
+  const backdrop = document.getElementById('audit-modal-backdrop');
+  const modal = document.getElementById('audit-modal');
+  backdrop.style.display = 'flex';
+  backdrop.querySelector('.absolute').classList.add('modal-bg-enter');
+  modal.classList.add('drawer-enter');
+  setTimeout(() => lucide.createIcons(), 50);
+}
+
+function closeAuditModal() {
+  const backdrop = document.getElementById('audit-modal-backdrop');
+  const modal = document.getElementById('audit-modal');
+  const bg = backdrop.querySelector('.absolute');
+  modal.classList.remove('drawer-enter');
+  modal.classList.add('drawer-exit');
+  bg.classList.remove('modal-bg-enter');
+  bg.classList.add('modal-bg-exit');
+  setTimeout(() => { backdrop.style.display = 'none'; modal.classList.remove('drawer-exit'); bg.classList.remove('modal-bg-exit'); }, 300);
+}
+
+// ═══════════════════════════════════════════════════
+//  MINOR INTERACTIVE STUBS
+// ═══════════════════════════════════════════════════
+function showNotifications() {
+  alert('Notifications:\n\n• Wilson attrition event — 12 Diamond clients pending\n• Compliance Guard flagged Apex Holdings §4.7.2\n• 4 AI optimization suggestions ready for review');
+}
+function showUserProfile() {
+  alert('User Profile:\n\nAlex Morgan\nNorth Region Lead\nPacific Northwest Division\n\nRole: Regional Manager\nAccess: Full Platform + Deploy Authority\nLast login: Today, 09:47 UTC');
+}
+function showFilterTooltip() {
+  alert('Filter Options:\n\n• Capacity: Under / At / Over\n• Risk: Low / Medium / High\n• Specialization: UHNW, Commercial, Digital, Cross-Border, Retirement\n• AUM Tier: $0-50M, $50-150M, $150M+');
+}
+
+// ═══════════════════════════════════════════════════
+//  GOVERNANCE TOGGLE
+// ═══════════════════════════════════════════════════
+let governanceOpen = false;
+function toggleGovernance() {
+  const body = document.getElementById('governance-body');
+  const chevron = document.getElementById('governance-chevron-icon');
+  governanceOpen = !governanceOpen;
+  body.style.maxHeight = governanceOpen ? body.scrollHeight + 'px' : '0px';
+  chevron.style.transform = governanceOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+  setTimeout(() => lucide.createIcons(), 50);
+}
+
+// ═══════════════════════════════════════════════════
+//  DEPLOY WORKFLOW
+// ═══════════════════════════════════════════════════
+let isDeployed = false;
+function deployAssignments() {
+  if (isDeployed) return;
+  isDeployed = true;
+  const btn = document.getElementById('deploy-btn');
+  const progressTrack = document.getElementById('deploy-progress-track');
+  const progressFill = document.getElementById('deploy-progress-fill');
+  btn.style.pointerEvents = 'none';
+  btn.innerHTML = `<div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full" style="animation: spin 0.8s linear infinite;"></div><span>Deploying...</span>`;
+  btn.style.background = 'linear-gradient(135deg, rgba(6,182,212,0.3), rgba(37,99,235,0.2))';
+  btn.style.boxShadow = '0 0 40px rgba(6,182,212,0.2)';
+  progressTrack.style.display = 'block';
+  progressFill.classList.add('deploy-progress-bar');
+
+  // Animate impact numbers during deploy
+  animateImpact();
+
+  setTimeout(() => {
+    document.getElementById('deploy-btn-zone').innerHTML = `
+      <div class="flex items-center gap-2.5 px-5 py-2 rounded-xl" style="background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25); box-shadow: 0 0 25px rgba(16,185,129,0.12);">
+        <div class="w-6 h-6 rounded-full flex items-center justify-center" style="background: rgba(16,185,129,0.2); border: 1px solid rgba(16,185,129,0.3);"><i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-400"></i></div>
+        <span class="text-[12px] font-semibold text-emerald-300">Deployed Successfully</span>
+        <span class="text-[10px] text-slate-500 font-mono ml-1">10:06:42 UTC</span>
+      </div>`;
+    progressTrack.style.display = 'none';
+    progressFill.classList.remove('deploy-progress-bar');
+    showSuccessToast();
+    lucide.createIcons();
+  }, 2000);
+}
+
+function animateImpact() {
+  const aumEl = document.getElementById('impact-aum');
+  const burnEl = document.getElementById('impact-burnout');
+  const steps = [{a:'+4.2%',b:'−15%'},{a:'+4.5%',b:'−17%'},{a:'+4.8%',b:'−19%'},{a:'+5.1%',b:'−21%'},{a:'+5.3%',b:'−22%'}];
+  steps.forEach((s,i) => {
+    setTimeout(() => {
+      aumEl.textContent = s.a; aumEl.classList.add('count-animate');
+      burnEl.textContent = s.b; burnEl.classList.add('count-animate');
+      setTimeout(() => { aumEl.classList.remove('count-animate'); burnEl.classList.remove('count-animate'); }, 300);
+    }, i * 380);
+  });
+}
+
+function showSuccessToast() {
+  const toast = document.getElementById('success-toast');
+  toast.style.display = 'block';
+  toast.querySelector(':scope > div').classList.add('toast-enter');
+  lucide.createIcons();
+  setTimeout(() => dismissToast(), 8000);
+}
+function dismissToast() {
+  const toast = document.getElementById('success-toast');
+  const inner = toast.querySelector(':scope > div');
+  inner.classList.remove('toast-enter');
+  inner.classList.add('toast-exit');
+  setTimeout(() => { toast.style.display = 'none'; inner.classList.remove('toast-exit'); }, 400);
+}
+
+// ═══════════════════════════════════════════════════
+//  RUN SCENARIO
+// ═══════════════════════════════════════════════════
+let isRunning = false;
+function runScenario() {
+  if (isRunning) return;
+  isRunning = true;
+  const btn = document.getElementById('run-btn');
+  const btnText = document.getElementById('run-btn-text');
+  btn.style.opacity = '0.7'; btn.style.cursor = 'not-allowed';
+  btnText.innerHTML = '<span style="display:inline-flex;align-items:center;gap:6px;"><div class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full" style="animation: spin 1s linear infinite;"></div>Simulating...</span>';
+  document.getElementById('logic-trail').innerHTML = '';
+  const newTrail = [
+    {step:1,title:'Re-Simulation Initiated',detail:'Reprocessing Wilson attrition event with updated capacity constraints.',status:'complete',time:'10:06:01',color:'#34d399'},
+    {step:2,title:'Diamond Tier Priority Scan',detail:'12 Diamond clients ($540M AUM) require immediate warm handoff.',status:'complete',time:'10:06:04',color:'#34d399'},
+    {step:3,title:'Multi-Factor Matching Engine',detail:'Running compatibility matrix: specialization (35%), lifestyle (25%), language (20%), geography (10%), capacity (10%). Testing 3,412 permutations...',status:'complete',time:'10:06:08',color:'#34d399'},
+    {step:4,title:'Revenue Exposure Assessment',detail:'$840M AUM at transition risk. Mitigation: staggered introductions + 90-day co-managed window. Projected preservation: $812M (96.7%).',status:'warning',time:'10:06:11',color:'#fbbf24'},
+    {step:5,title:'CONFLICT DETECTED: Apex Holdings §4.7.2',detail:'CEO (Hayes) and COO (Voss) flagged under information barrier policy. Same-RM assignment BLOCKED.',status:'conflict',time:'10:06:14',color:'#d946ef'},
+    {step:6,title:'Split-Assignment Resolved',detail:'Hayes → Chen (96%). Voss → Okonkwo (91%). Information barrier enforced. 100% compliant.',status:'success',time:'10:06:15',color:'#34d399'},
+    {step:7,title:'Final Optimization Complete',detail:'Global compatibility: 94.8%. Capacity balanced. No advisor exceeds 90% threshold.',status:'success',time:'10:06:18',color:'#22d3ee'},
+    {step:8,title:'Generating Transition Playbooks...',detail:'Creating 12 Diamond Tier handoff scripts. Scheduling 48 Gold Tier intro calls. Filing compliance docs...',status:'active',time:'10:06:20',color:'#22d3ee'},
+  ];
+  newTrail.forEach((entry, i) => {
+    setTimeout(() => {
+      renderLogicTrail(newTrail.slice(0, i+1));
+      lucide.createIcons();
+      if (i === newTrail.length-1) {
+        setTimeout(() => {
+          isRunning = false; btn.style.opacity = '1'; btn.style.cursor = 'pointer';
+          btnText.innerHTML = '<i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Re-run Scenario';
+          lucide.createIcons();
+        }, 600);
+      }
+    }, (i+1) * 650);
+  });
+}
+
+// ═══════════════════════════════════════════════════
+//  TIMER
+// ═══════════════════════════════════════════════════
+let seconds = 272;
+function updateTimer() {
+  seconds++;
+  const m = String(Math.floor(seconds/60)).padStart(2,'0');
+  const s = String(seconds%60).padStart(2,'0');
+  document.getElementById('elapsed-time').textContent = `00:${m}:${s}`;
+}
+
+// ═══════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  renderHeatmap();
+  renderAgentFleet();
+  renderRMCards();
+  renderLogicTrail(logicTrail);
+  lucide.createIcons();
+  setInterval(updateTimer, 1000);
+});
+</script>
+</body>
+</html>

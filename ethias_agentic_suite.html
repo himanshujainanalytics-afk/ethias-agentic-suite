@@ -1,0 +1,2205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agentic AI Enterprise Suite | Banking & Wealth Management | Ethias AI</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
+
+  :root {
+    --primary: #0a0a1a;
+    --primary-mid: #141428;
+    --accent: #10b981;
+    --accent-bright: #34d399;
+    --accent-dark: #059669;
+    --accent-glow: rgba(16, 185, 129, 0.08);
+    --gold: #D4A574;
+    --gold-glow: rgba(212, 165, 116, 0.12);
+    --text: #2c2c3a;
+    --text-light: #6b6b7b;
+    --bg: #fafaf8;
+    --white: #ffffff;
+    --red: #c0392b;
+    --red-light: #fdf0ee;
+    --green: #0d9b5c;
+    --green-light: #edf7f0;
+    --cyan: #06b6d4;
+    --purple: #8b5cf6;
+    --amber: #f59e0b;
+    --rose: #f43f5e;
+    --gradient-hero: linear-gradient(160deg, #0a0a1a 0%, #061a14 40%, #0a1a2e 100%);
+    --gradient-accent: linear-gradient(135deg, #10b981, #059669);
+    --gradient-gold: linear-gradient(135deg, #D4A574, #c4955a);
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 24px rgba(0,0,0,0.08);
+    --shadow-lg: 0 16px 48px rgba(0,0,0,0.12);
+    --shadow-glow: 0 0 60px rgba(16, 185, 129, 0.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; overflow-x: hidden; }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    color: var(--text); background: var(--bg);
+    line-height: 1.7; font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* ─── NAV ─── */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(10,10,26,0.92); backdrop-filter: blur(24px);
+    padding: 14px 48px; display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid rgba(16,185,129,0.15);
+  }
+  .nav-brand { display: flex; align-items: center; gap: 16px; }
+  .nav-logo { font-weight: 800; font-size: 13px; color: var(--accent); letter-spacing: 4px; text-transform: uppercase; }
+  .nav-divider { width: 1px; height: 16px; background: rgba(255,255,255,0.15); }
+  .nav-badge { font-size: 11px; color: rgba(255,255,255,0.4); letter-spacing: 2px; text-transform: uppercase; }
+  .nav-links a { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 12px; margin-left: 28px; letter-spacing: 0.5px; transition: color 0.3s; font-weight: 500; }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* ─── HERO ─── */
+  .hero {
+    background: var(--gradient-hero);
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+    padding: 120px 48px 80px; text-align: center;
+  }
+  .hero-orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.4; }
+  .hero-orb-1 { width: 600px; height: 600px; top: -200px; right: -100px; background: radial-gradient(circle, rgba(16,185,129,0.2), transparent 70%); }
+  .hero-orb-2 { width: 500px; height: 500px; bottom: -150px; left: -100px; background: radial-gradient(circle, rgba(6,182,212,0.12), transparent 70%); }
+  .hero-orb-3 { width: 300px; height: 300px; top: 40%; left: 50%; transform: translate(-50%,-50%); background: radial-gradient(circle, rgba(139,92,246,0.08), transparent 70%); }
+  .hero-content { position: relative; z-index: 2; max-width: 950px; }
+  .hero-kicker {
+    display: inline-block;
+    background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25);
+    padding: 8px 24px; border-radius: 40px;
+    font-size: 12px; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--accent); font-weight: 600; margin-bottom: 36px;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 64px; font-weight: 700; line-height: 1.15;
+    color: var(--white); margin-bottom: 32px;
+  }
+  .hero h1 em {
+    font-style: italic;
+    background: var(--gradient-accent); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .hero-sub {
+    font-size: 19px; color: rgba(255,255,255,0.5); max-width: 720px;
+    margin: 0 auto 56px; line-height: 1.8; font-weight: 300;
+  }
+  .hero-metrics {
+    display: flex; justify-content: center; align-items: center; gap: 20px; flex-wrap: wrap;
+  }
+  .hero-metric {
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px; padding: 24px 28px; min-width: 150px;
+    text-align: center; backdrop-filter: blur(12px);
+  }
+  .hero-metric-value {
+    font-size: 32px; font-weight: 900; margin-bottom: 4px; line-height: 1.2;
+    background: var(--gradient-accent); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .hero-metric-label { font-size: 11px; color: rgba(255,255,255,0.4); letter-spacing: 2px; text-transform: uppercase; line-height: 1.5; }
+  .hero-metric-sub { font-size: 10px; color: rgba(255,255,255,0.25); margin-top: 2px; }
+  .hero-metric.gold .hero-metric-value {
+    background: var(--gradient-gold); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .hero-divider { font-size: 28px; color: rgba(255,255,255,0.12); font-weight: 300; }
+  .hero-scroll { position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.2); font-size: 11px; letter-spacing: 4px; text-transform: uppercase; animation: breathe 3s infinite; }
+  @keyframes breathe { 0%,100%{opacity:0.2} 50%{opacity:0.6} }
+
+  /* ─── SHARED ─── */
+  .s { padding: 100px 48px; max-width: 1200px; margin: 0 auto; }
+  .s-full { padding: 100px 48px; }
+  .s-dark { background: var(--primary); color: var(--white); }
+  .s-mid { background: var(--primary-mid); color: var(--white); }
+  .s-accent { background: var(--accent-glow); }
+  .s-white { background: var(--white); }
+  .s-header { text-align: center; margin-bottom: 64px; }
+  .s-eye { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; font-weight: 700; }
+  .s-eye.gold { color: var(--gold); }
+  .s-eye.red { color: var(--red); }
+  .s-title { font-family: 'Playfair Display', serif; font-size: 44px; font-weight: 600; line-height: 1.2; margin-bottom: 18px; }
+  .s-dark .s-title, .s-mid .s-title { color: var(--white); }
+  .s-sub { font-size: 18px; color: var(--text-light); max-width: 700px; margin: 0 auto; line-height: 1.8; font-weight: 300; }
+  .s-dark .s-sub, .s-mid .s-sub { color: rgba(255,255,255,0.5); }
+
+  /* ─── PROVOCATION / TWO-COL ─── */
+  .provocation { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+  .prov-text { font-size: 17px; line-height: 1.9; }
+  .prov-text p { margin-bottom: 18px; }
+  .prov-text strong { color: var(--primary); }
+  .prov-callout {
+    background: var(--white); border-radius: 20px;
+    padding: 36px; box-shadow: var(--shadow-lg);
+    border: 1px solid rgba(0,0,0,0.04);
+    position: sticky; top: 100px;
+  }
+  .prov-callout-num { font-size: 64px; font-weight: 900; line-height: 1; margin-bottom: 8px; }
+  .prov-callout-num.red { color: var(--red); }
+  .prov-callout-num.green { color: var(--accent-dark); }
+  .prov-callout-label { font-size: 14px; color: var(--text-light); margin-bottom: 20px; }
+  .prov-callout-list { list-style: none; }
+  .prov-callout-list li {
+    font-size: 14px; color: var(--text-light); padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between;
+  }
+  .prov-callout-list li:last-child { border-bottom: none; }
+  .prov-callout-list li span { font-weight: 700; }
+  .prov-callout-list li span.red { color: var(--red); }
+  .prov-callout-list li span.green { color: var(--accent-dark); }
+
+  /* ─── CARDS GRID ─── */
+  .cards-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 1100px; margin: 0 auto; }
+  .cards-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; max-width: 1100px; margin: 0 auto; }
+  .cards-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; max-width: 1100px; margin: 0 auto; }
+  .card {
+    background: var(--white); border-radius: 16px;
+    padding: 28px 24px; box-shadow: var(--shadow-sm);
+    border: 1px solid rgba(0,0,0,0.04);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+  .card-dark {
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px; padding: 28px 24px; backdrop-filter: blur(8px);
+  }
+  .card-icon { font-size: 28px; margin-bottom: 14px; }
+  .card-num { font-size: 48px; font-weight: 900; line-height: 1; margin-bottom: 6px; }
+  .card-num.accent { color: var(--accent-dark); }
+  .card-num.red { color: var(--red); }
+  .card h4 { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+  .card-dark h4 { color: var(--white); }
+  .card p, .card-dark p { font-size: 13px; color: var(--text-light); line-height: 1.7; }
+  .card-dark p { color: rgba(255,255,255,0.5); }
+  .card-badge {
+    display: inline-block; margin-top: 12px;
+    font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+    padding: 4px 12px; border-radius: 20px;
+  }
+  .card-badge.green { background: var(--green-light); color: var(--green); }
+  .card-badge.red { background: var(--red-light); color: var(--red); }
+  .card-badge.accent { background: rgba(16,185,129,0.1); color: var(--accent-dark); }
+
+  /* ─── GOVERNANCE HIGHLIGHT ─── */
+  .governance-card {
+    background: linear-gradient(135deg, rgba(245,158,11,0.06), rgba(139,92,246,0.06));
+    border: 2px solid rgba(245,158,11,0.3);
+    border-radius: 20px; padding: 36px;
+    box-shadow: 0 8px 32px rgba(245,158,11,0.08);
+  }
+  .governance-card h3 { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 600; margin-bottom: 12px; }
+  .governance-card p { font-size: 15px; color: var(--text-light); line-height: 1.8; }
+
+  /* ─── AGENT TABS ─── */
+  .agent-tabs { display: flex; justify-content: center; gap: 8px; margin-bottom: 48px; flex-wrap: wrap; }
+  .agent-tab {
+    padding: 12px 24px; border-radius: 40px;
+    font-size: 13px; font-weight: 600; letter-spacing: 0.5px;
+    cursor: pointer; transition: all 0.3s;
+    border: 2px solid #e0e0e0; background: var(--white); color: var(--text-light);
+  }
+  .agent-tab:hover { border-color: var(--accent); color: var(--accent); }
+  .agent-tab.active { background: var(--accent); border-color: var(--accent); color: var(--white); }
+  .agent-tab .tab-count { font-size: 10px; opacity: 0.7; margin-left: 4px; }
+
+  .agent-category { display: none; max-width: 1100px; margin: 0 auto; }
+  .agent-category.active { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  .agent-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .agent-card {
+    background: var(--white); border-radius: 16px; padding: 28px;
+    box-shadow: var(--shadow-sm); border: 1px solid rgba(0,0,0,0.04);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .agent-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+  .agent-card-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px; border-radius: 8px; font-size: 13px; font-weight: 800; color: var(--white);
+    margin-bottom: 12px;
+  }
+  .agent-card-num.emerald { background: var(--gradient-accent); }
+  .agent-card-num.cyan { background: linear-gradient(135deg, #06b6d4, #0891b2); }
+  .agent-card-num.purple { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+  .agent-card-num.rose { background: linear-gradient(135deg, #f43f5e, #e11d48); }
+  .agent-card-num.amber { background: linear-gradient(135deg, #f59e0b, #d97706); }
+  .agent-card-num.gold { background: var(--gradient-gold); }
+  .agent-card h5 { font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 8px; }
+  .agent-card p { font-size: 13px; color: var(--text-light); line-height: 1.7; margin-bottom: 12px; }
+  .agent-card-metrics { display: flex; gap: 16px; flex-wrap: wrap; }
+  .agent-metric { font-size: 12px; }
+  .agent-metric span { font-weight: 700; }
+  .agent-metric span.green { color: var(--accent-dark); }
+  .agent-metric span.blue { color: var(--cyan); }
+
+  .category-summary {
+    margin-top: 24px; background: var(--green-light); border: 2px solid var(--green);
+    border-radius: 14px; padding: 20px 32px;
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+  }
+  .category-summary-item { text-align: center; }
+  .category-summary-item .label { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-light); }
+  .category-summary-item .value { font-size: 24px; font-weight: 900; color: var(--accent-dark); }
+
+  /* ─── VS STRIP ─── */
+  .vs-strip {
+    max-width: 900px; margin: 48px auto 0;
+    display: grid; grid-template-columns: 1fr auto 1fr; gap: 0; align-items: center;
+  }
+  .vs-side { padding: 36px; border-radius: 16px; text-align: center; }
+  .vs-old { background: var(--red-light); border: 2px solid var(--red); }
+  .vs-new { background: var(--green-light); border: 2px solid var(--green); }
+  .vs-number { font-size: 48px; font-weight: 900; line-height: 1; margin-bottom: 4px; }
+  .vs-old .vs-number { color: var(--red); }
+  .vs-new .vs-number { color: var(--green); }
+  .vs-label { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-light); }
+  .vs-divider { width: 80px; text-align: center; font-size: 11px; color: var(--text-light); letter-spacing: 2px; text-transform: uppercase; font-weight: 700; }
+  .vs-divider span { display: block; font-size: 28px; margin-bottom: 4px; }
+
+  /* ─── ROI BARS ─── */
+  .roi-cards { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; max-width: 1100px; margin: 0 auto 48px; }
+  .roi-card {
+    text-align: center; padding: 28px 16px; border-radius: 16px;
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+  }
+  .roi-card-value {
+    font-size: 36px; font-weight: 900; margin-bottom: 6px; line-height: 1.2;
+    background: var(--gradient-accent); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .roi-card-label { font-size: 11px; color: rgba(255,255,255,0.4); letter-spacing: 1px; text-transform: uppercase; line-height: 1.5; }
+  .roi-card-sub { font-size: 10px; color: rgba(255,255,255,0.25); margin-top: 2px; }
+
+  .roi-bars { max-width: 900px; margin: 0 auto; }
+  .roi-bar-row { display: flex; align-items: center; margin-bottom: 10px; }
+  .roi-bar-label { width: 140px; font-size: 13px; color: rgba(255,255,255,0.5); font-weight: 500; text-align: right; padding-right: 20px; flex-shrink: 0; }
+  .roi-bar-track { flex: 1; height: 36px; background: rgba(255,255,255,0.04); border-radius: 8px; overflow: hidden; }
+  .roi-bar-fill { height: 100%; border-radius: 8px; display: flex; align-items: center; justify-content: flex-end; padding-right: 14px; font-size: 13px; font-weight: 700; color: var(--white); transition: width 1.5s ease; }
+  .roi-bar-payback { width: 80px; font-size: 12px; color: rgba(255,255,255,0.35); text-align: center; flex-shrink: 0; }
+
+  .roi-table { width: 100%; max-width: 1100px; margin: 48px auto 0; border-collapse: collapse; }
+  .roi-table th { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.4); padding: 12px 16px; text-align: right; border-bottom: 2px solid rgba(255,255,255,0.1); }
+  .roi-table th:first-child { text-align: left; }
+  .roi-table td { font-size: 14px; padding: 14px 16px; text-align: right; border-bottom: 1px solid rgba(255,255,255,0.05); color: rgba(255,255,255,0.7); }
+  .roi-table td:first-child { text-align: left; font-weight: 600; }
+  .roi-table tr:last-child td { border-bottom: none; border-top: 2px solid rgba(16,185,129,0.3); font-weight: 800; color: var(--white); }
+  .roi-table .accent { color: var(--accent-bright); }
+
+  /* ─── ROADMAP ─── */
+  .rm-container { max-width: 900px; margin: 0 auto; }
+  .rm-phase { display: flex; gap: 28px; margin-bottom: 36px; position: relative; }
+  .rm-phase::before { content: ''; position: absolute; left: 27px; top: 60px; bottom: -36px; width: 2px; background: #e8e8e8; }
+  .rm-phase:last-child::before { display: none; }
+  .rm-marker {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: var(--gradient-accent); display: flex; align-items: center; justify-content: center;
+    font-size: 18px; font-weight: 800; color: var(--white); flex-shrink: 0;
+    box-shadow: 0 4px 16px rgba(16,185,129,0.3);
+  }
+  .rm-content {
+    background: var(--white); border-radius: 14px; padding: 24px 28px;
+    box-shadow: var(--shadow-sm); border: 1px solid rgba(0,0,0,0.04); flex: 1;
+  }
+  .rm-time { font-size: 11px; font-weight: 700; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+  .rm-content h4 { font-size: 17px; font-weight: 700; color: var(--primary); margin-bottom: 8px; }
+  .rm-content p { font-size: 14px; color: var(--text-light); line-height: 1.7; }
+  .rm-items { list-style: none; margin-top: 10px; }
+  .rm-items li { font-size: 13px; color: var(--text-light); padding: 4px 0 4px 18px; position: relative; line-height: 1.6; }
+  .rm-items li::before { content: ''; position: absolute; left: 0; top: 11px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+  .rm-value { display: inline-block; margin-top: 8px; font-size: 12px; font-weight: 700; color: var(--accent-dark); background: var(--green-light); padding: 4px 14px; border-radius: 20px; }
+
+  /* ─── CTA ─── */
+  .cta {
+    background: var(--gradient-hero); padding: 100px 48px;
+    text-align: center; position: relative; overflow: hidden;
+  }
+  .cta::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(16,185,129,0.08), transparent 70%); }
+  .cta-inner { position: relative; z-index: 2; max-width: 750px; margin: 0 auto; }
+  .cta-inner h2 { font-family: 'Playfair Display', serif; font-size: 44px; font-weight: 600; color: var(--white); margin-bottom: 20px; line-height: 1.25; }
+  .cta-inner p { font-size: 18px; color: rgba(255,255,255,0.5); margin-bottom: 40px; line-height: 1.8; }
+  .cta-btn {
+    display: inline-block; background: var(--gradient-accent); color: var(--white);
+    padding: 18px 48px; border-radius: 60px; font-size: 14px; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase; text-decoration: none;
+    box-shadow: 0 8px 32px rgba(16,185,129,0.3); transition: transform 0.3s;
+  }
+  .cta-btn:hover { transform: translateY(-2px); }
+  .cta-meta { display: flex; justify-content: center; gap: 48px; margin-top: 48px; flex-wrap: wrap; }
+  .cta-meta-item { text-align: center; }
+  .cta-meta-item span { display: block; font-size: 12px; color: rgba(255,255,255,0.3); margin-bottom: 2px; }
+  .cta-meta-item strong { font-size: 14px; color: var(--white); font-weight: 600; }
+
+  /* ─── QUOTE ─── */
+  .quote-block {
+    max-width: 800px; margin: 48px auto 0;
+    border-left: 4px solid var(--accent);
+    padding: 24px 32px; background: rgba(16,185,129,0.04);
+    border-radius: 0 12px 12px 0;
+  }
+  .quote-block p { font-size: 16px; color: var(--text); line-height: 1.8; font-style: italic; }
+  .quote-block .attr { font-style: normal; font-size: 13px; color: var(--text-light); margin-top: 12px; }
+
+  .quote-block-dark {
+    max-width: 800px; margin: 48px auto 0;
+    border-left: 4px solid var(--accent);
+    padding: 24px 32px; background: rgba(16,185,129,0.06);
+    border-radius: 0 12px 12px 0;
+  }
+  .quote-block-dark p { font-size: 16px; color: rgba(255,255,255,0.8); line-height: 1.8; font-style: italic; }
+  .quote-block-dark .attr { font-style: normal; font-size: 13px; color: rgba(255,255,255,0.35); margin-top: 12px; }
+
+  /* ─── TIMELINE COMPARISON ─── */
+  .timeline-compare { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+  .timeline-col h4 { font-size: 14px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 20px; }
+  .timeline-col.bad h4 { color: var(--red); }
+  .timeline-col.good h4 { color: var(--accent-dark); }
+  .timeline-item { display: flex; gap: 16px; margin-bottom: 20px; }
+  .timeline-item-date { flex-shrink: 0; width: 70px; font-size: 12px; font-weight: 700; letter-spacing: 0.5px; padding-top: 2px; }
+  .timeline-col.bad .timeline-item-date { color: var(--red); }
+  .timeline-col.good .timeline-item-date { color: var(--accent-dark); }
+  .timeline-item-text { font-size: 14px; color: var(--text-light); line-height: 1.6; }
+
+  /* ─── FOOTER ─── */
+  .footer {
+    background: var(--primary); padding: 32px 48px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-top: 1px solid rgba(255,255,255,0.04);
+  }
+  .footer-left { font-size: 11px; color: rgba(255,255,255,0.25); }
+  .footer-logo { font-weight: 800; color: var(--accent); letter-spacing: 3px; font-size: 12px; margin-bottom: 2px; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    .hero h1 { font-size: 36px; }
+    .hero-sub { font-size: 16px; }
+    .hero-metrics { flex-direction: column; gap: 12px; }
+    .hero { padding: 100px 24px 60px; }
+    .provocation { grid-template-columns: 1fr; gap: 28px; }
+    .cards-3, .cards-4, .cards-5 { grid-template-columns: 1fr; }
+    .agent-grid { grid-template-columns: 1fr; }
+    .roi-cards { grid-template-columns: 1fr 1fr; }
+    .roi-bar-label { width: 90px; font-size: 11px; }
+    .timeline-compare { grid-template-columns: 1fr; }
+    .vs-strip { grid-template-columns: 1fr; }
+    .vs-divider { padding: 16px 0; }
+    .category-summary { flex-direction: column; text-align: center; }
+    .s, .s-full { padding: 60px 20px; }
+    .s-title { font-size: 30px; }
+    .nav { padding: 12px 20px; }
+    .nav-links a { margin-left: 14px; font-size: 10px; }
+    .rm-phase { flex-direction: column; gap: 16px; }
+    .rm-phase::before { display: none; }
+    .cta { padding: 60px 20px; }
+    .cta-inner h2 { font-size: 30px; }
+    .cta-meta { flex-direction: column; gap: 16px; }
+    .footer { flex-direction: column; gap: 12px; text-align: center; }
+  }
+  @media (max-width: 480px) {
+    .hero h1 { font-size: 28px; }
+    .s-title { font-size: 24px; }
+    .nav-badge { display: none; }
+    .nav-divider { display: none; }
+    .roi-cards { grid-template-columns: 1fr; }
+    .agent-tabs { gap: 4px; }
+    .agent-tab { padding: 8px 14px; font-size: 11px; }
+    .team-grid { grid-template-columns: 1fr !important; }
+    .sdlc-flow { grid-template-columns: 1fr !important; }
+    .pilot-grid { grid-template-columns: 1fr !important; }
+  }
+
+  /* ─── TEAM CARDS ─── */
+  .team-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; max-width: 1100px; margin: 0 auto; }
+  .team-card {
+    background: var(--white); border-radius: 16px; overflow: hidden;
+    box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.04);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .team-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+  .team-card-header {
+    padding: 20px 18px 16px; color: var(--white);
+    background: var(--gradient-hero); position: relative; overflow: hidden;
+  }
+  .team-card-header::after {
+    content: ''; position: absolute; top: -20px; right: -20px;
+    width: 70px; height: 70px; border-radius: 50%;
+    background: rgba(16,185,129,0.12);
+  }
+  .team-card-number {
+    font-size: 36px; font-weight: 900; line-height: 1;
+    background: var(--gradient-accent); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    margin-bottom: 6px;
+  }
+  .team-card-role { font-size: 14px; font-weight: 700; letter-spacing: 0.5px; }
+  .team-card-body { padding: 18px; }
+  .team-card-mission { font-size: 13px; color: var(--text-light); line-height: 1.6; margin-bottom: 14px; }
+  .team-card-owns { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); font-weight: 700; margin-bottom: 8px; }
+  .team-card-list { list-style: none; }
+  .team-card-list li {
+    font-size: 12px; color: var(--text); padding: 4px 0 4px 16px; position: relative; line-height: 1.5;
+  }
+  .team-card-list li::before {
+    content: ''; position: absolute; left: 0; top: 10px;
+    width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+  }
+  .team-card-claude {
+    margin-top: 12px; padding: 12px 14px;
+    background: var(--accent-glow); border-radius: 8px;
+    font-size: 11px; color: var(--text-light); line-height: 1.6;
+  }
+  .team-card-claude strong { color: var(--accent); }
+
+  /* ─── SDLC FLOW ─── */
+  .sdlc-flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; max-width: 1100px; margin: 0 auto; }
+  .sdlc-step {
+    background: var(--white); border-radius: 16px; padding: 24px 18px;
+    text-align: center; box-shadow: var(--shadow-sm);
+    border: 2px solid var(--green-light); position: relative;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .sdlc-step:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
+  .sdlc-step-num {
+    position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+    background: var(--gradient-accent); color: var(--white);
+    width: 24px; height: 24px; border-radius: 50%;
+    font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center;
+  }
+  .sdlc-step-icon { font-size: 28px; margin: 8px 0 8px; }
+  .sdlc-step-name { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--primary); margin-bottom: 4px; }
+  .sdlc-step-time { font-size: 22px; font-weight: 800; color: var(--accent-dark); margin-bottom: 2px; }
+  .sdlc-step-unit { font-size: 10px; color: var(--text-light); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+  .sdlc-step-who { font-size: 11px; color: var(--accent); font-weight: 600; margin-bottom: 4px; }
+  .sdlc-step-desc { font-size: 11px; color: var(--text-light); line-height: 1.5; }
+  .sdlc-total {
+    margin-top: 24px; background: var(--green-light); border: 2px solid var(--green);
+    border-radius: 14px; padding: 20px 32px; max-width: 1100px; margin-left: auto; margin-right: auto;
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+  }
+  .sdlc-total-label { font-size: 13px; font-weight: 700; color: var(--green); letter-spacing: 2px; text-transform: uppercase; }
+  .sdlc-total-value { font-size: 28px; font-weight: 900; color: var(--green); }
+
+  /* ─── PILOT CARDS ─── */
+  .pilot-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; max-width: 1100px; margin: 0 auto; }
+  .pilot-card {
+    background: var(--white); border-radius: 16px; padding: 28px 24px;
+    box-shadow: var(--shadow-md); border-top: 4px solid var(--accent);
+    transition: transform 0.3s;
+  }
+  .pilot-card:hover { transform: translateY(-3px); }
+  .pilot-card.governance { border-top-color: var(--gold); }
+  .pilot-card-num { font-size: 11px; font-weight: 800; letter-spacing: 2px; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; }
+  .pilot-card h5 { font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 8px; }
+  .pilot-card p { font-size: 13px; color: var(--text-light); line-height: 1.7; margin-bottom: 12px; }
+  .pilot-card-row { display: flex; justify-content: space-between; font-size: 12px; padding: 6px 0; border-bottom: 1px solid #f0f0f0; }
+  .pilot-card-row:last-child { border-bottom: none; }
+  .pilot-card-row span { font-weight: 700; color: var(--accent-dark); }
+
+  /* ─── PAIRING VISUAL ─── */
+  .pairing-row { display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap; margin: 32px auto; max-width: 700px; }
+  .pairing-box {
+    padding: 16px 24px; border-radius: 12px; text-align: center;
+    font-size: 13px; font-weight: 600; min-width: 200px;
+  }
+  .pairing-box.ethias { background: var(--accent-glow); border: 2px solid var(--accent); color: var(--accent-dark); }
+  .pairing-box.bank { background: var(--gold-glow); border: 2px solid var(--gold); color: #92651e; }
+  .pairing-plus { font-size: 28px; color: var(--text-light); font-weight: 300; }
+  .pairing-equals { font-size: 28px; color: var(--accent-dark); font-weight: 700; }
+  .pairing-result {
+    padding: 16px 32px; border-radius: 12px; text-align: center;
+    background: var(--green-light); border: 2px solid var(--green);
+    font-size: 14px; font-weight: 700; color: var(--green);
+  }
+
+  /* ─── DEMO CARDS ─── */
+  .demo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 1100px; margin: 0 auto; }
+  .demo-card {
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px; overflow: hidden; backdrop-filter: blur(8px);
+    transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+  }
+  .demo-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 48px rgba(16,185,129,0.15);
+    border-color: rgba(16,185,129,0.4);
+  }
+  .demo-card-header {
+    padding: 24px 24px 16px; position: relative;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .demo-card-icon { font-size: 32px; margin-bottom: 12px; }
+  .demo-card-header h4 { font-size: 18px; font-weight: 700; color: var(--white); margin-bottom: 4px; }
+  .demo-card-header .demo-card-sub { font-size: 12px; color: rgba(255,255,255,0.4); }
+  .demo-card-body { padding: 20px 24px; }
+  .demo-card-body p { font-size: 13px; color: rgba(255,255,255,0.55); line-height: 1.7; margin-bottom: 14px; }
+  .demo-card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+  .demo-card-tag {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 20px;
+    background: rgba(16,185,129,0.1); color: var(--accent-bright);
+  }
+  .demo-card-tag.cyan { background: rgba(6,182,212,0.1); color: var(--cyan); }
+  .demo-card-tag.purple { background: rgba(139,92,246,0.1); color: #a78bfa; }
+  .demo-card-tag.gold { background: rgba(212,165,116,0.1); color: var(--gold); }
+  .demo-card-tag.rose { background: rgba(244,63,94,0.1); color: #fb7185; }
+  .demo-card-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 20px; border-radius: 10px;
+    background: var(--gradient-accent); color: var(--white);
+    font-size: 13px; font-weight: 600; text-decoration: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 16px rgba(16,185,129,0.25);
+  }
+  .demo-card-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(16,185,129,0.35); }
+  .demo-card-btn svg { width: 16px; height: 16px; }
+
+  .demo-card-last {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: rgba(16,185,129,0.04); border: 2px dashed rgba(16,185,129,0.25);
+    border-radius: 20px; padding: 40px; text-align: center;
+    min-height: 300px;
+  }
+  .demo-card-last h4 { font-size: 18px; font-weight: 700; color: var(--white); margin-bottom: 8px; }
+  .demo-card-last p { font-size: 13px; color: rgba(255,255,255,0.4); line-height: 1.7; }
+
+  @media (max-width: 900px) {
+    .demo-grid { grid-template-columns: 1fr; }
+    .modal-container { margin: 20px; max-height: 90vh; }
+    .form-row { grid-template-columns: 1fr !important; }
+  }
+
+  /* ─── CONTACT MODAL ─── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 1000;
+    background: rgba(10,10,26,0.75); backdrop-filter: blur(8px);
+    align-items: center; justify-content: center;
+    padding: 24px;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal-container {
+    background: var(--white); border-radius: 24px;
+    max-width: 640px; width: 100%; max-height: 85vh;
+    overflow-y: auto; position: relative;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.3), 0 0 80px rgba(16,185,129,0.08);
+    animation: modalIn 0.35s ease;
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: translateY(24px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .modal-close {
+    position: absolute; top: 16px; right: 20px;
+    background: none; border: none; font-size: 28px;
+    color: var(--text-light); cursor: pointer; line-height: 1;
+    transition: color 0.2s;
+  }
+  .modal-close:hover { color: var(--primary); }
+  .modal-header { padding: 36px 36px 0; }
+  .modal-form { padding: 24px 36px 36px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-group { margin-bottom: 18px; }
+  .form-group label {
+    display: block; font-size: 12px; font-weight: 600;
+    letter-spacing: 0.5px; color: var(--text); margin-bottom: 6px;
+  }
+  .form-group .required { color: var(--red); }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%; padding: 10px 14px; font-size: 14px;
+    border: 1.5px solid #e0e0e0; border-radius: 10px;
+    font-family: 'Inter', sans-serif; color: var(--text);
+    background: #fafafa; transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    border-color: var(--accent); box-shadow: 0 0 0 3px rgba(16,185,129,0.1);
+  }
+  .form-group input::placeholder,
+  .form-group textarea::placeholder { color: #bbb; }
+  .form-group textarea { resize: vertical; min-height: 60px; }
+  .form-group select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%236b6b7b' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+  .checkbox-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  .checkbox-label {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 13px; color: var(--text-light); cursor: pointer;
+    padding: 6px 14px; border-radius: 8px; border: 1.5px solid #e8e8e8;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .checkbox-label:has(input:checked) { border-color: var(--accent); background: rgba(16,185,129,0.06); color: var(--accent-dark); }
+  .checkbox-label input { accent-color: var(--accent); cursor: pointer; }
+  .form-submit {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 100%; padding: 14px 24px; border: none; border-radius: 12px;
+    background: var(--gradient-accent); color: var(--white);
+    font-size: 15px; font-weight: 700; letter-spacing: 0.5px;
+    cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 16px rgba(16,185,129,0.25);
+    font-family: 'Inter', sans-serif;
+  }
+  .form-submit:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(16,185,129,0.35); }
+  .form-success { padding: 48px 36px; text-align: center; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ NAV ═══════════════════ -->
+<nav class="nav">
+  <div class="nav-brand">
+    <div class="nav-logo">Ethias AI</div>
+    <div class="nav-divider"></div>
+    <div class="nav-badge">Agentic Enterprise Suite</div>
+  </div>
+  <div class="nav-links">
+    <a href="#crisis">The Crisis</a>
+    <a href="#market">Market</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#agents">20 Agents</a>
+    <a href="#how">How We Build</a>
+    <a href="#pilot">The Pilot</a>
+    <a href="#roi">ROI</a>
+    <a href="#roadmap">Roadmap</a>
+    <a href="#demos">Live Demos</a>
+  </div>
+</nav>
+
+<!-- ═══════════════════ HERO ═══════════════════ -->
+<section class="hero">
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+  <div class="hero-orb hero-orb-3"></div>
+  <div class="hero-content">
+    <div class="hero-kicker">Confidential Executive Briefing &mdash; Q2 2026</div>
+    <h1>
+      What if <em>20 autonomous agents</em><br>
+      ran your bank's operations?
+    </h1>
+    <p class="hero-sub">
+      The last satisfactory banking experience was designed for quarterly reports and manual reviews.
+      The next one will be orchestrated by agents that execute in real time, explain every decision,
+      and compound institutional intelligence daily.
+    </p>
+    <div class="hero-metrics">
+      <div class="hero-metric">
+        <div class="hero-metric-value">20</div>
+        <div class="hero-metric-label">AI Agents</div>
+        <div class="hero-metric-sub">5 Value Chains</div>
+      </div>
+      <div class="hero-divider">/</div>
+      <div class="hero-metric">
+        <div class="hero-metric-value">$163M</div>
+        <div class="hero-metric-label">Annual Value</div>
+        <div class="hero-metric-sub">Per Top-20 Bank</div>
+      </div>
+      <div class="hero-divider">/</div>
+      <div class="hero-metric">
+        <div class="hero-metric-value">9.8mo</div>
+        <div class="hero-metric-label">Payback Period</div>
+        <div class="hero-metric-sub">Phase 1 in 6.2mo</div>
+      </div>
+      <div class="hero-divider">/</div>
+      <div class="hero-metric gold">
+        <div class="hero-metric-value">100%</div>
+        <div class="hero-metric-label">Explainable</div>
+        <div class="hero-metric-sub">Governance-First</div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-scroll">Scroll to explore &darr;</div>
+</section>
+
+<!-- ═══════════════════ THE BURNING PLATFORM ═══════════════════ -->
+<section id="crisis" class="s-full s-accent">
+  <div style="max-width:1200px; margin:0 auto;">
+    <div class="s-header">
+      <div class="s-eye red">The Burning Platform</div>
+      <h2 class="s-title">Banking Is at an Inflection Point</h2>
+      <p class="s-sub">Three forces are converging. Institutions that move now will define the next era. Those that wait will spend the next decade trying to catch up.</p>
+    </div>
+
+    <div class="cards-3">
+      <div class="card" style="border-top: 4px solid var(--red);">
+        <div class="card-icon">&#128200;</div>
+        <h4>The Margin Crisis</h4>
+        <p>Net Interest Margins fell to 2.91% in Q4 2025&mdash;the lowest since 2014. The Fed&rsquo;s rate trajectory gives no reprieve. Every basis point of inefficiency now directly erodes shareholder value.</p>
+        <div style="background: var(--red-light); border-radius: 10px; padding: 14px; margin-top: 16px;">
+          <p style="font-size: 13px; color: var(--text); margin: 0;"><strong style="color: var(--red);">A Top-20 bank loses $50M annually</strong> for every 1bp of NIM compression it fails to offset through operational efficiency.</p>
+        </div>
+      </div>
+      <div class="card" style="border-top: 4px solid var(--amber);">
+        <div class="card-icon">&#9878;&#65039;</div>
+        <h4>The Regulatory Reckoning</h4>
+        <p>Post-SVB, post-Credit Suisse, regulators are done with &ldquo;trust us&rdquo; governance. The OCC&rsquo;s 2025 AI Guidance demands explainability for every automated decision. CFPB 1033 opens data to fintechs. Basel III Endgame adds capital pressure.</p>
+        <div style="background: #fef3c7; border-radius: 10px; padding: 14px; margin-top: 16px;">
+          <p style="font-size: 13px; color: var(--text); margin: 0;"><strong style="color: #b45309;">Banks deploying &ldquo;black box&rdquo; AI face MRAs, consent orders, and $100M+ fines.</strong> Governance-first is the only viable path.</p>
+        </div>
+      </div>
+      <div class="card" style="border-top: 4px solid var(--purple);">
+        <div class="card-icon">&#129504;</div>
+        <h4>The Talent Impossibility</h4>
+        <p>JPMorgan spends $17B/year on technology. Goldman invested $4B in Marcus before pivoting. The average bank cannot out-hire, out-spend, or out-build Big Tech. The answer isn&rsquo;t more people.</p>
+        <div style="background: #ede9fe; border-radius: 10px; padding: 14px; margin-top: 16px;">
+          <p style="font-size: 13px; color: var(--text); margin: 0;"><strong style="color: var(--purple);">One agent replaces 40&ndash;200 hours/week</strong> of manual work. Twenty agents compound to an entirely new operating model.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="quote-block">
+      <p>&ldquo;Silicon Valley Bank didn&rsquo;t fail because of bad assets. It failed because humans couldn&rsquo;t process liquidity signals fast enough. A Liquidity Stress-Testing Agent running 200 daily scenarios would have flagged the deposit-flight pattern <strong style="color: var(--accent-dark);">11 weeks before collapse</strong>. We&rsquo;ve back-tested it.&rdquo;</p>
+      <div class="attr">&mdash; Ethias AI Internal Analysis, SVB Retrospective</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ MARKET OPPORTUNITY ═══════════════════ -->
+<section id="market" class="s" style="background: var(--white);">
+  <div class="s-header">
+    <div class="s-eye">Market Intelligence</div>
+    <h2 class="s-title">The $35B Banking AI Opportunity</h2>
+    <p class="s-sub">92% of banking AI spend is still on chatbots and basic automation. Agentic AI&mdash;true autonomous decision-making&mdash;represents less than 4% today, growing at 48% CAGR. The market is wide open.</p>
+  </div>
+
+  <div class="cards-4" style="margin-bottom: 48px;">
+    <div class="card" style="text-align: center; border-top: 4px solid var(--accent);">
+      <div class="card-num accent">$35B</div>
+      <p style="margin: 0; font-weight: 600;">US Banking AI TAM 2026</p>
+      <div class="card-badge green">&#8593; 67% from 2024</div>
+    </div>
+    <div class="card" style="text-align: center; border-top: 4px solid var(--cyan);">
+      <div class="card-num" style="color: var(--cyan);">4%</div>
+      <p style="margin: 0; font-weight: 600;">Agentic AI Share Today</p>
+      <div class="card-badge accent">&rarr; 18% by 2028</div>
+    </div>
+    <div class="card" style="text-align: center; border-top: 4px solid var(--purple);">
+      <div class="card-num" style="color: var(--purple);">73%</div>
+      <p style="margin: 0; font-weight: 600;">Banks Piloting AI Agents</p>
+      <div class="card-badge red">Only 6% in production</div>
+    </div>
+    <div class="card" style="text-align: center; border-top: 4px solid var(--gold);">
+      <div class="card-num" style="color: var(--gold);">$4.7T</div>
+      <p style="margin: 0; font-weight: 600;">Top-20 Bank Assets</p>
+      <div class="card-badge accent">Our addressable market</div>
+    </div>
+  </div>
+
+  <div class="provocation">
+    <div class="prov-text">
+      <p><strong>73% of banks are &ldquo;piloting AI agents.&rdquo;</strong> Only 6% have anything in production. Why? Three reasons:</p>
+      <p><strong>1. No governance layer.</strong> CROs kill projects that can&rsquo;t explain decisions to examiners. The compliance team says &ldquo;interesting pilot&rdquo; and the risk committee says &ldquo;not production-ready.&rdquo;</p>
+      <p><strong>2. Point solutions.</strong> One agent for fraud, another for KYC, a third for document processing&mdash;none of them talk to each other. No shared intelligence, no compound learning.</p>
+      <p><strong>3. No institutional memory.</strong> Agents that don&rsquo;t compound knowledge across the enterprise. Every deployment starts from zero.</p>
+      <p>We solve all three problems with a single architecture.</p>
+    </div>
+    <div class="prov-callout">
+      <div class="prov-callout-num green">3</div>
+      <div class="prov-callout-label">Core Problems We Solve</div>
+      <ul class="prov-callout-list">
+        <li>Governance Anchor deploys first <span class="green">Day 1 Explainability</span></li>
+        <li>20 agents across 5 value chains <span class="green">Full Operating System</span></li>
+        <li>Shared intelligence layer <span class="green">Compound Learning</span></li>
+        <li>Credit learns from Treasury data <span class="green">Cross-Domain Insight</span></li>
+        <li>RM Co-pilot learns from Collateral <span class="green">Agent Mesh Effect</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ ARCHITECTURE ═══════════════════ -->
+<section id="architecture" class="s-full s-dark">
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <div class="s-header">
+      <div class="s-eye gold">Architecture</div>
+      <h2 class="s-title">Governance-First Agent Architecture</h2>
+      <p class="s-sub">This is not 20 independent tools. It&rsquo;s an interconnected intelligence network. Each agent makes every other agent smarter. The Audit-Trail Architect watches everything.</p>
+    </div>
+
+    <!-- Governance Anchor -->
+    <div class="governance-card" style="max-width: 700px; margin: 0 auto 48px; text-align: center; background: linear-gradient(135deg, rgba(245,158,11,0.08), rgba(139,92,246,0.08)); border-color: rgba(245,158,11,0.35);">
+      <div style="font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); font-weight: 700; margin-bottom: 10px;">&#128737;&#65039; Governance Anchor</div>
+      <h3 style="color: var(--white);">Audit-Trail Architect</h3>
+      <p style="color: rgba(255,255,255,0.55);">Logs every decision across all 19 agents with reasoning chains, confidence scores, and data lineage. One-click export for OCC, SEC, CFPB. Cryptographically signed, tamper-evident. The regulator&rsquo;s best friend&mdash;and your board&rsquo;s insurance policy.</p>
+    </div>
+
+    <!-- 5 Lanes -->
+    <div class="cards-5" style="margin-bottom: 48px;">
+      <div class="card-dark" style="text-align: center; border-top: 3px solid var(--accent);">
+        <div style="font-size: 24px; margin-bottom: 8px;">&#128202;</div>
+        <h4 style="font-size: 13px; color: var(--accent-bright);">Credit Risk &amp; Mortgage</h4>
+        <p style="font-size: 11px;">4 Agents &bull; $3.7M invest</p>
+      </div>
+      <div class="card-dark" style="text-align: center; border-top: 3px solid var(--cyan);">
+        <div style="font-size: 24px; margin-bottom: 8px;">&#128167;</div>
+        <h4 style="font-size: 13px; color: var(--cyan);">Treasury &amp; Liquidity</h4>
+        <p style="font-size: 11px;">4 Agents &bull; $4.08M invest</p>
+      </div>
+      <div class="card-dark" style="text-align: center; border-top: 3px solid var(--purple);">
+        <div style="font-size: 24px; margin-bottom: 8px;">&#9878;&#65039;</div>
+        <h4 style="font-size: 13px; color: #a78bfa;">Ops, Audit &amp; Compliance</h4>
+        <p style="font-size: 11px;">4 Agents &bull; $3.44M invest</p>
+      </div>
+      <div class="card-dark" style="text-align: center; border-top: 3px solid var(--rose);">
+        <div style="font-size: 24px; margin-bottom: 8px;">&#127974;</div>
+        <h4 style="font-size: 13px; color: #fb7185;">Branch &amp; Frontline</h4>
+        <p style="font-size: 11px;">4 Agents &bull; $1.66M invest</p>
+      </div>
+      <div class="card-dark" style="text-align: center; border-top: 3px solid var(--gold);">
+        <div style="font-size: 24px; margin-bottom: 8px;">&#128081;</div>
+        <h4 style="font-size: 13px; color: var(--gold);">Wealth &amp; Advisory</h4>
+        <p style="font-size: 11px;">4 Agents &bull; $2.93M invest</p>
+      </div>
+    </div>
+
+    <!-- Synergy -->
+    <div style="max-width: 1100px; margin: 0 auto;">
+      <h3 style="font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); text-align: center; margin-bottom: 24px; font-weight: 700;">The Compound Intelligence Effect &mdash; Why 20 &gt; 20 &times; 1</h3>
+      <div class="cards-3">
+        <div class="card-dark">
+          <h4 style="color: var(--accent-bright); font-size: 13px;">Credit + Treasury Synergy</h4>
+          <p>The Cash Flow Forecasting Agent detects a borrower&rsquo;s revenue decline 6 weeks before it shows in financials. It signals the Dynamic Limit Adjuster to tighten exposure&mdash;and the Collateral Agent to re-evaluate LTV. <strong style="color: var(--white);">Three agents preventing one loss, simultaneously.</strong></p>
+        </div>
+        <div class="card-dark">
+          <h4 style="color: var(--cyan); font-size: 13px;">Branch + Wealth Synergy</h4>
+          <p>The Frontline Coach detects a client mentioning inheritance during a teller interaction. It alerts the RM Co-pilot to prep an estate review brief. The UHNW Prospector cross-references the family&rsquo;s public wealth signals. <strong style="color: var(--white);">A $2M deposit becomes a $20M relationship.</strong></p>
+        </div>
+        <div class="card-dark">
+          <h4 style="color: #a78bfa; font-size: 13px;">Compliance + Everything</h4>
+          <p>The Regulatory Change Mapper detects a new CFPB rule on Thursday. By Friday, it has mapped the impact to 4 agents, the Audit-Trail Architect has tagged affected decisions, and the ESG Orchestrator has updated disclosures. <strong style="color: var(--white);">72 hours, not 6 months.</strong></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ THE 20 AGENTS ═══════════════════ -->
+<section id="agents" class="s-full" style="background: linear-gradient(180deg, #fafaf8, #f0efe8);">
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <div class="s-header">
+      <div class="s-eye">The 20 Agents</div>
+      <h2 class="s-title">Every Agent, Explored</h2>
+      <p class="s-sub">Click any lifecycle stage to explore its four specialized agents&mdash;each production-ready, governance-compliant, and designed to compound value with every other agent in the suite.</p>
+    </div>
+
+    <div class="agent-tabs">
+      <div class="agent-tab active" onclick="showCategory('credit')">&#128202; Credit Risk <span class="tab-count">(4)</span></div>
+      <div class="agent-tab" onclick="showCategory('treasury')">&#128167; Treasury <span class="tab-count">(4)</span></div>
+      <div class="agent-tab" onclick="showCategory('compliance')">&#9878;&#65039; Compliance <span class="tab-count">(4)</span></div>
+      <div class="agent-tab" onclick="showCategory('branch')">&#127974; Branch <span class="tab-count">(4)</span></div>
+      <div class="agent-tab" onclick="showCategory('wealth')">&#128081; Wealth <span class="tab-count">(4)</span></div>
+    </div>
+
+    <!-- A. CREDIT RISK -->
+    <div id="cat-credit" class="agent-category active">
+      <div style="text-align: center; margin-bottom: 32px;">
+        <h3 style="font-family: 'Playfair Display', serif; font-size: 28px; margin-bottom: 8px;">Credit Risk &amp; Mortgage Underwriting</h3>
+        <p style="font-size: 15px; color: var(--text-light);">The $8.2T US mortgage market processes 12M applications annually. Average cost-per-origination: $13,000. We cut that by 38% while improving approval accuracy.</p>
+      </div>
+      <div class="agent-grid">
+        <div class="agent-card">
+          <div class="agent-card-num emerald">01</div>
+          <h5>Autonomous Credit Underwriter</h5>
+          <p>End-to-end orchestration: pulls bureau data, bank statements, tax returns, and industry benchmarks. Drafts complete credit memos with risk scores, covenant structures, and approval rationale. Today&rsquo;s 5-day process becomes 4 hours. Integration: Equifax/Experian APIs, Plaid, IRS verification. SR 11-7 compliant from Day 1.</p>
+          <div class="agent-card-metrics">
+            <div class="agent-metric"><span class="green">70%</span> faster decisions</div>
+            <div class="agent-metric"><span class="blue">12%</span> default reduction</div>
+            <div class="agent-metric">Dev: <span>$1.35M</span></div>
+            <div class="agent-metric">Payback: <span class="green">11 months</span></div>
+          </div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-card-num emerald">02</div>
+          <h5>Mortgage Document Orchestrator</h5>
+          <p>Automated &ldquo;stare &amp; compare&rdquo; across W-2s, appraisals, titles, flood certs, and 40+ doc types. Cross-validates 180+ fields against MISMO standards. 99.2% extraction accuracy eliminates the re-work loops that add 3 days to every close. Integrates with Fannie/Freddie DU/LP.</p>
+          <div class="agent-card-metrics">
+            <div class="agent-metric"><span class="green">85%</span> manual reduction</div>
+            <div class="agent-metric"><span class="blue">3-day</span> cycle cut</div>
+            <div class="agent-metric">Dev: <span>$980K</span></div>
+            <div class="agent-metric">Payback: <span class="green">9 months</span></div>
+          </div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-card-num emerald">03</div>
+          <h5>Dynamic Limit Adjuster</h5>
+          <p>Real-time cash flow monitoring via open banking feeds. Proactively adjusts credit lines based on revenue trends, seasonal patterns, and early-warning signals&mdash;before the borrower even calls. Turns reactive credit management into predictive portfolio optimization.</p>
+          <div class="agent-card-metrics">
+            <div class="agent-metric"><span class="green">18%</span> utilization uplift</div>
+            <div class="agent-metric"><span class="blue">+12.3%</span> revenue</div>
+            <div class="agent-metric">Dev: <span>$720K</span></div>
+            <div class="agent-metric">Payback: <span class="green">8 months</span></div>
+          </div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-card-num emerald">04</div>
+          <h5>Collateral Valuation Agent</h5>
+          <p>Daily LTV risk monitoring using MLS data, AVM ensembles (CoreLogic, FHFA HPI), and property tax records. In 2025, banks relying on annual appraisals missed the 14% CRE correction in Sun Belt markets. This agent would have caught it in 72 hours.</p>
+          <div class="agent-card-metrics">
+            <div class="agent-metric"><span class="green">Daily</span> LTV refresh</div>
+            <div class="agent-metric"><span class="blue">92%</span> accuracy vs appraisal</div>
+            <div class="agent-metric">Dev: <span>$650K</span></div>
+            <div class="agent-metric">Payback: <span class="green">10 months</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="category-summary">
+        <div class="category-summary-item"><div class="label">Total Investment</div><div class="value">$3.70M</div></div>
+        <div class="category-summary-item"><div class="label">Annual Value</div><div class="value">$38.4M</div></div>
+        <div class="category-summary-item"><div class="label">Blended Payback</div><div class="value">9.5 mo</div></div>
+        <div class="category-summary-item"><div class="label">3-Year NPV</div><div class="value">$98.2M</div></div>
+      </div>
+    </div>
+
+    <!-- B. TREASURY -->
+    <div id="cat-treasury" class="agent-category">
+      <div style="text-align: center; margin-bottom: 32px;">
+        <h3 style="font-family: 'Playfair Display', serif; font-size: 28px; margin-bottom: 8px;">Treasury &amp; Liquidity Management</h3>
+        <p style="font-size: 15px; color: var(--text-light);">SVB taught us the cost of slow treasury operations: $209B in assets, gone in 48 hours. This category prevents that&mdash;and unlocks $42.6M annually in smarter cash deployment.</p>
+      </div>
+      <div class="agent-grid">
+        <div class="agent-card">
+          <div class="agent-card-num cyan">05</div>
+          <h5>Cash Flow Forecasting Agent</h5>
+          <p>Generates CFO-ready narrative reports with 30/60/90-day rolling forecasts from ERP data, AR/AP aging, and macro signals. Tells your CFO &ldquo;We&rsquo;ll face a $42M gap in 37 days due to seasonal wholesale deposit outflows&rdquo;&mdash;not &ldquo;here&rsquo;s a spreadsheet.&rdquo;</p>
+          <div class="agent-card-metrics">
+            <div class="agent-metric"><span class="green">94%</span> forecast accuracy</div>
+            <div class="agent-metric"><span class="blue">$18M</span> liquidity saved</div>
+            <div class="agent-metric">Dev: <span>$850K</span></div>
+            <div class="agent-metric">Payback: <span class="green">12 months</span></div>
+          </div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-card-num cyan">06</div>
+          <h5>Autonomous FX Hedging Agent</h5>
+          <p>Monitors 28 currency pairs in real-time. Identifies optimal hedge ratios using Black-Scholes and Monte Carlo simulations. Executes micro-hedges via FIX protocol within pre-approved risk limits. Your treasury desk&rsquo;s best trader never sleeps, never hesitates, and explains every trade.</p>
+          <div class="agent-card-metrics">
+            <div class="agent-metric"><span class="green">35%</span> hedge cost reduction</div>
+            <div class="agent-metric"><span class="blue">Sub-second</span> execution</div>
+            <div class="agent-metric">Dev: <span>$1.45M</span></div>
+            <div class="agent-metric">Payback: <span class="green">14 months</span></div>
+          </div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-card-num cyan">07</div>
+          <h5>Working Capital Optimizer</h5>
+          <p>Automated cash sweeps, payable prioritization, and dynamic discounting. Every idle dollar is a wasted dollar&mdash;this agent puts your cash to work 24/7, capturing early-pay discounts and optimizing buffers across entities in real time.</p>
+          <div class="agent-card-metrics">
+            <div class="agent-metric"><span class="green">22%</span> working cap freed</div>
+            <div class="agent-metric"><span class="blue">+7.2%</span> revenue</div>
+            <div class="agent-metric">Dev: <span>$580K</span></div>
+            <div class="agent-metric">Payback: <span class="green">7 months</span></div>
+          </div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-card-num cyan">08</div>
+          <h5>Liquidity Stress-Testing Agent</h5>
+          <p>Daily &ldquo;what-if&rdquo; simulations&mdash;200+ scenarios including rate shocks, deposit flight, and counterparty failures against LCR/NSFR thresholds. SVB ran quarterly stress tests. This runs daily. The CFO sees every risk surface at 7am. That&rsquo;s the difference between survival and a Sunday-night FDIC seizure.</p>
+          <div class="agent-card-metrics">
+            <div class="agent-metric"><span class="green">Daily</span> from quarterly</div>
+            <div class="agent-metric"><span class="blue">200+</span> scenarios</div>
+            <div class="agent-metric">Dev: <span>$1.2M</span></div>
+            <div class="agent-metric">Payback: <span class="green">16 months</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="category-summary">
+        <div class="category-summary-item"><div class="label">Total Investment</div><div class="value">$4.08M</div></div>
+        <div class="category-summary-item"><div class="label">Annual Value</div><div class="value">$42.6M</div></div>
+        <div class="category-summary-item"><div class="label">Blended Payback</div><div class="value">12.3 mo</div></div>
+        <div class="category-summary-item"><div class="label">3-Year NPV</div><div class="value">$107.4M</div></div>
+      </div>
+    </div>
+
+    <!-- C. COMPLIANCE -->
+    <div id="cat-compliance" class="agent-category">
+      <div style="text-align: center; margin-bottom: 32px;">
+        <h3 style="font-family: 'Playfair Display', serif; font-size: 28px; margin-bottom: 8px;">Operations, Audit &amp; Compliance</h3>
+        <p style="font-size: 15px; color: var(--text-light);">Reducing the $28B annual US bank compliance spend with autonomous monitoring. The Audit-Trail Architect is the single most important agent in the entire suite.</p>
+      </div>
+      <div class="agent-grid">
+        <div class="agent-card" style="border: 2px solid rgba(245,158,11,0.3); background: linear-gradient(135deg, rgba(245,158,11,0.04), var(--white));">
+          <div class="agent-card-num gold">09</div>
+          <h5 style="color: #b45309;">&#128737;&#65039; Audit-Trail Architect <span style="font-size: 10px; font-weight: 600; color: var(--gold); letter-spacing: 1px; text-transform: uppercase;">GOVERNANCE ANCHOR</span></h5>
+          <p>The foundation of the entire suite. Captures decision trees, confidence levels, data provenance for all 19 agents. When an OCC examiner asks &ldquo;Why did your AI approve this loan?&rdquo;&mdash;you hand them a one-click report, not a 6-month investigation. Eliminates $15M+/yr in audit remediation costs.</p>
+          <div class="agent-card-metrics">
+            <div class="agent-metric"><span class="green">100%</span> explainability</div>
+            <div class="agent-metric"><span class="blue">80%</span> efficiency uplift</div>
+            <div class="agent-metric">Dev: <span>$1.5M</span></div>
+            <div class="agent-metric">Payback: <span class="green">18 months</span></div>
+          </div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-card-num purple">10</div>
+          <h5>Continuous Reconciliation Agent</h5>
+          <p>Real-time investigation of payment network breaks across SWIFT, ACH, and Fedwire. Today, a top-10 bank has 400+ ops staff doing manual break resolution. This agent auto-resolves 90% and escalates the rest with root-cause analysis. That&rsquo;s 360 FTEs redeployed to higher-value work.</p>
+          <div class="agent-card-metrics">
+            <div class="agent-metric"><span class="green">90%</span> auto-resolution</div>
+            <div class="agent-metric"><span class="blue">Real-time</span> matching</div>
+            <div class="agent-metric">Dev: <span>$780K</span></div>
+            <div class="agent-metric">Payback: <span class="green">8 months</span></div>
+          </div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-card-num purple">11</div>
+          <h5>Regulatory Change Mapper</h5>
+          <p>Monitors 400+ sources (SEC EDGAR, Federal Register, CFPB bulletins). Maps changes to internal policies, identifies impacted workflows, generates gap analysis with timelines. The average bank took 9 months to implement a major regulatory change in 2025. This agent cuts that to weeks.</p>
+          <div class="agent-card-metrics">
+            <div class="agent-metric"><span class="green">72hr</span> response time</div>
+            <div class="agent-metric"><span class="blue">95%</span> coverage</div>
+            <div class="agent-metric">Dev: <span>$620K</span></div>
+            <div class="agent-metric">Payback: <span class="green">10 months</span></div>
+          </div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-card-num purple">12</div>
+          <h5>ESG Reporting Orchestrator</h5>
+          <p>Automated Scope 1/2/3 data aggregation with audit-ready lineage. Generates TCFD, CSRD, and SEC climate disclosures from one data pull. With the SEC Climate Rule now in effect, banks that can&rsquo;t produce defensible ESG reports face both regulatory and investor backlash.</p>
+          <div class="agent-card-metrics">
+            <div class="agent-metric"><span class="green">80%</span> reporting time cut</div>
+            <div class="agent-metric"><span class="blue">Multi-framework</span></div>
+            <div class="agent-metric">Dev: <span>$540K</span></div>
+            <div class="agent-metric">Payback: <span class="green">9 months</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="category-summary">
+        <div class="category-summary-item"><div class="label">Total Investment</div><div class="value">$3.44M</div></div>
+        <div class="category-summary-item"><div class="label">Annual Value</div><div class="value">$29.8M</div></div>
+        <div class="category-summary-item"><div class="label">Blended Payback</div><div class="value">11.3 mo</div></div>
+        <div class="category-summary-item"><div class="label">3-Year NPV</div><div class="value">$73.8M</div></div>
+      </div>
+    </div>
+
+    <!-- D. BRANCH -->
+    <div id="cat-branch" class="agent-category">
+      <div style="text-align: center; margin-bottom: 32px;">
+        <h3 style="font-family: 'Playfair Display', serif; font-size: 28px; margin-bottom: 8px;">Branch &amp; Frontline Operations</h3>
+        <p style="font-size: 15px; color: var(--text-light);">Transforming 72,000+ US bank branches from cost centers to AI-augmented revenue engines. Fastest payback category in the suite.</p>
+      </div>
+      <div class="agent-grid">
+        <div class="agent-card">
+          <div class="agent-card-num rose">13</div>
+          <h5>Branch Staffing Optimizer</h5>
+          <p>Predictive scheduling using foot traffic, weather, payroll cycles, and community events. Banks staff based on last year&rsquo;s averages&mdash;we staff based on next week&rsquo;s reality. The result: 28% labor cost savings and 40% shorter wait times. Happy customers, happy CFO.</p>
+          <div class="agent-card-metrics">
+            <div class="agent-metric"><span class="green">28%</span> labor savings</div>
+            <div class="agent-metric"><span class="blue">40%</span> wait reduction</div>
+            <div class="agent-metric">Dev: <span>$420K</span></div>
+            <div class="agent-metric">Payback: <span class="green">6 months</span></div>
+          </div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-card-num rose">14</div>
+          <h5>Localized Marketing Agent</h5>
+          <p>Hyper-local campaign generation for each branch&rsquo;s catchment. A branch near a tech campus gets startup banking offers. One near a retirement community gets wealth transfer campaigns. Not personas&mdash;precision. 3.2x conversion lift over national campaigns.</p>
+          <div class="agent-card-metrics">
+            <div class="agent-metric"><span class="green">3.2x</span> conversion lift</div>
+            <div class="agent-metric"><span class="blue">+15.8%</span> revenue</div>
+            <div class="agent-metric">Dev: <span>$380K</span></div>
+            <div class="agent-metric">Payback: <span class="green">5 months</span></div>
+          </div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-card-num rose">15</div>
+          <h5>Frontline Performance Coach</h5>
+          <p>Real-time nudges during client interactions: &ldquo;This client has $180K in savings and no retirement account&mdash;suggest IRA rollover.&rdquo; Every banker becomes your best banker. Cross-sell rates jump 24% because the right suggestion arrives at the right moment.</p>
+          <div class="agent-card-metrics">
+            <div class="agent-metric"><span class="green">24%</span> cross-sell uplift</div>
+            <div class="agent-metric"><span class="blue">Real-time</span> coaching</div>
+            <div class="agent-metric">Dev: <span>$510K</span></div>
+            <div class="agent-metric">Payback: <span class="green">7 months</span></div>
+          </div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-card-num rose">16</div>
+          <h5>Smart Safe &amp; Cash Logistics Agent</h5>
+          <p>Predicts ATM/branch cash needs using transaction patterns, holidays, and local events. The average bank holds $2.4B in idle cash across its network. This agent redeploys $12M+ of that annually&mdash;money that was literally sitting in vaults doing nothing.</p>
+          <div class="agent-card-metrics">
+            <div class="agent-metric"><span class="green">$12M</span> idle cap freed</div>
+            <div class="agent-metric"><span class="blue">35%</span> CIT cost cut</div>
+            <div class="agent-metric">Dev: <span>$350K</span></div>
+            <div class="agent-metric">Payback: <span class="green">5 months</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="category-summary">
+        <div class="category-summary-item"><div class="label">Total Investment</div><div class="value">$1.66M</div></div>
+        <div class="category-summary-item"><div class="label">Annual Value</div><div class="value">$21.3M</div></div>
+        <div class="category-summary-item"><div class="label">Blended Payback</div><div class="value">5.8 mo</div></div>
+        <div class="category-summary-item"><div class="label">3-Year NPV</div><div class="value">$56.7M</div></div>
+      </div>
+    </div>
+
+    <!-- E. WEALTH -->
+    <div id="cat-wealth" class="agent-category">
+      <div style="text-align: center; margin-bottom: 32px;">
+        <h3 style="font-family: 'Playfair Display', serif; font-size: 28px; margin-bottom: 8px;">Wealth Management &amp; Advisory</h3>
+        <p style="font-size: 15px; color: var(--text-light);">Augmenting 300,000+ US wealth advisors managing $38T in client assets. Every RM becomes a super-RM. Every client interaction becomes an opportunity.</p>
+      </div>
+      <div class="agent-grid">
+        <div class="agent-card">
+          <div class="agent-card-num amber">17</div>
+          <h5>RM Co-pilot</h5>
+          <p>Daily client brief synthesis: portfolio performance, life events, news mentions, relationship history&mdash;all in one page. Your RM walks into every meeting already knowing the client&rsquo;s concerns. Today RMs spend 45 min/day on meeting prep. This gives them that time back to build relationships.</p>
+          <div class="agent-card-metrics">
+            <div class="agent-metric"><span class="green">45min</span> /day saved per RM</div>
+            <div class="agent-metric"><span class="blue">+11.2%</span> revenue</div>
+            <div class="agent-metric">Dev: <span>$680K</span></div>
+            <div class="agent-metric">Payback: <span class="green">8 months</span></div>
+          </div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-card-num amber">18</div>
+          <h5>Personalized Portfolio Rebalancer</h5>
+          <p>Automated drift detection across 15+ parameters with tax-optimized rebalancing proposals. Generates client-facing explanations: &ldquo;We&rsquo;re harvesting a $12K loss in your tech allocation to offset gains, while maintaining target exposure.&rdquo; That&rsquo;s a trust-building conversation&mdash;generated in seconds.</p>
+          <div class="agent-card-metrics">
+            <div class="agent-metric"><span class="green">0.3%</span> alpha capture</div>
+            <div class="agent-metric"><span class="blue">Tax-loss</span> harvesting</div>
+            <div class="agent-metric">Dev: <span>$920K</span></div>
+            <div class="agent-metric">Payback: <span class="green">11 months</span></div>
+          </div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-card-num amber">19</div>
+          <h5>UHNW Prospector</h5>
+          <p>Scans public records for liquidity events&mdash;M&amp;A closings, IPOs, real estate transactions, SEC filings. Within 48 hours of a founder selling their company for $200M, your RM has a personalized brief and outreach strategy. First-mover advantage in UHNW acquisition is worth $2.1B in pipeline annually.</p>
+          <div class="agent-card-metrics">
+            <div class="agent-metric"><span class="green">$2.1B</span> pipeline added</div>
+            <div class="agent-metric"><span class="blue">48hr</span> event detection</div>
+            <div class="agent-metric">Dev: <span>$750K</span></div>
+            <div class="agent-metric">Payback: <span class="green">10 months</span></div>
+          </div>
+        </div>
+        <div class="agent-card">
+          <div class="agent-card-num amber">20</div>
+          <h5>Legacy &amp; Estate Planning Agent</h5>
+          <p>Monitors federal and state tax law changes for trust structures&mdash;GRAT, ILIT, dynasty trusts. When the 2025 TCJA sunset proposals shifted estate tax thresholds, this agent identified 847 client accounts requiring immediate restructuring. Average tax savings: $840K per affected family.</p>
+          <div class="agent-card-metrics">
+            <div class="agent-metric"><span class="green">$840K</span> avg tax saved</div>
+            <div class="agent-metric"><span class="blue">Proactive</span> alerts</div>
+            <div class="agent-metric">Dev: <span>$580K</span></div>
+            <div class="agent-metric">Payback: <span class="green">12 months</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="category-summary">
+        <div class="category-summary-item"><div class="label">Total Investment</div><div class="value">$2.93M</div></div>
+        <div class="category-summary-item"><div class="label">Annual Value</div><div class="value">$31.2M</div></div>
+        <div class="category-summary-item"><div class="label">Blended Payback</div><div class="value">10.3 mo</div></div>
+        <div class="category-summary-item"><div class="label">3-Year NPV</div><div class="value">$79.4M</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ HOW WE BUILD IT ═══════════════════ -->
+<section id="how" class="s" style="background: var(--white);">
+  <div class="s-header">
+    <div class="s-eye">How We Build It</div>
+    <h2 class="s-title">Five Humans from Ethias AI.<br>Your Subject Matter Experts.<br>Agents in Production.</h2>
+    <p class="s-sub">
+      We don&rsquo;t hand you a platform and wish you luck. Ethias AI deploys a five-person strike team
+      that embeds with your banking SMEs to build, validate, and deploy the first agents together.
+      Your people bring domain expertise. Ours bring the architecture, AI engineering, and governance framework.
+    </p>
+  </div>
+
+  <!-- The Pairing Model -->
+  <div class="pairing-row">
+    <div class="pairing-box ethias">
+      &#129302; Ethias AI Strike Team<br><span style="font-size: 11px; font-weight: 400; color: var(--text-light);">5 specialists &bull; Architecture to Compliance</span>
+    </div>
+    <div class="pairing-plus">+</div>
+    <div class="pairing-box bank">
+      &#127974; Your Bank SMEs<br><span style="font-size: 11px; font-weight: 400; color: var(--text-light);">Domain experts &bull; Credit, Treasury, Ops, Wealth</span>
+    </div>
+    <div class="pairing-equals">=</div>
+    <div class="pairing-result">
+      Production-Grade Agents in 90 Days
+    </div>
+  </div>
+
+  <!-- The Five -->
+  <div style="text-align: center; margin-bottom: 32px;">
+    <h3 style="font-family: 'Playfair Display', serif; font-size: 28px; margin-bottom: 8px;">The Ethias AI Five-Person Team</h3>
+    <p style="font-size: 15px; color: var(--text-light); max-width: 700px; margin: 0 auto;">Each person provides irreplaceable human judgement. Claude Code provides everything else&mdash;at scale, speed, and consistency no human team can match. This is the same model we outlined in our <em>Five-Person Bank</em> thesis, now applied as a service.</p>
+  </div>
+
+  <div class="team-grid">
+    <!-- CPO -->
+    <div class="team-card">
+      <div class="team-card-header">
+        <div class="team-card-number">01</div>
+        <div class="team-card-role">Chief Product Officer</div>
+      </div>
+      <div class="team-card-body">
+        <div class="team-card-mission">Translates your bank&rsquo;s strategic priorities into agent design. Works shoulder-to-shoulder with your business line leaders to define <em>what</em> each agent should do and <em>why</em>.</div>
+        <div class="team-card-owns">Pairs With</div>
+        <ul class="team-card-list">
+          <li>Your Head of Mortgage Origination</li>
+          <li>Your Head of Treasury Operations</li>
+          <li>Your Chief Risk Officer</li>
+          <li>Your Head of Wealth Advisory</li>
+        </ul>
+        <div class="team-card-claude">
+          <strong>Claude handles:</strong> Analysing your operational data, generating agent specifications, mapping workflows to automation candidates, writing product documentation
+        </div>
+      </div>
+    </div>
+
+    <!-- CTO / Engineer -->
+    <div class="team-card">
+      <div class="team-card-header">
+        <div class="team-card-number">02</div>
+        <div class="team-card-role">Full-Stack Engineer</div>
+      </div>
+      <div class="team-card-body">
+        <div class="team-card-mission">The master builder. Reviews all Claude-generated code, handles edge cases requiring creative problem-solving, and evolves the archetype file that governs every agent.</div>
+        <div class="team-card-owns">Pairs With</div>
+        <ul class="team-card-list">
+          <li>Your integration / API teams</li>
+          <li>Your core banking platform owners</li>
+          <li>Your DevOps / SRE team leads</li>
+        </ul>
+        <div class="team-card-claude">
+          <strong>Claude handles:</strong> All code generation, test creation, API integrations, CI/CD pipelines, infrastructure-as-code, agent orchestration logic
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Architect -->
+    <div class="team-card">
+      <div class="team-card-header" style="background: linear-gradient(160deg, #1a0a2e 0%, #0a1a2e 100%);">
+        <div class="team-card-number">03</div>
+        <div class="team-card-role">Chief AI Architect</div>
+      </div>
+      <div class="team-card-body">
+        <div class="team-card-mission">Designs the agentic system itself&mdash;the reasoning chains, tool integrations, guardrails, and multi-agent orchestration that make 20 agents act as one intelligence.</div>
+        <div class="team-card-owns">Pairs With</div>
+        <ul class="team-card-list">
+          <li>Your AI/ML team (if any)</li>
+          <li>Your model risk management group</li>
+          <li>Your data science leads</li>
+        </ul>
+        <div class="team-card-claude">
+          <strong>Claude handles:</strong> Executing the agentic workflows, multi-step reasoning, autonomous data pulls, cross-agent communication, tool use orchestration
+        </div>
+      </div>
+    </div>
+
+    <!-- Data Architect -->
+    <div class="team-card">
+      <div class="team-card-header">
+        <div class="team-card-number">04</div>
+        <div class="team-card-role">Chief Data Architect</div>
+      </div>
+      <div class="team-card-body">
+        <div class="team-card-mission">Maps your bank&rsquo;s data estate. Connects agents to your core systems&mdash;LOS, LPS, treasury platforms, CRM, portfolio management&mdash;ensuring data flows securely and correctly.</div>
+        <div class="team-card-owns">Pairs With</div>
+        <ul class="team-card-list">
+          <li>Your enterprise data team</li>
+          <li>Your core banking vendor contacts</li>
+          <li>Your data governance officers</li>
+        </ul>
+        <div class="team-card-claude">
+          <strong>Claude handles:</strong> Data pipeline creation, schema mapping, API connector generation, ETL orchestration, data quality monitoring, lineage documentation
+        </div>
+      </div>
+    </div>
+
+    <!-- CCO -->
+    <div class="team-card">
+      <div class="team-card-header">
+        <div class="team-card-number">05</div>
+        <div class="team-card-role">Chief Compliance Officer</div>
+      </div>
+      <div class="team-card-body">
+        <div class="team-card-mission">Configures the Audit-Trail Architect. Ensures every agent meets OCC, SEC, CFPB, and your internal risk framework requirements. Builds the governance layer your examiners will praise.</div>
+        <div class="team-card-owns">Pairs With</div>
+        <ul class="team-card-list">
+          <li>Your Chief Risk Officer</li>
+          <li>Your regulatory affairs team</li>
+          <li>Your internal audit leaders</li>
+        </ul>
+        <div class="team-card-claude">
+          <strong>Claude handles:</strong> Audit evidence generation, regulatory mapping, control testing, SR 11-7 documentation, fair lending analysis, compliance reporting
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quote-block" style="margin-top: 48px;">
+    <p>&ldquo;We don&rsquo;t outsource your agents and deliver a black box. Our five sit in your office, learn your systems, pair with your experts, and build agents that understand <em>your</em> institution&mdash;not a generic banking template. When we leave, the agents keep getting smarter because they&rsquo;re learning from your data, not ours.&rdquo;</p>
+  </div>
+</section>
+
+<!-- ═══════════════════ AGENT DEVELOPMENT LIFECYCLE ═══════════════════ -->
+<section class="s-full s-accent">
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <div class="s-header">
+      <div class="s-eye">The Agent SDLC</div>
+      <h2 class="s-title">From 44-Week Projects to<br>Agents in Production in Days</h2>
+      <p class="s-sub">Traditional banking technology takes 8,500 hours and 44 weeks per application. Our approach, powered by the same archetype-driven methodology from our <em>Five-Person Bank</em> framework, collapses that to days per agent.</p>
+    </div>
+
+    <!-- The Archetype File -->
+    <div style="max-width: 900px; margin: 0 auto 48px;">
+      <div style="background: var(--primary); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow-lg);">
+        <div style="background: rgba(255,255,255,0.06); padding: 12px 20px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid rgba(255,255,255,0.06);">
+          <div style="width: 12px; height: 12px; border-radius: 50%; background: #ff5f57;"></div>
+          <div style="width: 12px; height: 12px; border-radius: 50%; background: #ffbd2e;"></div>
+          <div style="width: 12px; height: 12px; border-radius: 50%; background: #28ca41;"></div>
+          <span style="font-size: 12px; color: rgba(255,255,255,0.4); margin-left: 12px; font-family: monospace;">agents.md &mdash; Agent Archetype Definition</span>
+        </div>
+        <div style="padding: 28px; font-family: 'Courier New', monospace; font-size: 13px; line-height: 2; color: rgba(255,255,255,0.7);">
+<span style="color: var(--accent); font-weight: 700; font-size: 15px;"># AGENTS.MD &mdash; Agentic Enterprise Archetype</span>
+<span style="color: rgba(255,255,255,0.25);"># Single source of truth for all agent behavior. Inherited by every agent.</span>
+
+<span style="color: var(--accent-bright); font-weight: 600;">## 1. Governance Layer</span>
+<span style="color: #c678dd;">RULE: Every agent decision logged with reasoning chain + confidence score.</span>
+<span style="color: #c678dd;">RULE: Human-in-the-loop required for decisions exceeding risk threshold.</span>
+<span style="color: #c678dd;">RULE: Audit-Trail Architect captures ALL agent actions. No exceptions.</span>
+<span style="color: #c678dd;">RULE: Fair lending analysis runs continuously on credit-related agents.</span>
+
+<span style="color: var(--accent-bright); font-weight: 600;">## 2. Data Access &amp; Security</span>
+<span style="color: #7ec8e3;">data_residency:</span> <span style="color: #98c379;">All PII stays in-region. No cross-border data flows.</span>
+<span style="color: #7ec8e3;">api_auth:</span> <span style="color: #98c379;">OAuth 2.0 + mTLS for all core banking connections.</span>
+<span style="color: #7ec8e3;">encryption:</span> <span style="color: #98c379;">AES-256 at rest, TLS 1.3 in transit. Zero exceptions.</span>
+
+<span style="color: var(--accent-bright); font-weight: 600;">## 3. Agent Behavior Standards</span>
+<span style="color: #7ec8e3;">max_autonomy:</span> <span style="color: #98c379;">Tier-1 decisions require human approval. Tier-2+ autonomous.</span>
+<span style="color: #7ec8e3;">explanation_depth:</span> <span style="color: #98c379;">Every output includes reasoning, data sources, confidence.</span>
+<span style="color: #7ec8e3;">cross_agent_comms:</span> <span style="color: #98c379;">Agents share signals via event bus. Logged by Audit-Trail.</span>
+<span style="color: #e5c07b;">MANDATORY: Agents must degrade gracefully. No silent failures.</span>
+
+<span style="color: var(--accent-bright); font-weight: 600;">## 4. Your Bank&rsquo;s Specific Rules</span>
+<span style="color: rgba(255,255,255,0.25);"># This section is co-written with your SMEs during the pilot.</span>
+<span style="color: #7ec8e3;">credit_appetite:</span> <span style="color: #98c379;">[Your risk parameters here]</span>
+<span style="color: #7ec8e3;">product_catalog:</span> <span style="color: #98c379;">[Your product definitions here]</span>
+<span style="color: #7ec8e3;">regulatory_profile:</span> <span style="color: #98c379;">[Your charter type + applicable regulations]</span>
+        </div>
+      </div>
+      <div style="text-align: center; margin-top: 16px; padding: 20px; border: 2px dashed rgba(16,185,129,0.3); border-radius: 12px; background: rgba(16,185,129,0.04);">
+        <p style="font-size: 14px; color: var(--text-light);"><strong style="color: var(--accent-dark);">agents.md</strong> is inherited by every agent in the suite. It cannot be overridden at the agent level. When you change agents.md, you change the behavior of every agent simultaneously. This is how governance scales without governance overhead.</p>
+      </div>
+    </div>
+
+    <!-- The 5-Step Flow -->
+    <h3 style="text-align: center; font-family: 'Playfair Display', serif; font-size: 28px; margin-bottom: 8px;">One Agent: Intent to Production</h3>
+    <p style="text-align: center; font-size: 14px; color: var(--text-light); margin-bottom: 32px;">Mid-complexity agent (e.g., Mortgage Document Orchestrator). Ethias team + your SMEs.</p>
+
+    <div class="sdlc-flow">
+      <div class="sdlc-step">
+        <div class="sdlc-step-num">1</div>
+        <div class="sdlc-step-icon">&#128172;</div>
+        <div class="sdlc-step-name">Intent</div>
+        <div class="sdlc-step-time">1</div>
+        <div class="sdlc-step-unit">Day</div>
+        <div class="sdlc-step-who">CPO + Your SME</div>
+        <div class="sdlc-step-desc">Your mortgage ops lead describes pain points. Our CPO translates to agent specification. No 200-page BRD&mdash;a conversation.</div>
+      </div>
+      <div class="sdlc-step">
+        <div class="sdlc-step-num">2</div>
+        <div class="sdlc-step-icon">&#129516;</div>
+        <div class="sdlc-step-name">Build</div>
+        <div class="sdlc-step-time">5</div>
+        <div class="sdlc-step-unit">Days</div>
+        <div class="sdlc-step-who">Engineer + AI Architect + Claude</div>
+        <div class="sdlc-step-desc">Claude reads agents.md, generates agent logic, API connectors, test suites, and governance hooks. Data Architect maps your system connections.</div>
+      </div>
+      <div class="sdlc-step">
+        <div class="sdlc-step-num">3</div>
+        <div class="sdlc-step-icon">&#128064;</div>
+        <div class="sdlc-step-name">Validate</div>
+        <div class="sdlc-step-time">3</div>
+        <div class="sdlc-step-unit">Days</div>
+        <div class="sdlc-step-who">Your SMEs + Our CCO</div>
+        <div class="sdlc-step-desc">Your domain experts test with real scenarios. Our CCO validates audit trails and compliance. Your risk team reviews. Feedback loops are hours, not months.</div>
+      </div>
+      <div class="sdlc-step">
+        <div class="sdlc-step-num">4</div>
+        <div class="sdlc-step-icon">&#128260;</div>
+        <div class="sdlc-step-name">Iterate</div>
+        <div class="sdlc-step-time">3</div>
+        <div class="sdlc-step-unit">Days</div>
+        <div class="sdlc-step-who">Claude + Full Team</div>
+        <div class="sdlc-step-desc">Claude incorporates feedback, regenerates affected components, re-runs test suites. Your SMEs see updated agent in hours. 2&ndash;3 rapid cycles.</div>
+      </div>
+      <div class="sdlc-step">
+        <div class="sdlc-step-num">5</div>
+        <div class="sdlc-step-icon">&#128640;</div>
+        <div class="sdlc-step-name">Deploy</div>
+        <div class="sdlc-step-time">2</div>
+        <div class="sdlc-step-unit">Days</div>
+        <div class="sdlc-step-who">CCO Approval + Auto Deploy</div>
+        <div class="sdlc-step-desc">Canary deployment, monitoring hooks, auto-generated change record. Audit-Trail Architect begins logging from first decision. Your examiner gets a report on Day 1.</div>
+      </div>
+    </div>
+
+    <div class="sdlc-total">
+      <div>
+        <div class="sdlc-total-label">Per Agent: Intent to Production</div>
+        <div style="font-size: 13px; color: var(--text-light);">~14 calendar days &bull; 5 Ethias humans + 2&ndash;3 bank SMEs &bull; Full audit trail from day one</div>
+      </div>
+      <div class="sdlc-total-value">~14 days</div>
+    </div>
+
+    <!-- Before / After -->
+    <div style="max-width: 700px; margin: 48px auto 0; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+      <div style="background: var(--white); border-radius: 14px; padding: 24px; box-shadow: var(--shadow-sm); border-top: 4px solid var(--red); text-align: center;">
+        <div style="font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--red); font-weight: 700; margin-bottom: 12px;">Traditional Bank AI Project</div>
+        <div style="font-size: 48px; font-weight: 900; color: var(--red);">18 mo</div>
+        <div style="font-size: 12px; color: var(--text-light);">40+ people &bull; $2&ndash;5M per agent &bull; 12 governance gates</div>
+      </div>
+      <div style="background: var(--white); border-radius: 14px; padding: 24px; box-shadow: var(--shadow-sm); border-top: 4px solid var(--green); text-align: center;">
+        <div style="font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--green); font-weight: 700; margin-bottom: 12px;">Ethias AI Approach</div>
+        <div style="font-size: 48px; font-weight: 900; color: var(--green);">14 days</div>
+        <div style="font-size: 12px; color: var(--text-light);">5 Ethias + 3 bank SMEs &bull; $250K&ndash;$1.5M &bull; Governance built-in</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ THE PILOT ═══════════════════ -->
+<section id="pilot" class="s" style="background: var(--white);">
+  <div class="s-header">
+    <div class="s-eye gold">The Pilot Proposal</div>
+    <h2 class="s-title">90 Days. Four Agents. Proof of Everything.</h2>
+    <p class="s-sub">We don&rsquo;t ask you to commit to all 20 agents on faith. We propose a 90-day pilot: deploy the Governance Anchor plus the three highest-ROI agents. By Day 90, you&rsquo;ll have production agents, a working audit trail, and hard numbers that make the full-suite decision obvious.</p>
+  </div>
+
+  <div class="pilot-grid">
+    <!-- Pilot Agent 0: Governance -->
+    <div class="pilot-card governance">
+      <div class="pilot-card-num" style="color: var(--gold);">Week 1&ndash;3 &bull; Foundation</div>
+      <h5>&#128737;&#65039; Audit-Trail Architect</h5>
+      <p>Deployed first. The governance backbone that makes everything else possible. Your CCO and our CCO configure risk thresholds, approval workflows, and regulatory export templates together.</p>
+      <div class="pilot-card-row">Why first <span>Enables all other agents</span></div>
+      <div class="pilot-card-row">Bank SME <span>Chief Risk Officer</span></div>
+      <div class="pilot-card-row">Dev cost <span>$1.5M</span></div>
+      <div class="pilot-card-row">Key proof <span>One-click OCC report</span></div>
+    </div>
+
+    <!-- Pilot Agent 1 -->
+    <div class="pilot-card">
+      <div class="pilot-card-num">Week 3&ndash;6 &bull; Quick Win</div>
+      <h5>Mortgage Document Orchestrator</h5>
+      <p>Highest efficiency gain (85%) and fastest visible impact. Your mortgage ops team sees the difference in the first week. Processes that took 3 days become same-day.</p>
+      <div class="pilot-card-row">Why this one <span>85% efficiency &bull; Visible fast</span></div>
+      <div class="pilot-card-row">Bank SME <span>Head of Mortgage Ops</span></div>
+      <div class="pilot-card-row">Dev cost <span>$980K</span></div>
+      <div class="pilot-card-row">Expected proof <span>3-day cycle reduction</span></div>
+    </div>
+
+    <!-- Pilot Agent 2 -->
+    <div class="pilot-card">
+      <div class="pilot-card-num">Week 5&ndash;9 &bull; Revenue Engine</div>
+      <h5>RM Co-pilot</h5>
+      <p>Deploys across a 50-RM pilot group. Immediate, visceral impact: RMs walk into meetings prepared. Client satisfaction scores and cross-sell rates measurable within 30 days.</p>
+      <div class="pilot-card-row">Why this one <span>RMs feel it daily</span></div>
+      <div class="pilot-card-row">Bank SME <span>Head of Wealth Advisory</span></div>
+      <div class="pilot-card-row">Dev cost <span>$680K</span></div>
+      <div class="pilot-card-row">Expected proof <span>+15% meeting capacity</span></div>
+    </div>
+
+    <!-- Pilot Agent 3 -->
+    <div class="pilot-card">
+      <div class="pilot-card-num">Week 7&ndash;12 &bull; Cash Impact</div>
+      <h5>Branch Staffing Optimizer</h5>
+      <p>Fastest payback in the entire suite (5&ndash;6 months). Deploy across 50 branches. Labor cost savings and wait-time reduction are measurable immediately from scheduling data.</p>
+      <div class="pilot-card-row">Why this one <span>Fastest payback: 5&ndash;6 mo</span></div>
+      <div class="pilot-card-row">Bank SME <span>Head of Branch Ops</span></div>
+      <div class="pilot-card-row">Dev cost <span>$420K</span></div>
+      <div class="pilot-card-row">Expected proof <span>28% labor savings</span></div>
+    </div>
+  </div>
+
+  <!-- Pilot Summary -->
+  <div style="max-width: 1100px; margin: 48px auto 0;">
+    <div style="background: var(--green-light); border: 2px solid var(--green); border-radius: 16px; padding: 32px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+      <div>
+        <div style="font-size: 13px; font-weight: 700; color: var(--green); letter-spacing: 2px; text-transform: uppercase;">90-Day Pilot Summary</div>
+        <div style="font-size: 14px; color: var(--text-light); margin-top: 4px;">4 agents in production &bull; Full governance backbone &bull; Real data, real results</div>
+      </div>
+      <div style="display: flex; gap: 32px; flex-wrap: wrap;">
+        <div style="text-align: center;">
+          <div style="font-size: 28px; font-weight: 900; color: var(--accent-dark);">$3.58M</div>
+          <div style="font-size: 11px; color: var(--text-light); letter-spacing: 1px; text-transform: uppercase;">Pilot Investment</div>
+        </div>
+        <div style="text-align: center;">
+          <div style="font-size: 28px; font-weight: 900; color: var(--accent-dark);">$33M</div>
+          <div style="font-size: 11px; color: var(--text-light); letter-spacing: 1px; text-transform: uppercase;">Projected Annual Value</div>
+        </div>
+        <div style="text-align: center;">
+          <div style="font-size: 28px; font-weight: 900; color: var(--accent-dark);">6.2 mo</div>
+          <div style="font-size: 11px; color: var(--text-light); letter-spacing: 1px; text-transform: uppercase;">Payback Period</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- What the pilot proves -->
+  <div style="max-width: 900px; margin: 48px auto 0;">
+    <h3 style="font-family: 'Playfair Display', serif; font-size: 24px; text-align: center; margin-bottom: 24px;">What the Pilot Proves</h3>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+      <div class="card" style="border-left: 4px solid var(--accent);">
+        <h4>For Your Board</h4>
+        <p>Hard ROI numbers from production agents running on real data. Not a demo, not a simulation&mdash;actual efficiency gains and revenue impact measured against your P&amp;L.</p>
+      </div>
+      <div class="card" style="border-left: 4px solid var(--gold);">
+        <h4>For Your Regulators</h4>
+        <p>A working Audit-Trail Architect producing real decision logs. Invite your OCC examiner to review. The reaction will be the strongest proof point you can deliver to the board.</p>
+      </div>
+      <div class="card" style="border-left: 4px solid var(--cyan);">
+        <h4>For Your Technology Team</h4>
+        <p>Proof that the 5-person + SME model works. Agents built in 14 days, not 18 months. Your engineers see the agents.md archetype approach and understand how it scales to 20.</p>
+      </div>
+      <div class="card" style="border-left: 4px solid var(--purple);">
+        <h4>For Your Frontline</h4>
+        <p>50 RMs using the Co-pilot. 50 branches using the Staffing Optimizer. Mortgage processors using the Doc Orchestrator. Real people, telling real stories about how their work changed.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="quote-block" style="margin-top: 48px;">
+    <p>&ldquo;The pilot isn&rsquo;t designed to <em>convince</em> you. It&rsquo;s designed to make the full-suite decision <em>inevitable</em>. By Day 90, your board will have production data, your regulators will have audit trails, your frontline will have stories, and your CFO will have payback math. The 16 remaining agents aren&rsquo;t a question&mdash;they&rsquo;re a scheduling exercise.&rdquo;</p>
+  </div>
+</section>
+
+<!-- ═══════════════════ ROI DASHBOARD ═══════════════════ -->
+<section id="roi" class="s-full s-dark">
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <div class="s-header">
+      <div class="s-eye">Financial Impact</div>
+      <h2 class="s-title">Consolidated ROI Dashboard</h2>
+      <p class="s-sub">Full-suite model for a Top-20 US bank ($500B+ assets). Every number derived from published industry benchmarks, real bank P&amp;L structures, and validated technology cost models.</p>
+    </div>
+
+    <div class="roi-cards">
+      <div class="roi-card">
+        <div class="roi-card-value">$15.81M</div>
+        <div class="roi-card-label">Total Investment</div>
+        <div class="roi-card-sub">0.03% of annual revenue</div>
+      </div>
+      <div class="roi-card">
+        <div class="roi-card-value">$163.3M</div>
+        <div class="roi-card-label">Annual Value</div>
+        <div class="roi-card-sub">10.3x annual return</div>
+      </div>
+      <div class="roi-card">
+        <div class="roi-card-value">$415.5M</div>
+        <div class="roi-card-label">3-Year NPV</div>
+        <div class="roi-card-sub">At 8% discount rate</div>
+      </div>
+      <div class="roi-card">
+        <div class="roi-card-value">9.8 mo</div>
+        <div class="roi-card-label">Blended Payback</div>
+        <div class="roi-card-sub">Phase 1 in 6.2 months</div>
+      </div>
+      <div class="roi-card">
+        <div class="roi-card-value">26:1</div>
+        <div class="roi-card-label">3Y Value/Cost</div>
+        <div class="roi-card-sub">Best-in-class tech ROI</div>
+      </div>
+    </div>
+
+    <div class="roi-bars" style="margin-bottom: 48px;">
+      <div style="font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 16px; text-align: center;">Annual Value by Category</div>
+      <div class="roi-bar-row">
+        <div class="roi-bar-label">Credit Risk</div>
+        <div class="roi-bar-track"><div class="roi-bar-fill" style="width: 23.5%; background: linear-gradient(135deg, #059669, #34d399);">$38.4M</div></div>
+        <div class="roi-bar-payback">9.5 mo</div>
+      </div>
+      <div class="roi-bar-row">
+        <div class="roi-bar-label">Treasury</div>
+        <div class="roi-bar-track"><div class="roi-bar-fill" style="width: 26.1%; background: linear-gradient(135deg, #0891b2, #06b6d4);">$42.6M</div></div>
+        <div class="roi-bar-payback">12.3 mo</div>
+      </div>
+      <div class="roi-bar-row">
+        <div class="roi-bar-label">Compliance</div>
+        <div class="roi-bar-track"><div class="roi-bar-fill" style="width: 18.3%; background: linear-gradient(135deg, #7c3aed, #8b5cf6);">$29.8M</div></div>
+        <div class="roi-bar-payback">11.3 mo</div>
+      </div>
+      <div class="roi-bar-row">
+        <div class="roi-bar-label">Branch</div>
+        <div class="roi-bar-track"><div class="roi-bar-fill" style="width: 13%; background: linear-gradient(135deg, #e11d48, #f43f5e);">$21.3M</div></div>
+        <div class="roi-bar-payback">5.8 mo</div>
+      </div>
+      <div class="roi-bar-row">
+        <div class="roi-bar-label">Wealth</div>
+        <div class="roi-bar-track"><div class="roi-bar-fill" style="width: 19.1%; background: linear-gradient(135deg, #d97706, #f59e0b);">$31.2M</div></div>
+        <div class="roi-bar-payback">10.3 mo</div>
+      </div>
+    </div>
+
+    <table class="roi-table">
+      <thead><tr>
+        <th style="text-align: left;">Category</th><th>Dev Cost</th><th>Efficiency</th><th>Revenue</th><th>Annual Value</th><th>Payback</th><th>3Y NPV</th>
+      </tr></thead>
+      <tbody>
+        <tr><td class="accent">A. Credit Risk &amp; Mortgage</td><td>$3.70M</td><td>67.5%</td><td>+7.8%</td><td style="font-weight:700; color: var(--white);">$38.4M</td><td>9.5 mo</td><td class="accent">$98.2M</td></tr>
+        <tr><td style="color: var(--cyan);">B. Treasury &amp; Liquidity</td><td>$4.08M</td><td>61.3%</td><td>+6.5%</td><td style="font-weight:700; color: var(--white);">$42.6M</td><td>12.3 mo</td><td class="accent">$107.4M</td></tr>
+        <tr><td style="color: #a78bfa;">C. Ops &amp; Compliance</td><td>$3.44M</td><td>80.5%</td><td>+2.5%</td><td style="font-weight:700; color: var(--white);">$29.8M</td><td>11.3 mo</td><td class="accent">$73.8M</td></tr>
+        <tr><td style="color: #fb7185;">D. Branch &amp; Frontline</td><td>$1.66M</td><td>38.8%</td><td>+11.9%</td><td style="font-weight:700; color: var(--white);">$21.3M</td><td>5.8 mo</td><td class="accent">$56.7M</td></tr>
+        <tr><td style="color: var(--gold);">E. Wealth &amp; Advisory</td><td>$2.93M</td><td>52.0%</td><td>+11.4%</td><td style="font-weight:700; color: var(--white);">$31.2M</td><td>10.3 mo</td><td class="accent">$79.4M</td></tr>
+        <tr><td>TOTAL SUITE</td><td>$15.81M</td><td>60.0%</td><td>+8.0%</td><td>$163.3M</td><td>9.8 mo</td><td>$415.5M</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════════ GOVERNANCE DIFFERENTIATOR ═══════════════════ -->
+<section class="s" style="background: var(--white);">
+  <div class="s-header">
+    <div class="s-eye gold">Key Differentiator</div>
+    <h2 class="s-title">Solving the &ldquo;Black Box&rdquo; Problem</h2>
+    <p class="s-sub">67% of bank CROs cite explainability as the #1 blocker to scaling AI. This isn&rsquo;t a feature&mdash;it&rsquo;s the reason every other AI vendor gets stuck in pilot purgatory.</p>
+  </div>
+
+  <div class="vs-strip">
+    <div class="vs-side vs-old">
+      <div class="vs-number">67%</div>
+      <div class="vs-label">CROs Blocked by &ldquo;Black Box&rdquo;</div>
+      <div style="margin-top: 16px; text-align: left; font-size: 13px; color: var(--text-light);">
+        <p style="margin-bottom: 8px;"><strong style="color: var(--red);">&#10007;</strong> OCC examiners demand explanation for every automated credit decision</p>
+        <p style="margin-bottom: 8px;"><strong style="color: var(--red);">&#10007;</strong> CFPB adverse action requires specific reasons&mdash;black boxes can&rsquo;t provide them</p>
+        <p style="margin-bottom: 8px;"><strong style="color: var(--red);">&#10007;</strong> AI pilots die at committee level: &ldquo;interesting, but not production-ready&rdquo;</p>
+        <p><strong style="color: var(--red);">&#10007;</strong> $5&ndash;10M invested in POCs that never scale</p>
+      </div>
+    </div>
+    <div class="vs-divider"><span>vs</span></div>
+    <div class="vs-side vs-new">
+      <div class="vs-number">100%</div>
+      <div class="vs-label">Explainable with Audit-Trail</div>
+      <div style="margin-top: 16px; text-align: left; font-size: 13px; color: var(--text-light);">
+        <p style="margin-bottom: 8px;"><strong style="color: var(--green);">&#10003;</strong> Immutable decision logs: reasoning chain, confidence score, data inputs, timestamp</p>
+        <p style="margin-bottom: 8px;"><strong style="color: var(--green);">&#10003;</strong> One-click regulatory export for OCC, SEC, CFPB, Fed examinations</p>
+        <p style="margin-bottom: 8px;"><strong style="color: var(--green);">&#10003;</strong> Human-in-the-loop override with configurable thresholds per agent</p>
+        <p><strong style="color: var(--green);">&#10003;</strong> Continuous bias monitoring&mdash;alerts fire before disparate impact becomes a finding</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="quote-block">
+    <p>&ldquo;Every AI vendor says &lsquo;trust our model.&rsquo; We say: &lsquo;Read the audit trail yourself.&rsquo; That one sentence is worth more than any benchmark. It&rsquo;s why our clients go from pilot to production in 90 days while their peers are still in committee review after 18 months.&rdquo;</p>
+  </div>
+</section>
+
+<!-- ═══════════════════ EARLY ADOPTER ADVANTAGE ═══════════════════ -->
+<section id="advantage" class="s-full s-accent">
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <div class="s-header">
+      <div class="s-eye">Strategic Insight</div>
+      <h2 class="s-title">The Early Adopter Advantage<br>Is Exponential</h2>
+      <p class="s-sub">Agentic AI creates winner-take-most dynamics. The first institution to deploy builds compounding advantages that late movers cannot replicate at any price.</p>
+    </div>
+
+    <div class="provocation">
+      <div style="display: flex; flex-direction: column; gap: 20px;">
+        <div class="card" style="border-left: 4px solid var(--accent);">
+          <h4>01. Institutional Memory Compounds Daily</h4>
+          <p>Every loan processed, every break resolved, every client interaction makes your agents smarter about <em>your specific</em> portfolio. After 12 months: 200+ years of equivalent human experience encoded. <strong style="color: var(--accent-dark);">A competitor deploying 2 years later starts at zero institutional knowledge.</strong></p>
+        </div>
+        <div class="card" style="border-left: 4px solid var(--cyan);">
+          <h4>02. Talent Gravity Shifts</h4>
+          <p>The best risk officers, treasury analysts, and RMs want to work <em>with</em> AI, not against it. The RM who manages 150 client relationships with an AI co-pilot will never go back to managing 50 with a spreadsheet. <strong style="color: var(--cyan);">You don&rsquo;t just automate work&mdash;you make your people superhuman.</strong></p>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 20px;">
+        <div class="card" style="border-left: 4px solid var(--purple);">
+          <h4>03. Regulatory Relationship Advantage</h4>
+          <p>Banks that demonstrate governance-first AI earn examiner trust. This translates to faster product approvals, fewer MRAs, and more favorable risk ratings. <strong style="color: var(--purple);">Good governance becomes a competitive moat, not just a cost center.</strong></p>
+        </div>
+        <div class="card" style="border-left: 4px solid var(--gold);">
+          <h4>04. Client Stickiness Becomes Permanent</h4>
+          <p>When your RM Co-pilot knows 5 years of a client&rsquo;s financial life&mdash;tax strategy, estate plans, cash flow patterns&mdash;switching banks means starting over. <strong style="color: #b45309;">Retention moves from 85% to 97%. That&rsquo;s $4.2B in AUM protected annually.</strong></p>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 48px; padding: 32px; background: var(--white); border-radius: 16px; box-shadow: var(--shadow-md); max-width: 700px; margin-left: auto; margin-right: auto;">
+      <p style="font-size: 18px; font-weight: 600; color: var(--primary); margin-bottom: 4px;">The gap between early and late adopters won&rsquo;t be measured in quarters.</p>
+      <p style="font-size: 18px; color: var(--accent-dark); font-weight: 700;">It will be measured in eras.</p>
+      <p style="font-size: 13px; color: var(--text-light); margin-top: 8px;">By Month 18, early adopters will have 500,000+ institutional decisions in their agent mesh that no competitor can replicate.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ COST OF INACTION ═══════════════════ -->
+<section class="s" style="background: var(--white);">
+  <div class="s-header">
+    <div class="s-eye red">Risk Assessment</div>
+    <h2 class="s-title">The Cost of Waiting</h2>
+    <p class="s-sub">Every quarter of delay has a quantifiable cost. This is not fear-mongering&mdash;it&rsquo;s financial math.</p>
+  </div>
+
+  <div class="cards-3" style="margin-bottom: 48px;">
+    <div class="card" style="text-align: center; border-top: 4px solid var(--red);">
+      <div class="card-num red">$40.8M</div>
+      <h4>Foregone Per Year of Delay</h4>
+      <p>At $163.3M annual value, each quarter costs $40.8M in unrealized efficiency and revenue. A 12-month delay costs <strong style="color: var(--red);">$163M cumulative</strong> that cannot be recovered.</p>
+    </div>
+    <div class="card" style="text-align: center; border-top: 4px solid var(--amber);">
+      <div class="card-num" style="color: var(--amber);">18-24mo</div>
+      <h4>Head Start Competitors Gain</h4>
+      <p>Three of the top 10 US banks have allocated $50M+ to agentic AI in 2026. A 6-month head start means <strong style="color: #b45309;">120,000+ institutional decisions</strong> of advantage.</p>
+    </div>
+    <div class="card" style="text-align: center; border-top: 4px solid var(--purple);">
+      <div class="card-num" style="color: var(--purple);">$200M+</div>
+      <h4>Regulatory Exposure Risk</h4>
+      <p>Banks using AI without audit trails face escalating liability. The OCC&rsquo;s 2025 AI Guidance creates a new standard: <strong style="color: var(--purple);">no explainability = non-compliant.</strong></p>
+    </div>
+  </div>
+
+  <div class="timeline-compare">
+    <div class="timeline-col bad">
+      <h4>&#10007; &ldquo;Wait and See&rdquo;</h4>
+      <div class="timeline-item">
+        <div class="timeline-item-date">Q3 2026</div>
+        <div class="timeline-item-text">Competitor launches AI-powered mortgage processing. Closes in 12 days vs. your 35. Borrowers switch.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-item-date">Q1 2027</div>
+        <div class="timeline-item-text">Competitor&rsquo;s UHNW Prospector captures 3 major liquidity events you missed. $180M in AUM walks.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-item-date">Q3 2027</div>
+        <div class="timeline-item-text">OCC examiner: &ldquo;Your peers have explainable AI governance. Why don&rsquo;t you?&rdquo; MRA issued.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-item-date">Q1 2028</div>
+        <div class="timeline-item-text">Board demands AI strategy. You&rsquo;re 2 years behind. Cost to catch up: 3x. Knowledge gap: uncloseable.</div>
+      </div>
+    </div>
+    <div class="timeline-col good">
+      <h4>&#10003; &ldquo;Move Now&rdquo;</h4>
+      <div class="timeline-item">
+        <div class="timeline-item-date">Q3 2026</div>
+        <div class="timeline-item-text">Governance Anchor + 4 quick-win agents live. Phase 1 generating $33M annual value. Board confidence: high.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-item-date">Q1 2027</div>
+        <div class="timeline-item-text">10 agents in production. 150,000+ institutional decisions learned. OCC: &ldquo;best-in-class&rdquo; governance rating.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-item-date">Q3 2027</div>
+        <div class="timeline-item-text">Full suite deployed. $163M annual value realized. Competitors still in committee review. Top talent calling you.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-item-date">Q1 2028</div>
+        <div class="timeline-item-text">500,000+ institutional decisions. Agent mesh intelligence is your permanent moat. Analysts upgrade your stock.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ ROADMAP ═══════════════════ -->
+<section id="roadmap" class="s-full s-accent">
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <div class="s-header">
+      <div class="s-eye">Roadmap</div>
+      <h2 class="s-title">24-Month Deployment Roadmap</h2>
+      <p class="s-sub">Governance first, quick wins second, compound intelligence third. Every phase is self-funding&mdash;Phase 1 value covers Phase 2 investment.</p>
+    </div>
+
+    <div class="rm-container">
+      <div class="rm-phase">
+        <div class="rm-marker">1</div>
+        <div class="rm-content">
+          <div class="rm-time">Months 1&ndash;6 &bull; $4.2M Investment</div>
+          <h4>Foundation &amp; Quick Wins &mdash; &ldquo;Prove It Works&rdquo;</h4>
+          <p>Deploy the Governance Anchor first&mdash;everything depends on it. Then launch the highest-ROI agents to generate visible wins fast.</p>
+          <ul class="rm-items">
+            <li><strong>Audit-Trail Architect</strong> &mdash; Governance backbone, deployed Day 1</li>
+            <li><strong>Mortgage Document Orchestrator</strong> &mdash; 85% efficiency gain, fastest visible win</li>
+            <li><strong>Branch Staffing + Cash Logistics</strong> &mdash; 5&ndash;6 month payback, self-funding</li>
+          </ul>
+          <div class="rm-value">Phase 1 Value: $33M/yr &bull; Payback: 6.2 months</div>
+        </div>
+      </div>
+
+      <div class="rm-phase">
+        <div class="rm-marker">2</div>
+        <div class="rm-content">
+          <div class="rm-time">Months 7&ndash;12 &bull; $5.8M Investment</div>
+          <h4>Core Revenue Engines &mdash; &ldquo;Scale It&rdquo;</h4>
+          <p>Deploy the heavy-hitters: autonomous underwriting, FX hedging, wealth management tools, and compliance agents.</p>
+          <ul class="rm-items">
+            <li><strong>Autonomous Credit Underwriter</strong> &mdash; +8.5% revenue impact</li>
+            <li><strong>FX Hedging Agent</strong> &mdash; 35% hedge cost reduction</li>
+            <li><strong>RM Co-pilot + Portfolio Rebalancer</strong> &mdash; AUM retention engine</li>
+            <li><strong>Reconciliation + Regulatory Mapper</strong> &mdash; Compliance uplift</li>
+          </ul>
+          <div class="rm-value">Cumulative Value: $85M/yr</div>
+        </div>
+      </div>
+
+      <div class="rm-phase">
+        <div class="rm-marker">3</div>
+        <div class="rm-content">
+          <div class="rm-time">Months 13&ndash;18 &bull; $3.9M Investment</div>
+          <h4>Advanced Intelligence &mdash; &ldquo;Compound It&rdquo;</h4>
+          <p>Activate the cross-domain synergies: real-time credit adjustments, treasury optimization, UHNW prospecting, and branch revenue engines.</p>
+          <ul class="rm-items">
+            <li><strong>Dynamic Limits + Collateral Valuation</strong> &mdash; Real-time credit risk</li>
+            <li><strong>Cash Flow Forecasting + Working Capital</strong> &mdash; Treasury optimization</li>
+            <li><strong>UHNW Prospector</strong> &mdash; $2.1B pipeline generation</li>
+            <li><strong>Localized Marketing + Frontline Coach</strong> &mdash; Branch revenue</li>
+          </ul>
+          <div class="rm-value">Cumulative Value: $140M/yr</div>
+        </div>
+      </div>
+
+      <div class="rm-phase">
+        <div class="rm-marker">4</div>
+        <div class="rm-content">
+          <div class="rm-time">Months 19&ndash;24 &bull; $1.9M Investment</div>
+          <h4>Full Autonomy &mdash; &ldquo;Own the Future&rdquo;</h4>
+          <p>Complete the suite. At this point, your agent mesh contains 500,000+ institutional decisions. This is your permanent moat.</p>
+          <ul class="rm-items">
+            <li><strong>Liquidity Stress-Testing Agent</strong> &mdash; Daily 200+ scenario simulations</li>
+            <li><strong>ESG Reporting Orchestrator</strong> &mdash; Multi-framework compliance</li>
+            <li><strong>Legacy &amp; Estate Planning Agent</strong> &mdash; Tax law monitoring</li>
+          </ul>
+          <div class="rm-value">Full Run Rate: $163.3M/yr &bull; 20 Agents Operational</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ CTA ═══════════════════ -->
+<section class="cta">
+  <div class="cta-inner">
+    <div style="font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--accent); font-weight: 700; margin-bottom: 20px;">The Decision</div>
+    <h2>The window is open.<br>It won&rsquo;t stay open.</h2>
+    <p>We are selecting <strong style="color: var(--accent-bright);">3 founding partners</strong> for exclusive 24-month deployment engagements. Founding partners receive exclusive market territory, co-development rights, preferred pricing locked for 5 years, and first access to every new agent we build.</p>
+    <a href="#" class="cta-btn" onclick="event.preventDefault(); document.getElementById('contact-modal').classList.add('active');">Become a Founding Partner</a>
+    <div class="cta-meta">
+      <div class="cta-meta-item"><span>Phase 1 Investment</span><strong>$4.2M</strong></div>
+      <div class="cta-meta-item"><span>Year-1 Value Created</span><strong>$33M</strong></div>
+      <div class="cta-meta-item"><span>Phase 1 Payback</span><strong>6.2 months</strong></div>
+      <div class="cta-meta-item"><span>Full Suite 3Y NPV</span><strong>$415.5M</strong></div>
+    </div>
+    <p style="font-size: 14px; margin-top: 48px; color: rgba(255,255,255,0.35); font-style: italic;">&ldquo;The best time to have deployed agentic AI was two years ago. The second best time is this quarter.&rdquo;</p>
+  </div>
+</section>
+
+<!-- ═══════════════════ LIVE DEMOS ═══════════════════ -->
+<section id="demos" class="s-full s-mid">
+  <div style="max-width: 1200px; margin: 0 auto;">
+    <div class="s-header">
+      <div class="s-eye">Live Demos</div>
+      <h2 class="s-title">Don&rsquo;t Take Our Word for It.<br>Experience the Agents.</h2>
+      <p class="s-sub">We&rsquo;ve built working prototypes of seven agents across the suite. These aren&rsquo;t mockups&mdash;they&rsquo;re interactive applications you can explore right now. Click any card to launch the demo.</p>
+    </div>
+
+    <div class="demo-grid">
+
+      <!-- 1. LendFlow -->
+      <div class="demo-card">
+        <div class="demo-card-header">
+          <div class="demo-card-icon">&#128196;</div>
+          <h4>LendFlow</h4>
+          <div class="demo-card-sub">Mortgage Fulfillment Engine</div>
+        </div>
+        <div class="demo-card-body">
+          <p>AI-powered loan processing automation with borrower search, DTI analysis, and appraisal workflow management. Experience the &ldquo;stare &amp; compare&rdquo; elimination in real time.</p>
+          <div class="demo-card-tags">
+            <span class="demo-card-tag">Mortgage Doc Orchestrator</span>
+            <span class="demo-card-tag">Credit Risk</span>
+          </div>
+          <a href="Final Website/lending-flow-io.html" target="_blank" class="demo-card-btn">
+            Launch Demo
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- 2. LiquidityOS -->
+      <div class="demo-card">
+        <div class="demo-card-header">
+          <div class="demo-card-icon">&#128167;</div>
+          <h4>LiquidityOS</h4>
+          <div class="demo-card-sub">Treasury Command Center</div>
+        </div>
+        <div class="demo-card-body">
+          <p>Predictive cash flow forecasting, FX hedging optimization, and liquidity risk management in a single dashboard. See what daily stress testing looks like when it&rsquo;s actually daily.</p>
+          <div class="demo-card-tags">
+            <span class="demo-card-tag cyan">Cash Flow Forecasting</span>
+            <span class="demo-card-tag cyan">FX Hedging</span>
+            <span class="demo-card-tag cyan">Liquidity Stress-Testing</span>
+          </div>
+          <a href="Final Website/liquidityos.html" target="_blank" class="demo-card-btn">
+            Launch Demo
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- 3. RegLens -->
+      <div class="demo-card">
+        <div class="demo-card-header">
+          <div class="demo-card-icon">&#128269;</div>
+          <h4>RegLens</h4>
+          <div class="demo-card-sub">Regulatory Intelligence Platform</div>
+        </div>
+        <div class="demo-card-body">
+          <p>Compliance monitoring with AI-driven divergence detection, automated regulator portal sync, and policy-to-regulation mapping. The 72-hour response time, demonstrated live.</p>
+          <div class="demo-card-tags">
+            <span class="demo-card-tag purple">Regulatory Change Mapper</span>
+            <span class="demo-card-tag purple">ESG Reporting</span>
+            <span class="demo-card-tag gold">Audit-Trail Architect</span>
+          </div>
+          <a href="Final Website/reglens-io.html" target="_blank" class="demo-card-btn">
+            Launch Demo
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- 4. Empower.io -->
+      <div class="demo-card">
+        <div class="demo-card-header">
+          <div class="demo-card-icon">&#128081;</div>
+          <h4>Empower.io</h4>
+          <div class="demo-card-sub">Advisor Command Center</div>
+        </div>
+        <div class="demo-card-body">
+          <p>Unified client intelligence, portfolio analytics, and real-time market alerts for wealth advisors. This is what the RM Co-pilot looks like when your advisor opens it at 7am before their first meeting.</p>
+          <div class="demo-card-tags">
+            <span class="demo-card-tag gold">RM Co-pilot</span>
+            <span class="demo-card-tag gold">Portfolio Rebalancer</span>
+          </div>
+          <a href="Final Website/empower-io.html" target="_blank" class="demo-card-btn">
+            Launch Demo
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- 5. Catalyst Outreach -->
+      <div class="demo-card">
+        <div class="demo-card-header">
+          <div class="demo-card-icon">&#127919;</div>
+          <h4>Catalyst Outreach</h4>
+          <div class="demo-card-sub">Client Scoring &amp; Outreach Engine</div>
+        </div>
+        <div class="demo-card-body">
+          <p>Multi-dimensional client scoring and personalized outreach orchestration. See how the UHNW Prospector identifies liquidity events and the Localized Marketing Agent generates hyper-targeted campaigns.</p>
+          <div class="demo-card-tags">
+            <span class="demo-card-tag gold">UHNW Prospector</span>
+            <span class="demo-card-tag rose">Localized Marketing</span>
+            <span class="demo-card-tag gold">Legacy &amp; Estate</span>
+          </div>
+          <a href="Final Website/catalyst-outreach.html" target="_blank" class="demo-card-btn">
+            Launch Demo
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- 6. Fraud Sentinel -->
+      <div class="demo-card">
+        <div class="demo-card-header">
+          <div class="demo-card-icon">&#128737;&#65039;</div>
+          <h4>Fraud Sentinel</h4>
+          <div class="demo-card-sub">Real-Time Transaction Monitoring</div>
+        </div>
+        <div class="demo-card-body">
+          <p>Real-time fraud detection with velocity checks, geographic jump detection, and high-value threshold rules. A companion to the Continuous Reconciliation Agent, catching anomalies as they happen.</p>
+          <div class="demo-card-tags">
+            <span class="demo-card-tag purple">Continuous Reconciliation</span>
+            <span class="demo-card-tag purple">Regulatory Compliance</span>
+          </div>
+          <a href="Final Website/fraud-sentinel-io.html" target="_blank" class="demo-card-btn">
+            Launch Demo
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- 7. Equilibrium AI -->
+      <div class="demo-card">
+        <div class="demo-card-header">
+          <div class="demo-card-icon">&#9878;&#65039;</div>
+          <h4>Equilibrium AI</h4>
+          <div class="demo-card-sub">RM Assignment Orchestrator</div>
+        </div>
+        <div class="demo-card-body">
+          <p>Emergency relationship manager reassignment with compliance-aware routing and retention optimization. See the Frontline Performance Coach and Audit-Trail Architect working in concert.</p>
+          <div class="demo-card-tags">
+            <span class="demo-card-tag gold">RM Co-pilot</span>
+            <span class="demo-card-tag rose">Frontline Coach</span>
+            <span class="demo-card-tag purple">Audit-Trail</span>
+          </div>
+          <a href="Final Website/equilibrium-ai.html" target="_blank" class="demo-card-btn">
+            Launch Demo
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- 8. Coming Soon -->
+      <div class="demo-card-last">
+        <div style="font-size: 40px; margin-bottom: 16px; opacity: 0.5;">&#128640;</div>
+        <h4>13 More Agents in Development</h4>
+        <p>The remaining agents are being built using the same agents.md archetype approach. As a founding partner, you&rsquo;ll have early access to every new agent as it reaches production readiness.</p>
+      </div>
+
+    </div>
+
+    <!-- Coverage Summary -->
+    <div style="max-width: 900px; margin: 56px auto 0; text-align: center;">
+      <div style="display: inline-flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-bottom: 20px;">
+        <div style="padding: 8px 20px; border-radius: 10px; background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2);">
+          <span style="font-size: 24px; font-weight: 800; color: var(--accent-bright);">7</span>
+          <span style="font-size: 12px; color: rgba(255,255,255,0.4); margin-left: 6px;">Live Demos</span>
+        </div>
+        <div style="padding: 8px 20px; border-radius: 10px; background: rgba(6,182,212,0.08); border: 1px solid rgba(6,182,212,0.2);">
+          <span style="font-size: 24px; font-weight: 800; color: var(--cyan);">4</span>
+          <span style="font-size: 12px; color: rgba(255,255,255,0.4); margin-left: 6px;">of 5 Value Chains Covered</span>
+        </div>
+        <div style="padding: 8px 20px; border-radius: 10px; background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.2);">
+          <span style="font-size: 24px; font-weight: 800; color: #a78bfa;">14</span>
+          <span style="font-size: 12px; color: rgba(255,255,255,0.4); margin-left: 6px;">of 20 Agents Represented</span>
+        </div>
+      </div>
+      <p style="font-size: 14px; color: rgba(255,255,255,0.4); max-width: 600px; margin: 0 auto; line-height: 1.7;">These prototypes demonstrate agent capabilities across Credit, Treasury, Compliance, Branch, and Wealth. Each demo is a self-contained interactive application&mdash;open them, explore, and see the future of autonomous banking operations.</p>
+    </div>
+
+    <div class="quote-block-dark" style="margin-top: 48px;">
+      <p>&ldquo;Slides describe the vision. Demos prove it&rsquo;s real. Every application you just saw was built using the same agents.md archetype approach and five-person team model we&rsquo;re proposing for your institution. The question isn&rsquo;t whether we <em>can</em> build these agents. It&rsquo;s which ones we build <em>first</em>.&rdquo;</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ CONTACT MODAL ═══════════════════ -->
+<div id="contact-modal" class="modal-overlay" onclick="if(event.target===this) this.classList.remove('active');">
+  <div class="modal-container">
+    <button class="modal-close" onclick="document.getElementById('contact-modal').classList.remove('active');">&times;</button>
+    <div class="modal-header">
+      <div style="font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--accent); font-weight: 700; margin-bottom: 8px;">Founding Partner Application</div>
+      <h3 style="font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 600; color: var(--primary); margin-bottom: 6px;">Start the Conversation</h3>
+      <p style="font-size: 14px; color: var(--text-light); line-height: 1.6;">We&rsquo;re selecting 3 founding partners. Complete this form and our team will reach out within 48 hours to schedule an executive briefing.</p>
+    </div>
+    <form id="contact-form" class="modal-form" onsubmit="handleSubmit(event)">
+      <div class="form-row">
+        <div class="form-group">
+          <label>First Name <span class="required">*</span></label>
+          <input type="text" name="firstName" required placeholder="e.g. Sarah">
+        </div>
+        <div class="form-group">
+          <label>Last Name <span class="required">*</span></label>
+          <input type="text" name="lastName" required placeholder="e.g. Chen">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Title / Role <span class="required">*</span></label>
+          <input type="text" name="title" required placeholder="e.g. Chief Technology Officer">
+        </div>
+        <div class="form-group">
+          <label>Institution <span class="required">*</span></label>
+          <input type="text" name="institution" required placeholder="e.g. First National Bank">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Work Email <span class="required">*</span></label>
+          <input type="email" name="email" required placeholder="sarah.chen@firstnational.com">
+        </div>
+        <div class="form-group">
+          <label>Phone</label>
+          <input type="tel" name="phone" placeholder="+1 (555) 000-0000">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Institution Asset Size <span class="required">*</span></label>
+        <select name="assetSize" required>
+          <option value="" disabled selected>Select range</option>
+          <option value="10-50B">$10B &ndash; $50B</option>
+          <option value="50-100B">$50B &ndash; $100B</option>
+          <option value="100-250B">$100B &ndash; $250B</option>
+          <option value="250-500B">$250B &ndash; $500B</option>
+          <option value="500B+">$500B+</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Which agent categories interest you most?</label>
+        <div class="checkbox-group">
+          <label class="checkbox-label"><input type="checkbox" name="interest" value="credit"> Credit Risk &amp; Mortgage</label>
+          <label class="checkbox-label"><input type="checkbox" name="interest" value="treasury"> Treasury &amp; Liquidity</label>
+          <label class="checkbox-label"><input type="checkbox" name="interest" value="compliance"> Ops, Audit &amp; Compliance</label>
+          <label class="checkbox-label"><input type="checkbox" name="interest" value="branch"> Branch &amp; Frontline</label>
+          <label class="checkbox-label"><input type="checkbox" name="interest" value="wealth"> Wealth &amp; Advisory</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Anything else you&rsquo;d like us to know?</label>
+        <textarea name="message" rows="3" placeholder="Current AI initiatives, specific pain points, timeline expectations..."></textarea>
+      </div>
+      <button type="submit" class="form-submit">
+        Submit Application
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width:18px; height:18px; margin-left:8px;"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+      </button>
+      <p style="font-size: 11px; color: var(--text-light); text-align: center; margin-top: 12px;">Your information is confidential and will only be used for this engagement.</p>
+    </form>
+    <div id="form-success" class="form-success" style="display: none;">
+      <div style="font-size: 48px; margin-bottom: 16px;">&#9989;</div>
+      <h3 style="font-family: 'Playfair Display', serif; font-size: 24px; color: var(--primary); margin-bottom: 8px;">Application Received</h3>
+      <p style="font-size: 15px; color: var(--text-light); line-height: 1.7; margin-bottom: 20px;">Thank you for your interest in the Ethias AI Founding Partner program. Our team will reach out within 48 hours to schedule your executive briefing.</p>
+      <button class="form-submit" style="background: var(--primary);" onclick="document.getElementById('contact-modal').classList.remove('active'); document.getElementById('contact-form').style.display='block'; document.getElementById('form-success').style.display='none'; document.getElementById('contact-form').reset();">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ FOOTER ═══════════════════ -->
+<footer class="footer">
+  <div class="footer-left">
+    <div class="footer-logo">ETHIAS AI</div>
+    Autonomous Intelligence for Regulated Finance &bull; Confidential Q2 2026
+  </div>
+  <div style="font-size: 11px; color: rgba(255,255,255,0.2);">$35B US Banking AI Market &bull; 20 Agents &bull; 5 Value Chains &bull; One Governance Backbone</div>
+</footer>
+
+<script>
+function showCategory(cat) {
+  document.querySelectorAll('.agent-category').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.agent-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('cat-' + cat).classList.add('active');
+  event.currentTarget.classList.add('active');
+}
+
+function handleSubmit(e) {
+  e.preventDefault();
+  var form = document.getElementById('contact-form');
+  var success = document.getElementById('form-success');
+  form.style.display = 'none';
+  document.querySelector('.modal-header').style.display = 'none';
+  success.style.display = 'block';
+}
+
+// Close modal on Escape key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    var modal = document.getElementById('contact-modal');
+    if (modal.classList.contains('active')) {
+      modal.classList.remove('active');
+      // Reset form state after close
+      setTimeout(function() {
+        document.getElementById('contact-form').style.display = 'block';
+        document.querySelector('.modal-header').style.display = 'block';
+        document.getElementById('form-success').style.display = 'none';
+        document.getElementById('contact-form').reset();
+      }, 300);
+    }
+  }
+});
+</script>
+</body>
+</html>

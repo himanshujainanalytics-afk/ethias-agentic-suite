@@ -1,0 +1,2908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Five-Person Bank | A Radical Vision for AI-Native Technology</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
+
+  :root {
+    --primary: #0a0a1a;
+    --primary-mid: #141428;
+    --accent: #D4A574;
+    --accent-bright: #e8b888;
+    --accent-glow: rgba(212, 165, 116, 0.12);
+    --text: #2c2c3a;
+    --text-light: #6b6b7b;
+    --bg: #fafaf8;
+    --white: #ffffff;
+    --red: #c0392b;
+    --red-light: #fdf0ee;
+    --green: #0d9b5c;
+    --green-dark: #0a7a48;
+    --green-light: #edf7f0;
+    --gradient-hero: linear-gradient(160deg, #0a0a1a 0%, #0f1a3a 40%, #1a0a2e 100%);
+    --gradient-accent: linear-gradient(135deg, #D4A574, #c4955a);
+    --gradient-green: linear-gradient(135deg, #0d9b5c, #0dba6e);
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 24px rgba(0,0,0,0.08);
+    --shadow-lg: 0 16px 48px rgba(0,0,0,0.12);
+    --shadow-glow: 0 0 60px rgba(212, 165, 116, 0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    color: var(--text); background: var(--bg);
+    line-height: 1.7; font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ─── NAV ─── */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(10,10,26,0.92); backdrop-filter: blur(24px);
+    padding: 14px 48px; display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid rgba(212,165,116,0.15);
+  }
+  .nav-brand { display: flex; align-items: center; gap: 16px; }
+  .nav-logo { font-weight: 800; font-size: 13px; color: var(--accent); letter-spacing: 4px; text-transform: uppercase; }
+  .nav-divider { width: 1px; height: 16px; background: rgba(255,255,255,0.15); }
+  .nav-badge { font-size: 11px; color: rgba(255,255,255,0.4); letter-spacing: 2px; text-transform: uppercase; }
+  .nav-links a { color: rgba(255,255,255,0.5); text-decoration: none; font-size: 12px; margin-left: 28px; letter-spacing: 0.5px; transition: color 0.3s; font-weight: 500; }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* ─── HERO ─── */
+  .hero {
+    background: var(--gradient-hero);
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+    padding: 120px 48px 80px; text-align: center;
+  }
+  .hero-orb {
+    position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.4;
+  }
+  .hero-orb-1 { width: 600px; height: 600px; top: -200px; right: -100px; background: radial-gradient(circle, rgba(212,165,116,0.2), transparent 70%); }
+  .hero-orb-2 { width: 500px; height: 500px; bottom: -150px; left: -100px; background: radial-gradient(circle, rgba(13,155,92,0.12), transparent 70%); }
+  .hero-orb-3 { width: 300px; height: 300px; top: 40%; left: 50%; transform: translate(-50%,-50%); background: radial-gradient(circle, rgba(100,100,255,0.08), transparent 70%); }
+  .hero-content { position: relative; z-index: 2; max-width: 950px; }
+  .hero-kicker {
+    display: inline-block;
+    background: rgba(212,165,116,0.1); border: 1px solid rgba(212,165,116,0.25);
+    padding: 8px 24px; border-radius: 40px;
+    font-size: 12px; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--accent); font-weight: 600; margin-bottom: 36px;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 72px; font-weight: 700; line-height: 1.1;
+    color: var(--white); margin-bottom: 32px;
+  }
+  .hero h1 em {
+    font-style: italic;
+    background: var(--gradient-accent); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .hero-number {
+    font-family: 'Inter', sans-serif; font-style: normal;
+    font-size: 96px; font-weight: 900; display: block;
+    background: var(--gradient-accent); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    line-height: 1.1; margin: 8px 0;
+  }
+  .hero-sub {
+    font-size: 20px; color: rgba(255,255,255,0.55); max-width: 680px;
+    margin: 0 auto 56px; line-height: 1.8; font-weight: 300;
+  }
+  .hero-equation {
+    display: flex; justify-content: center; align-items: center; gap: 24px;
+    flex-wrap: wrap;
+  }
+  .hero-eq-card {
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px; padding: 28px 24px; min-width: 150px;
+    text-align: center; backdrop-filter: blur(12px);
+  }
+  .hero-eq-icon { font-size: 32px; margin-bottom: 10px; }
+  .hero-eq-label { font-size: 11px; color: rgba(255,255,255,0.4); letter-spacing: 2px; text-transform: uppercase; line-height: 1.5; }
+  .hero-eq-value { font-size: 20px; font-weight: 700; color: var(--white); margin-bottom: 4px; }
+  .hero-eq-plus { font-size: 32px; color: rgba(255,255,255,0.2); font-weight: 300; }
+  .hero-eq-equals { font-size: 32px; color: var(--accent); font-weight: 700; }
+  .hero-eq-result {
+    background: rgba(212,165,116,0.08); border: 1px solid rgba(212,165,116,0.3);
+    border-radius: 16px; padding: 28px 32px; text-align: center;
+  }
+  .hero-eq-result .hero-eq-value { color: var(--accent); font-size: 24px; }
+
+  .hero-scroll { position: absolute; bottom: 32px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.2); font-size: 11px; letter-spacing: 4px; text-transform: uppercase; animation: breathe 3s infinite; }
+  @keyframes breathe { 0%,100%{opacity:0.2} 50%{opacity:0.6} }
+
+  /* ─── SHARED ─── */
+  .s { padding: 100px 48px; max-width: 1200px; margin: 0 auto; }
+  .s-full { padding: 100px 48px; }
+  .s-dark { background: var(--primary); color: var(--white); }
+  .s-mid { background: var(--primary-mid); color: var(--white); }
+  .s-accent { background: var(--accent-glow); }
+  .s-white { background: var(--white); }
+  .s-header { text-align: center; margin-bottom: 64px; }
+  .s-eye { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; font-weight: 700; }
+  .s-title { font-family: 'Playfair Display', serif; font-size: 44px; font-weight: 600; line-height: 1.2; margin-bottom: 18px; }
+  .s-dark .s-title, .s-mid .s-title { color: var(--white); }
+  .s-sub { font-size: 18px; color: var(--text-light); max-width: 640px; margin: 0 auto; line-height: 1.8; font-weight: 300; }
+  .s-dark .s-sub, .s-mid .s-sub { color: rgba(255,255,255,0.5); }
+
+  /* ─── PROVOCATION ─── */
+  .provocation {
+    max-width: 900px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 48px;
+    align-items: start;
+  }
+  .prov-text { font-size: 17px; line-height: 1.9; }
+  .prov-text p { margin-bottom: 18px; }
+  .prov-text strong { color: var(--primary); }
+  .prov-callout {
+    background: var(--white); border-radius: 20px;
+    padding: 36px; box-shadow: var(--shadow-lg);
+    border: 1px solid rgba(0,0,0,0.04);
+    position: sticky; top: 100px;
+  }
+  .prov-callout-num { font-size: 64px; font-weight: 900; color: var(--red); line-height: 1; margin-bottom: 8px; }
+  .prov-callout-label { font-size: 14px; color: var(--text-light); margin-bottom: 20px; }
+  .prov-callout-list { list-style: none; }
+  .prov-callout-list li {
+    font-size: 14px; color: var(--text-light); padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between;
+  }
+  .prov-callout-list li:last-child { border-bottom: none; }
+  .prov-callout-list li span { font-weight: 700; color: var(--red); }
+
+  /* ─── OLD ORG PYRAMID ─── */
+  .pyramid-container { max-width: 800px; margin: 0 auto; }
+  .pyramid-row {
+    display: flex; justify-content: center; margin-bottom: 4px;
+  }
+  .pyramid-block {
+    background: linear-gradient(135deg, #8b0000, #c0392b);
+    color: var(--white); border-radius: 8px;
+    padding: 14px 20px; text-align: center;
+    margin: 2px; font-size: 12px; font-weight: 600;
+    letter-spacing: 0.5px; min-width: 120px;
+    box-shadow: 0 2px 8px rgba(139,0,0,0.2);
+  }
+  .pyramid-block small { display: block; font-weight: 400; opacity: 0.7; font-size: 10px; margin-top: 2px; }
+  .pyramid-total {
+    text-align: center; margin-top: 24px;
+    font-size: 14px; color: var(--red); font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+  }
+  .pyramid-total span { font-size: 48px; display: block; margin-top: 4px; font-weight: 900; }
+
+  /* ─── OLD SDLC WATERFALL ─── */
+  .old-sdlc { max-width: 1000px; margin: 48px auto 0; }
+  .old-sdlc-row { display: flex; align-items: center; margin-bottom: 5px; }
+  .old-sdlc-label { width: 130px; font-size: 12px; font-weight: 600; color: var(--text); text-align: right; padding-right: 16px; flex-shrink: 0; }
+  .old-sdlc-track { flex: 1; height: 36px; background: #f5f5f3; border-radius: 6px; position: relative; overflow: hidden; }
+  .old-sdlc-bar {
+    position: absolute; height: 100%; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: var(--white);
+  }
+  .old-sdlc-weeks { display: flex; padding-left: 146px; margin-top: 8px; }
+  .old-sdlc-weeks span { flex: 1; text-align: center; font-size: 10px; color: var(--text-light); }
+  .old-sdlc-total {
+    margin-top: 20px; background: var(--red-light); border: 2px solid var(--red);
+    border-radius: 12px; padding: 20px 32px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .old-sdlc-total-label { font-size: 13px; font-weight: 600; color: var(--red); letter-spacing: 2px; text-transform: uppercase; }
+  .old-sdlc-total-value { font-size: 36px; font-weight: 900; color: var(--red); }
+  .old-sdlc-total-sub { font-size: 13px; color: var(--text-light); }
+
+  /* ─── BANK.MD ─── */
+  .bankmd-container { max-width: 1000px; margin: 0 auto; }
+  .bankmd-visual {
+    background: var(--primary); border-radius: 20px; overflow: hidden;
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+  }
+  .bankmd-titlebar {
+    background: rgba(255,255,255,0.06);
+    padding: 12px 20px; display: flex; align-items: center; gap: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .bankmd-dot { width: 12px; height: 12px; border-radius: 50%; }
+  .bankmd-dot-r { background: #ff5f57; }
+  .bankmd-dot-y { background: #ffbd2e; }
+  .bankmd-dot-g { background: #28ca41; }
+  .bankmd-filename { font-size: 12px; color: rgba(255,255,255,0.4); margin-left: 12px; font-family: 'SF Mono', 'Fira Code', monospace; }
+  .bankmd-body { padding: 32px; font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace; font-size: 13px; line-height: 2; color: rgba(255,255,255,0.7); overflow-x: auto; }
+  .bankmd-body .c { color: rgba(255,255,255,0.25); }
+  .bankmd-body .h1 { color: var(--accent); font-weight: 700; font-size: 15px; }
+  .bankmd-body .h2 { color: var(--accent-bright); font-weight: 600; }
+  .bankmd-body .h3 { color: rgba(212,165,116,0.7); font-weight: 600; }
+  .bankmd-body .k { color: #7ec8e3; }
+  .bankmd-body .v { color: #98c379; }
+  .bankmd-body .warn { color: #e5c07b; }
+  .bankmd-body .rule { color: #c678dd; }
+
+  .bankmd-layers {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 16px; margin-top: 40px;
+  }
+  .bankmd-layer {
+    background: var(--white); border-radius: 16px;
+    padding: 28px 24px; box-shadow: var(--shadow-sm);
+    border-top: 4px solid var(--accent);
+    text-align: center;
+  }
+  .bankmd-layer-icon { font-size: 28px; margin-bottom: 12px; }
+  .bankmd-layer-title { font-size: 13px; font-weight: 700; color: var(--primary); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+  .bankmd-layer-desc { font-size: 13px; color: var(--text-light); line-height: 1.6; }
+
+  /* ─── THE FOUR ─── */
+  .four-container { max-width: 1000px; margin: 0 auto; }
+  .four-center {
+    width: 180px; height: 180px; border-radius: 50%;
+    background: var(--gradient-hero);
+    border: 3px solid var(--accent);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    margin: 0 auto 48px;
+    box-shadow: var(--shadow-glow);
+    position: relative;
+  }
+  .four-center-label { font-size: 10px; color: rgba(255,255,255,0.4); letter-spacing: 3px; text-transform: uppercase; }
+  .four-center-file { font-family: monospace; font-size: 18px; color: var(--accent); font-weight: 700; margin-top: 4px; }
+  .four-center-sub { font-size: 10px; color: rgba(255,255,255,0.3); margin-top: 4px; }
+  .four-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+  .four-card {
+    background: var(--white); border-radius: 20px;
+    overflow: hidden; box-shadow: var(--shadow-md);
+    transition: transform 0.3s, box-shadow 0.3s;
+    border: 1px solid rgba(0,0,0,0.04);
+  }
+  .four-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); }
+  .four-card-header {
+    padding: 24px 24px 20px;
+    color: var(--white);
+    background: var(--gradient-hero);
+    position: relative;
+    overflow: hidden;
+  }
+  .four-card-header::after {
+    content: ''; position: absolute; top: -20px; right: -20px;
+    width: 80px; height: 80px; border-radius: 50%;
+    background: rgba(212,165,116,0.12);
+  }
+  .four-card-number {
+    font-size: 48px; font-weight: 900; line-height: 1;
+    background: var(--gradient-accent); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    margin-bottom: 8px;
+  }
+  .four-card-role { font-size: 15px; font-weight: 700; letter-spacing: 0.5px; }
+  .four-card-body { padding: 24px; }
+  .four-card-mission { font-size: 13px; color: var(--text-light); line-height: 1.7; margin-bottom: 16px; }
+  .four-card-owns { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); font-weight: 700; margin-bottom: 10px; }
+  .four-card-list { list-style: none; }
+  .four-card-list li {
+    font-size: 13px; color: var(--text); padding: 6px 0;
+    padding-left: 18px; position: relative; line-height: 1.5;
+  }
+  .four-card-list li::before {
+    content: ''; position: absolute; left: 0; top: 12px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--green);
+  }
+  .four-card-claude {
+    margin-top: 16px; padding: 14px 16px;
+    background: var(--accent-glow); border-radius: 10px;
+    font-size: 11px; color: var(--text-light);
+    line-height: 1.6;
+  }
+  .four-card-claude strong { color: var(--accent); }
+
+  /* ─── VERSUS STRIP ─── */
+  .vs-strip {
+    max-width: 900px; margin: 48px auto 0;
+    display: grid; grid-template-columns: 1fr auto 1fr;
+    gap: 0; align-items: center;
+  }
+  .vs-side {
+    padding: 36px; border-radius: 16px; text-align: center;
+  }
+  .vs-old { background: var(--red-light); border: 2px solid var(--red); }
+  .vs-new { background: var(--green-light); border: 2px solid var(--green); }
+  .vs-number { font-size: 56px; font-weight: 900; line-height: 1; margin-bottom: 4px; }
+  .vs-old .vs-number { color: var(--red); }
+  .vs-new .vs-number { color: var(--green); }
+  .vs-label { font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color: var(--text-light); }
+  .vs-badge { font-size: 10px; font-weight: 700; color: var(--white); padding: 4px 12px; border-radius: 20px; display: inline-block; margin-top: 8px; }
+  .vs-old .vs-badge { background: var(--red); }
+  .vs-new .vs-badge { background: var(--green); }
+  .vs-divider {
+    width: 80px; text-align: center; font-size: 11px;
+    color: var(--text-light); letter-spacing: 2px; text-transform: uppercase;
+    font-weight: 700;
+  }
+  .vs-divider span { display: block; font-size: 28px; margin-bottom: 4px; }
+
+  /* ─── NEW SDLC ─── */
+  .new-sdlc-container { max-width: 1000px; margin: 0 auto; }
+  .new-sdlc-flow {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px;
+  }
+  .new-sdlc-step {
+    background: var(--white); border-radius: 16px;
+    padding: 24px 18px; text-align: center;
+    box-shadow: var(--shadow-sm); border: 2px solid var(--green-light);
+    position: relative;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .new-sdlc-step:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+  .new-sdlc-step-num {
+    position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+    background: var(--gradient-green); color: var(--white);
+    width: 24px; height: 24px; border-radius: 50%;
+    font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center;
+  }
+  .new-sdlc-step-icon { font-size: 28px; margin: 8px 0 10px; }
+  .new-sdlc-step-name { font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--primary); margin-bottom: 6px; }
+  .new-sdlc-step-time { font-size: 24px; font-weight: 800; color: var(--green); margin-bottom: 2px; }
+  .new-sdlc-step-unit { font-size: 10px; color: var(--text-light); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+  .new-sdlc-step-who { font-size: 11px; color: var(--accent); font-weight: 600; margin-bottom: 6px; }
+  .new-sdlc-step-desc { font-size: 11px; color: var(--text-light); line-height: 1.5; }
+  .new-sdlc-step-badge {
+    display: inline-block; margin-top: 10px;
+    font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 20px;
+    background: var(--green-light); color: var(--green);
+  }
+  .new-sdlc-arrow {
+    display: flex; align-items: center; justify-content: center;
+    color: var(--green); font-size: 18px; opacity: 0.4;
+  }
+  .new-sdlc-total {
+    margin-top: 28px; background: var(--green-light); border: 2px solid var(--green);
+    border-radius: 14px; padding: 24px 36px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .new-sdlc-total-label { font-size: 13px; font-weight: 700; color: var(--green); letter-spacing: 2px; text-transform: uppercase; }
+  .new-sdlc-total-value { font-size: 40px; font-weight: 900; color: var(--green); }
+  .new-sdlc-total-sub { font-size: 13px; color: var(--text-light); }
+  .new-sdlc-note {
+    text-align: center; margin-top: 20px;
+    font-size: 14px; color: var(--text-light); font-style: italic;
+  }
+
+  /* ─── CONTROL FRAMEWORK ─── */
+  .ctrl-container { max-width: 1000px; margin: 0 auto; }
+  .ctrl-visual {
+    display: grid; grid-template-columns: 1fr 2px 1fr;
+    gap: 0; background: var(--white); border-radius: 20px;
+    box-shadow: var(--shadow-lg); overflow: hidden;
+  }
+  .ctrl-old, .ctrl-new { padding: 40px; }
+  .ctrl-divider-line { background: #eee; }
+  .ctrl-heading {
+    font-size: 12px; letter-spacing: 3px; text-transform: uppercase;
+    font-weight: 700; margin-bottom: 24px;
+  }
+  .ctrl-old .ctrl-heading { color: var(--red); }
+  .ctrl-new .ctrl-heading { color: var(--green); }
+  .ctrl-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 0; border-bottom: 1px solid #f5f5f5;
+    font-size: 14px;
+  }
+  .ctrl-row:last-child { border-bottom: none; }
+  .ctrl-row-label { color: var(--text); font-weight: 500; }
+  .ctrl-row-value { font-weight: 700; }
+  .ctrl-old .ctrl-row-value { color: var(--red); }
+  .ctrl-new .ctrl-row-value { color: var(--green); }
+
+  .ctrl-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 40px; }
+  .ctrl-card {
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 16px; padding: 28px; backdrop-filter: blur(8px);
+  }
+  .ctrl-card-icon { font-size: 28px; margin-bottom: 14px; }
+  .ctrl-card h4 { font-size: 15px; color: var(--white); font-weight: 700; margin-bottom: 8px; }
+  .ctrl-card p { font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.7; }
+  .ctrl-card-badge {
+    display: inline-block; margin-top: 12px;
+    font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+    padding: 4px 12px; border-radius: 20px;
+    background: rgba(13,155,92,0.15); color: var(--green);
+  }
+
+  /* ─── ROI ─── */
+  .roi-hero-cards {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 20px; max-width: 1000px; margin: 0 auto 56px;
+  }
+  .roi-hero-card {
+    text-align: center; padding: 32px 20px;
+    border-radius: 16px; background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .roi-hero-card-value {
+    font-size: 44px; font-weight: 900;
+    background: var(--gradient-accent); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    margin-bottom: 6px; line-height: 1.2;
+  }
+  .roi-hero-card-label { font-size: 12px; color: rgba(255,255,255,0.4); letter-spacing: 1px; text-transform: uppercase; line-height: 1.5; }
+
+  .roi-bars { max-width: 800px; margin: 0 auto; }
+  .roi-bar-group { margin-bottom: 32px; }
+  .roi-bar-group-label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.3); margin-bottom: 10px; }
+  .roi-bar-row { display: flex; align-items: center; margin-bottom: 8px; }
+  .roi-bar-label { width: 100px; font-size: 12px; color: rgba(255,255,255,0.5); font-weight: 500; text-align: right; padding-right: 16px; flex-shrink: 0; }
+  .roi-bar-track { flex: 1; height: 32px; background: rgba(255,255,255,0.04); border-radius: 6px; overflow: hidden; }
+  .roi-bar-fill { height: 100%; border-radius: 6px; display: flex; align-items: center; justify-content: flex-end; padding-right: 12px; font-size: 12px; font-weight: 700; color: var(--white); }
+  .roi-bar-fill.old { background: rgba(192,57,43,0.5); }
+  .roi-bar-fill.new { background: var(--gradient-green); }
+
+  /* ─── ROADMAP ─── */
+  .rm-container { max-width: 900px; margin: 0 auto; }
+  .rm-phase { display: flex; gap: 28px; margin-bottom: 36px; position: relative; }
+  .rm-phase::before { content: ''; position: absolute; left: 27px; top: 60px; bottom: -36px; width: 2px; background: #e8e8e8; }
+  .rm-phase:last-child::before { display: none; }
+  .rm-marker {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: var(--gradient-accent); display: flex; align-items: center; justify-content: center;
+    font-size: 20px; font-weight: 800; color: var(--white); flex-shrink: 0;
+    box-shadow: 0 4px 16px rgba(212,165,116,0.3);
+  }
+  .rm-content {
+    background: var(--white); border-radius: 14px; padding: 24px 28px;
+    box-shadow: var(--shadow-sm); border: 1px solid rgba(0,0,0,0.04); flex: 1;
+  }
+  .rm-time { font-size: 11px; font-weight: 700; color: var(--accent); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+  .rm-content h4 { font-size: 17px; font-weight: 700; color: var(--primary); margin-bottom: 8px; }
+  .rm-content p { font-size: 14px; color: var(--text-light); line-height: 1.7; }
+  .rm-items { list-style: none; margin-top: 10px; }
+  .rm-items li { font-size: 13px; color: var(--text-light); padding: 4px 0 4px 18px; position: relative; }
+  .rm-items li::before { content: ''; position: absolute; left: 0; top: 11px; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+
+  /* ─── CTA ─── */
+  .cta {
+    background: var(--gradient-hero); padding: 100px 48px;
+    text-align: center; position: relative; overflow: hidden;
+  }
+  .cta::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(212,165,116,0.08), transparent 70%); }
+  .cta-inner { position: relative; z-index: 2; max-width: 700px; margin: 0 auto; }
+  .cta-inner h2 { font-family: 'Playfair Display', serif; font-size: 44px; font-weight: 600; color: var(--white); margin-bottom: 20px; line-height: 1.25; }
+  .cta-inner p { font-size: 18px; color: rgba(255,255,255,0.5); margin-bottom: 40px; line-height: 1.8; }
+  .cta-btn {
+    display: inline-block; background: var(--gradient-accent); color: var(--white);
+    padding: 18px 48px; border-radius: 60px; font-size: 14px; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase; text-decoration: none;
+    box-shadow: 0 8px 32px rgba(212,165,116,0.3); transition: transform 0.3s;
+  }
+  .cta-btn:hover { transform: translateY(-2px); }
+  .cta-meta { display: flex; justify-content: center; gap: 48px; margin-top: 48px; }
+  .cta-meta-item { text-align: center; }
+  .cta-meta-item span { display: block; font-size: 12px; color: rgba(255,255,255,0.3); margin-bottom: 2px; }
+  .cta-meta-item strong { font-size: 14px; color: var(--white); font-weight: 600; }
+
+  /* ─── FOOTER ─── */
+  .footer {
+    background: var(--primary); padding: 32px 48px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-top: 1px solid rgba(255,255,255,0.04);
+  }
+  .footer-left { font-size: 11px; color: rgba(255,255,255,0.25); }
+  .footer-logo { font-weight: 800; color: var(--accent); letter-spacing: 3px; font-size: 12px; margin-bottom: 2px; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    .hero h1 { font-size: 40px; }
+    .hero-number { font-size: 56px; }
+    .hero-equation { flex-direction: column; }
+    .provocation { grid-template-columns: 1fr; }
+    .four-grid { grid-template-columns: 1fr 1fr; }
+    .bankmd-layers { grid-template-columns: 1fr 1fr; }
+    .new-sdlc-flow { grid-template-columns: 1fr; }
+    .roi-hero-cards { grid-template-columns: 1fr 1fr; }
+    .ctrl-visual { grid-template-columns: 1fr; }
+    .ctrl-divider-line { display: none; }
+    .ctrl-cards { grid-template-columns: 1fr; }
+    .vs-strip { grid-template-columns: 1fr; }
+    .vs-divider { padding: 16px 0; }
+    .s, .s-full { padding: 60px 20px; }
+  }
+
+  /* ─── PRINT ─── */
+  @media print {
+    .nav { display: none; }
+    .hero { min-height: auto; padding: 48px; }
+    body { font-size: 11px; }
+  }
+
+  /* ─── PIPELINE CONNECTOR ─── */
+  .pipeline-connector {
+    max-width: 1000px; margin: 40px auto 0;
+    text-align: center; padding: 24px;
+    border: 2px dashed rgba(212,165,116,0.3);
+    border-radius: 12px; background: rgba(212,165,116,0.04);
+  }
+  .pipeline-connector p { font-size: 14px; color: var(--text-light); }
+  .pipeline-connector strong { color: var(--accent); }
+
+  /* ─── EMBEDDED TESTING VISUAL ─── */
+  .testing-visual {
+    max-width: 900px; margin: 48px auto 0;
+    background: var(--white); border-radius: 20px;
+    overflow: hidden; box-shadow: var(--shadow-lg);
+  }
+  .testing-header {
+    padding: 24px 32px; background: var(--primary); color: var(--white);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .testing-header h4 { font-size: 15px; font-weight: 700; }
+  .testing-header span { font-size: 11px; color: var(--accent); letter-spacing: 1px; text-transform: uppercase; font-weight: 600; }
+  .testing-body { padding: 32px; }
+  .testing-row {
+    display: flex; align-items: center; padding: 16px 0;
+    border-bottom: 1px solid #f5f5f5;
+  }
+  .testing-row:last-child { border-bottom: none; }
+  .testing-icon { font-size: 20px; width: 40px; flex-shrink: 0; }
+  .testing-content { flex: 1; }
+  .testing-content h5 { font-size: 14px; font-weight: 700; color: var(--primary); margin-bottom: 2px; }
+  .testing-content p { font-size: 12px; color: var(--text-light); }
+  .testing-status {
+    font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+    padding: 4px 12px; border-radius: 20px;
+    background: var(--green-light); color: var(--green);
+  }
+  .testing-status.eliminated {
+    background: var(--accent-glow); color: var(--accent);
+    text-decoration: line-through;
+  }
+
+  /* ═══════════════════ DEMO STYLES ═══════════════════ */
+
+  /* ─── DEMO TIMELINE ─── */
+  .demo-timeline { max-width: 1100px; margin: 0 auto; position: relative; }
+  .demo-timeline::before {
+    content: ''; position: absolute; left: 50%; top: 0; bottom: 0;
+    width: 3px; background: linear-gradient(180deg, var(--accent), var(--green), var(--accent));
+    transform: translateX(-50%); border-radius: 3px;
+    opacity: 0.3;
+  }
+  .demo-act {
+    position: relative; margin-bottom: 0;
+    padding: 32px 0;
+  }
+  .demo-act-badge {
+    position: absolute; left: 50%; transform: translateX(-50%);
+    top: 0; z-index: 3;
+    background: var(--gradient-accent); color: var(--white);
+    font-size: 11px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase;
+    padding: 8px 24px; border-radius: 30px;
+    box-shadow: 0 4px 20px rgba(212,165,116,0.35);
+    white-space: nowrap;
+  }
+  .demo-step {
+    display: grid; grid-template-columns: 1fr 60px 1fr;
+    align-items: start; gap: 0;
+    margin-bottom: 24px; position: relative;
+  }
+  .demo-step-left { text-align: right; padding-right: 32px; }
+  .demo-step-right { padding-left: 32px; }
+  .demo-step-center {
+    display: flex; align-items: center; justify-content: center;
+    position: relative; z-index: 2;
+  }
+  .demo-step-dot {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 800; color: var(--white);
+    box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+  }
+  .demo-step-dot.cpo { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+  .demo-step-dot.claude { background: var(--gradient-accent); }
+  .demo-step-dot.data { background: linear-gradient(135deg, #0ea5e9, #06b6d4); }
+  .demo-step-dot.eng { background: linear-gradient(135deg, #f59e0b, #d97706); }
+  .demo-step-dot.cco { background: linear-gradient(135deg, #0d9b5c, #059669); }
+  .demo-step-dot.ai { background: linear-gradient(135deg, #7c3aed, #a855f7); }
+  .demo-step-dot.team { background: linear-gradient(135deg, #ec4899, #f43f5e); }
+
+  .demo-who {
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    font-weight: 700; margin-bottom: 4px;
+  }
+  .demo-who.cpo { color: #6366f1; }
+  .demo-who.claude { color: var(--accent); }
+  .demo-who.data { color: #0ea5e9; }
+  .demo-who.eng { color: #f59e0b; }
+  .demo-who.cco { color: #0d9b5c; }
+  .demo-who.ai { color: #7c3aed; }
+  .demo-who.team { color: #ec4899; }
+
+  .demo-action {
+    font-size: 15px; font-weight: 700; color: var(--primary);
+    margin-bottom: 4px;
+  }
+  .demo-desc {
+    font-size: 13px; color: var(--text-light); line-height: 1.6;
+  }
+  .demo-time-badge {
+    display: inline-block; font-size: 10px; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 20px; margin-top: 6px;
+  }
+  .demo-time-badge.fast { background: var(--green-light); color: var(--green); }
+  .demo-time-badge.human { background: #eff4ff; color: #2563eb; }
+
+  /* ─── DEMO TERMINAL ─── */
+  .demo-terminal {
+    background: #0d1117; border-radius: 12px; overflow: hidden;
+    box-shadow: var(--shadow-lg); margin: 12px 0;
+    max-width: 100%;
+  }
+  .demo-terminal.wide {
+    grid-column: 1 / -1; max-width: 900px; margin: 16px auto;
+  }
+  .demo-term-bar {
+    background: #161b22; padding: 10px 16px;
+    display: flex; align-items: center; gap: 7px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .demo-term-dot { width: 11px; height: 11px; border-radius: 50%; }
+  .demo-term-dot.r { background: #ff5f57; }
+  .demo-term-dot.y { background: #ffbd2e; }
+  .demo-term-dot.g { background: #28ca41; }
+  .demo-term-title {
+    font-size: 11px; color: rgba(255,255,255,0.3);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    margin-left: 8px;
+  }
+  .demo-term-body {
+    padding: 18px 20px; font-family: 'SF Mono', 'Fira Code', 'Courier New', monospace;
+    font-size: 12.5px; line-height: 1.9; color: #c9d1d9;
+    overflow-x: auto; white-space: pre-wrap; word-break: break-word;
+  }
+  .demo-term-body .prompt { color: var(--accent); font-weight: 700; }
+  .demo-term-body .cmd { color: #f0f6fc; font-weight: 600; }
+  .demo-term-body .flag { color: #79c0ff; }
+  .demo-term-body .string { color: #a5d6ff; }
+  .demo-term-body .success { color: #3fb950; }
+  .demo-term-body .info { color: #8b949e; }
+  .demo-term-body .warn { color: #d29922; }
+  .demo-term-body .err { color: #f85149; }
+  .demo-term-body .file { color: #d2a8ff; }
+  .demo-term-body .url { color: #58a6ff; text-decoration: underline; }
+  .demo-term-body .highlight { color: var(--accent-bright); font-weight: 600; }
+  .demo-term-body .dim { color: #484f58; }
+  .demo-term-body .table-head { color: #58a6ff; font-weight: 700; }
+
+  /* ─── DEMO UI MOCKUP ─── */
+  .demo-ui-mockup {
+    background: var(--white); border-radius: 12px; overflow: hidden;
+    box-shadow: var(--shadow-lg); margin: 12px 0;
+    border: 1px solid #e5e7eb;
+  }
+  .demo-ui-bar {
+    background: #f9fafb; padding: 10px 16px;
+    display: flex; align-items: center; gap: 8px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .demo-ui-bar-dot { width: 10px; height: 10px; border-radius: 50%; background: #d1d5db; }
+  .demo-ui-bar-url {
+    flex: 1; background: var(--white); border: 1px solid #e5e7eb;
+    border-radius: 6px; padding: 4px 12px; font-size: 11px;
+    color: var(--text-light); font-family: 'SF Mono', monospace;
+  }
+  .demo-ui-content { padding: 0; }
+
+  /* ─── DEMO PHASE SEPARATOR ─── */
+  .demo-phase-sep {
+    text-align: center; padding: 48px 0 16px;
+    position: relative;
+  }
+  .demo-phase-sep-line {
+    display: inline-block; padding: 12px 32px;
+    background: var(--primary); color: var(--white);
+    border-radius: 40px; font-size: 13px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    box-shadow: var(--shadow-md);
+    position: relative; z-index: 2;
+  }
+  .demo-phase-sep-time {
+    display: block; font-size: 10px; font-weight: 500;
+    color: var(--accent); letter-spacing: 1px; margin-top: 4px;
+  }
+
+  /* ─── DEMO SCHEMA VISUAL ─── */
+  .demo-schema {
+    background: #1a1b26; border-radius: 12px; padding: 24px;
+    margin: 12px 0; color: #c0caf5;
+    font-family: 'SF Mono', monospace; font-size: 12px;
+    line-height: 1.8; overflow-x: auto;
+  }
+  .demo-schema .tname { color: #7aa2f7; font-weight: 700; }
+  .demo-schema .col { color: #9ece6a; }
+  .demo-schema .type { color: #bb9af7; }
+  .demo-schema .constraint { color: #f7768e; }
+  .demo-schema .fk { color: #e0af68; }
+  .demo-schema .comment { color: #565f89; }
+
+  /* ─── DEMO CRM WIREFRAME ─── */
+  .crm-wire { padding: 0; font-family: 'Inter', sans-serif; }
+  .crm-wire-nav {
+    background: #1e293b; padding: 12px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .crm-wire-logo { color: var(--white); font-size: 14px; font-weight: 700; }
+  .crm-wire-nav-links { display: flex; gap: 16px; }
+  .crm-wire-nav-links span {
+    font-size: 11px; color: rgba(255,255,255,0.5); cursor: pointer;
+    padding: 4px 10px; border-radius: 4px;
+  }
+  .crm-wire-nav-links span.active { background: rgba(255,255,255,0.1); color: var(--white); }
+  .crm-wire-body { display: grid; grid-template-columns: 220px 1fr; min-height: 300px; }
+  .crm-wire-sidebar {
+    background: #f8fafc; border-right: 1px solid #e2e8f0;
+    padding: 16px;
+  }
+  .crm-wire-sidebar-item {
+    padding: 8px 12px; font-size: 12px; color: #64748b;
+    border-radius: 6px; margin-bottom: 4px; cursor: pointer;
+  }
+  .crm-wire-sidebar-item.active { background: #e0f2fe; color: #0369a1; font-weight: 600; }
+  .crm-wire-main { padding: 20px; }
+  .crm-wire-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px;
+  }
+  .crm-wire-header h3 { font-size: 16px; color: var(--primary); }
+  .crm-wire-btn {
+    background: #2563eb; color: white; border: none; padding: 6px 16px;
+    border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer;
+  }
+  .crm-wire-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .crm-wire-card {
+    background: var(--white); border: 1px solid #e2e8f0; border-radius: 10px;
+    padding: 14px; transition: box-shadow 0.2s;
+  }
+  .crm-wire-card:hover { box-shadow: var(--shadow-sm); }
+  .crm-wire-card-name { font-size: 13px; font-weight: 700; color: var(--primary); }
+  .crm-wire-card-meta { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+  .crm-wire-card-port {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 10px; padding-top: 10px; border-top: 1px solid #f1f5f9;
+  }
+  .crm-wire-card-port-val { font-size: 15px; font-weight: 800; color: var(--primary); }
+  .crm-wire-card-port-label { font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
+  .crm-wire-card-change { font-size: 11px; font-weight: 600; }
+  .crm-wire-card-change.up { color: var(--green); }
+  .crm-wire-card-change.down { color: var(--red); }
+  .crm-wire-card-risk {
+    display: inline-block; font-size: 10px; font-weight: 600;
+    padding: 2px 8px; border-radius: 10px; margin-top: 6px;
+  }
+  .crm-wire-card-risk.low { background: var(--green-light); color: var(--green); }
+  .crm-wire-card-risk.med { background: #fef3c7; color: #d97706; }
+  .crm-wire-card-risk.high { background: var(--red-light); color: var(--red); }
+  .crm-wire-kpi-row {
+    display: grid; grid-template-columns: repeat(4,1fr); gap: 10px;
+    margin-bottom: 16px;
+  }
+  .crm-wire-kpi {
+    background: #f8fafc; border-radius: 8px; padding: 10px 12px; text-align: center;
+    border: 1px solid #e2e8f0;
+  }
+  .crm-wire-kpi-val { font-size: 18px; font-weight: 800; color: var(--primary); }
+  .crm-wire-kpi-label { font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* ─── CONTROLS.MD VISUAL ─── */
+  .controlsmd-visual {
+    background: #0d1117; border-radius: 12px; overflow: hidden;
+    box-shadow: var(--shadow-lg); margin: 12px 0;
+  }
+  .controlsmd-bar {
+    background: #161b22; padding: 10px 16px;
+    display: flex; align-items: center; gap: 7px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .controlsmd-body {
+    padding: 20px 24px; font-family: 'SF Mono', monospace;
+    font-size: 12px; line-height: 2; color: rgba(255,255,255,0.7);
+  }
+  .controlsmd-body .ch { color: #3fb950; font-weight: 700; }
+  .controlsmd-body .cr { color: #f85149; font-weight: 700; }
+  .controlsmd-body .cw { color: #d29922; }
+  .controlsmd-body .ci { color: #8b949e; }
+  .controlsmd-body .ck { color: #58a6ff; }
+
+  /* ─── DEMO PUBLISH CARD ─── */
+  .demo-publish-card {
+    background: var(--white); border-radius: 14px; padding: 24px;
+    box-shadow: var(--shadow-md); border: 1px solid rgba(0,0,0,0.04);
+    margin: 12px 0;
+  }
+  .demo-publish-card h5 {
+    font-size: 13px; font-weight: 700; color: var(--primary);
+    margin-bottom: 10px; letter-spacing: 0.5px;
+  }
+  .demo-publish-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 0; border-bottom: 1px solid #f5f5f5;
+    font-size: 13px;
+  }
+  .demo-publish-item:last-child { border-bottom: none; }
+  .demo-publish-item-label { color: var(--text-light); }
+  .demo-publish-item-value { font-weight: 600; color: var(--primary); }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ NAV ═══════════════════ -->
+<nav class="nav">
+  <div class="nav-brand">
+    <div class="nav-logo">Ethias AI</div>
+    <div class="nav-divider"></div>
+    <div class="nav-badge">CEO Strategic Advisory</div>
+  </div>
+  <div class="nav-links">
+    <a href="#problem">The Problem</a>
+    <a href="#bankmd">bank.md</a>
+    <a href="#four">The Five</a>
+    <a href="#sdlc">New SDLC</a>
+    <a href="#demo">Live Demo</a>
+    <a href="#controls">Controls</a>
+    <a href="#roi">ROI</a>
+  </div>
+</nav>
+
+<!-- ═══════════════════ HERO ═══════════════════ -->
+<section class="hero">
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+  <div class="hero-orb hero-orb-3"></div>
+  <div class="hero-content">
+    <div class="hero-kicker">A Radical Reimagination &mdash; Confidential</div>
+    <h1>
+      What if your entire technology<br>organisation was
+      <span class="hero-number">5</span>
+      <em>people and a file?</em>
+    </h1>
+    <p class="hero-sub">
+      One markdown file defines your enterprise DNA&mdash;architecture, security, compliance, design patterns.
+      Five exceptional humans provide judgement. Claude Code does everything else.
+    </p>
+    <div class="hero-equation">
+      <div class="hero-eq-card">
+        <div class="hero-eq-icon">&#x1F4C4;</div>
+        <div class="hero-eq-value">bank.md</div>
+        <div class="hero-eq-label">Enterprise DNA File</div>
+      </div>
+      <div class="hero-eq-plus">+</div>
+      <div class="hero-eq-card">
+        <div class="hero-eq-icon">&#x1F9E0;</div>
+        <div class="hero-eq-value">CPO</div>
+        <div class="hero-eq-label">Product Vision</div>
+      </div>
+      <div class="hero-eq-plus">+</div>
+      <div class="hero-eq-card">
+        <div class="hero-eq-icon">&#x1F528;</div>
+        <div class="hero-eq-value">Engineer</div>
+        <div class="hero-eq-label">Full-Stack Builder</div>
+      </div>
+      <div class="hero-eq-plus">+</div>
+      <div class="hero-eq-card">
+        <div class="hero-eq-icon">&#x1F916;</div>
+        <div class="hero-eq-value">AI Eng</div>
+        <div class="hero-eq-label">Agentic &amp; MCP</div>
+      </div>
+      <div class="hero-eq-plus">+</div>
+      <div class="hero-eq-card">
+        <div class="hero-eq-icon">&#x1F4CA;</div>
+        <div class="hero-eq-value">Data Arch</div>
+        <div class="hero-eq-label">Data &amp; AI</div>
+      </div>
+      <div class="hero-eq-plus">+</div>
+      <div class="hero-eq-card">
+        <div class="hero-eq-icon">&#x1F6E1;</div>
+        <div class="hero-eq-value">CCO</div>
+        <div class="hero-eq-label">Compliance &amp; Risk</div>
+      </div>
+      <div class="hero-eq-equals">=</div>
+      <div class="hero-eq-result">
+        <div class="hero-eq-value">A World-Class Bank</div>
+        <div class="hero-eq-label">Powered by Claude Code</div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-scroll">Scroll to see why</div>
+</section>
+
+<!-- ═══════════════════ THE PROBLEM ═══════════════════ -->
+<section id="problem" class="s-full s-accent">
+  <div style="max-width:1200px; margin:0 auto;">
+    <div class="s-header">
+      <div class="s-eye">The Brutal Truth</div>
+      <h2 class="s-title">Your Technology Organisation Was<br>Designed for a World That No Longer Exists</h2>
+      <p class="s-sub">
+        You employ 2,000 technologists. You spend $800M a year. And a single application
+        still takes 44 weeks to reach production. Here is where the money actually goes.
+      </p>
+    </div>
+
+    <!-- Org pyramid -->
+    <div class="pyramid-container">
+      <div class="pyramid-row">
+        <div class="pyramid-block">CTO<small>1 person</small></div>
+      </div>
+      <div class="pyramid-row">
+        <div class="pyramid-block">VP Engineering<small>4 people</small></div>
+        <div class="pyramid-block">VP Architecture<small>3 people</small></div>
+        <div class="pyramid-block">VP Infrastructure<small>3 people</small></div>
+      </div>
+      <div class="pyramid-row">
+        <div class="pyramid-block">Engineering Mgrs<small>24 people</small></div>
+        <div class="pyramid-block">Architects<small>18 people</small></div>
+        <div class="pyramid-block">QA Managers<small>12 people</small></div>
+        <div class="pyramid-block">Release Mgrs<small>8 people</small></div>
+      </div>
+      <div class="pyramid-row">
+        <div class="pyramid-block">Developers<small>680 people</small></div>
+        <div class="pyramid-block">QA Engineers<small>340 people</small></div>
+        <div class="pyramid-block">Business Analysts<small>220 people</small></div>
+        <div class="pyramid-block">DevOps / SRE<small>140 people</small></div>
+      </div>
+      <div class="pyramid-row">
+        <div class="pyramid-block">Scrum Masters<small>85 people</small></div>
+        <div class="pyramid-block">Compliance / GRC<small>120 people</small></div>
+        <div class="pyramid-block">Vendor / Contractors<small>350 people</small></div>
+      </div>
+      <div class="pyramid-total">
+        Current Technology Headcount
+        <span>2,008 people &bull; $813M / year</span>
+      </div>
+    </div>
+
+    <!-- Old SDLC -->
+    <div style="margin-top: 64px;">
+      <h3 style="text-align:center; font-family:'Playfair Display',serif; font-size:28px; color:var(--primary); margin-bottom:8px;">One Application: 8,500 Hours Across 44 Weeks</h3>
+      <p style="text-align:center; font-size:14px; color:var(--text-light); margin-bottom:24px;">14 handoffs &bull; 6 governance gates &bull; 23 approval steps &bull; 34% rework rate</p>
+      <div class="old-sdlc">
+        <div class="old-sdlc-row">
+          <div class="old-sdlc-label">Requirements</div>
+          <div class="old-sdlc-track"><div class="old-sdlc-bar" style="left:0;width:18%;background:#c0392b;">1,200 hrs &bull; 8 wks</div></div>
+        </div>
+        <div class="old-sdlc-row">
+          <div class="old-sdlc-label">Architecture</div>
+          <div class="old-sdlc-track"><div class="old-sdlc-bar" style="left:15%;width:12%;background:#e74c3c;">800 hrs &bull; 5 wks</div></div>
+        </div>
+        <div class="old-sdlc-row">
+          <div class="old-sdlc-label">Development</div>
+          <div class="old-sdlc-track"><div class="old-sdlc-bar" style="left:25%;width:32%;background:#8b0000;">2,800 hrs &bull; 14 wks</div></div>
+        </div>
+        <div class="old-sdlc-row">
+          <div class="old-sdlc-label">Testing</div>
+          <div class="old-sdlc-track"><div class="old-sdlc-bar" style="left:54%;width:20%;background:#c0392b;">1,800 hrs &bull; 9 wks</div></div>
+        </div>
+        <div class="old-sdlc-row">
+          <div class="old-sdlc-label">Release</div>
+          <div class="old-sdlc-track"><div class="old-sdlc-bar" style="left:72%;width:14%;background:#e74c3c;">1,100 hrs &bull; 5 wks</div></div>
+        </div>
+        <div class="old-sdlc-row">
+          <div class="old-sdlc-label">Governance</div>
+          <div class="old-sdlc-track"><div class="old-sdlc-bar" style="left:0;width:90%;background:rgba(139,0,0,0.15);border:1px dashed #8b0000;color:#8b0000;">800 hrs &mdash; continuous drag across entire lifecycle</div></div>
+        </div>
+        <div class="old-sdlc-weeks">
+          <span>W1</span><span>W5</span><span>W10</span><span>W15</span><span>W20</span><span>W25</span><span>W30</span><span>W35</span><span>W40</span><span>W44</span>
+        </div>
+        <div class="old-sdlc-total">
+          <div>
+            <div class="old-sdlc-total-label">Total Delivery Effort per Application</div>
+            <div class="old-sdlc-total-sub">62% is wait time &bull; 34% rework rate &bull; $4.2M blended cost</div>
+          </div>
+          <div class="old-sdlc-total-value">8,500 hrs</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Killer stats -->
+    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:20px; max-width:900px; margin:48px auto 0;">
+      <div style="background:var(--white); border-radius:14px; padding:24px; text-align:center; box-shadow:var(--shadow-sm); border-top:4px solid var(--red);">
+        <div style="font-size:36px; font-weight:900; color:var(--red); margin-bottom:4px;">62%</div>
+        <div style="font-size:12px; color:var(--text-light); letter-spacing:1px; text-transform:uppercase;">Wait Time</div>
+        <div style="font-size:11px; color:var(--text-light); margin-top:6px;">Only 38% of effort is value-adding. The rest is queues, handoffs, and approvals.</div>
+      </div>
+      <div style="background:var(--white); border-radius:14px; padding:24px; text-align:center; box-shadow:var(--shadow-sm); border-top:4px solid var(--red);">
+        <div style="font-size:36px; font-weight:900; color:var(--red); margin-bottom:4px;">14</div>
+        <div style="font-size:12px; color:var(--text-light); letter-spacing:1px; text-transform:uppercase;">Team Handoffs</div>
+        <div style="font-size:11px; color:var(--text-light); margin-top:6px;">Each handoff: 3-5 days queue time, context loss, and rework trigger.</div>
+      </div>
+      <div style="background:var(--white); border-radius:14px; padding:24px; text-align:center; box-shadow:var(--shadow-sm); border-top:4px solid var(--red);">
+        <div style="font-size:36px; font-weight:900; color:var(--red); margin-bottom:4px;">$4.2M</div>
+        <div style="font-size:12px; color:var(--text-light); letter-spacing:1px; text-transform:uppercase;">Per Application</div>
+        <div style="font-size:11px; color:var(--text-light); margin-top:6px;">100 apps/year = $420M in delivery alone, before run-the-bank costs.</div>
+      </div>
+      <div style="background:var(--white); border-radius:14px; padding:24px; text-align:center; box-shadow:var(--shadow-sm); border-top:4px solid var(--red);">
+        <div style="font-size:36px; font-weight:900; color:var(--red); margin-bottom:4px;">25%</div>
+        <div style="font-size:12px; color:var(--text-light); letter-spacing:1px; text-transform:uppercase;">Time Coding</div>
+        <div style="font-size:11px; color:var(--text-light); margin-top:6px;">Your engineers spend 75% of their time in meetings, docs, and process.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ THE PROVOCATION ═══════════════════ -->
+<section class="s" style="background: var(--white);">
+  <div class="s-header">
+    <div class="s-eye">The Provocation</div>
+    <h2 class="s-title">What If 95% of This Effort<br>Was Never Necessary?</h2>
+  </div>
+  <div class="provocation">
+    <div class="prov-text">
+      <p>
+        Consider what your 2,008-person technology organisation actually does. Strip away the coordination, the handoffs, the documentation theatre, the environment provisioning, the regression testing, the manual code review, the compliance evidence gathering.
+      </p>
+      <p>
+        <strong>What remains is judgement.</strong> Product judgement about what to build. Technical judgement about how to structure it. Data judgement about how to model it. Risk judgement about how to govern it.
+      </p>
+      <p>
+        Everything else&mdash;the writing of code, the writing of tests, the writing of documentation, the running of pipelines, the generation of evidence, the scanning for vulnerabilities, the assembly of deployment packages&mdash;<strong>is execution that Claude Code can perform autonomously, at machine speed, with perfect consistency.</strong>
+      </p>
+      <p>
+        The question is not &ldquo;how do we make our 2,000 people 30% more productive?&rdquo; The question is: <strong>&ldquo;what if we only needed the people who provide irreplaceable human judgement?&rdquo;</strong>
+      </p>
+      <p>The answer is five.</p>
+    </div>
+    <div class="prov-callout">
+      <div class="prov-callout-num">95%</div>
+      <div class="prov-callout-label">of technology effort is execution, not judgement</div>
+      <ul class="prov-callout-list">
+        <li>Writing code <span>Execution</span></li>
+        <li>Writing tests <span>Execution</span></li>
+        <li>Code review <span>Execution</span></li>
+        <li>Deployment scripting <span>Execution</span></li>
+        <li>Documentation <span>Execution</span></li>
+        <li>Environment setup <span>Execution</span></li>
+        <li>Compliance evidence <span>Execution</span></li>
+        <li>Security scanning <span>Execution</span></li>
+        <li>Regression testing <span>Execution</span></li>
+        <li>Incident triage <span>Execution</span></li>
+        <li style="border-bottom: 2px solid var(--primary); font-weight: 700; color: var(--primary);">
+          Architecture &amp; judgement <span style="color: var(--green); font-weight: 800;">Human</span>
+        </li>
+        <li style="font-weight: 700; color: var(--primary);">
+          Product &amp; risk decisions <span style="color: var(--green); font-weight: 800;">Human</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ BANK.MD ═══════════════════ -->
+<section id="bankmd" class="s-full s-accent">
+  <div style="max-width:1200px; margin:0 auto;">
+    <div class="s-header">
+      <div class="s-eye">The Enterprise DNA</div>
+      <h2 class="s-title">bank.md: One File to Rule Them All</h2>
+      <p class="s-sub">
+        Instead of 120 GRC analysts, 18 architects, and 340 QA engineers enforcing standards manually,
+        a single markdown file becomes the immutable constitution of your technology estate.
+      </p>
+    </div>
+
+    <div class="bankmd-container">
+      <div class="bankmd-visual">
+        <div class="bankmd-titlebar">
+          <div class="bankmd-dot bankmd-dot-r"></div>
+          <div class="bankmd-dot bankmd-dot-y"></div>
+          <div class="bankmd-dot bankmd-dot-g"></div>
+          <div class="bankmd-filename">bank.md &mdash; Enterprise Archetype Definition</div>
+        </div>
+        <div class="bankmd-body">
+<span class="h1"># BANK.MD &mdash; Global Enterprise Archetype</span>
+<span class="c"># This file is the single source of truth for all technology standards.</span>
+<span class="c"># Every Claude Code agent inherits these rules. No exceptions. No overrides.</span>
+
+<span class="h2">## 1. Architecture Standards</span>
+<span class="k">default_pattern:</span> <span class="v">event-driven-microservices</span>
+<span class="k">api_standard:</span> <span class="v">OpenAPI 3.1 with mandatory contract-first design</span>
+<span class="k">data_residency:</span> <span class="v">all PII must reside in-region (EU: Frankfurt, APAC: Singapore, US: Virginia)</span>
+<span class="k">service_mesh:</span> <span class="v">mandatory mTLS between all services, zero-trust networking</span>
+<span class="k">database:</span> <span class="v">PostgreSQL (OLTP), Snowflake (analytics), Redis (caching) &mdash; no exceptions</span>
+<span class="k">max_service_size:</span> <span class="v">500 lines of business logic. If exceeded, decompose.</span>
+
+<span class="h2">## 2. Security &amp; Compliance Layer</span>
+<span class="rule">RULE: No secrets in code. All credentials via HashiCorp Vault.</span>
+<span class="rule">RULE: All inputs sanitised. No raw SQL. Parameterised queries only.</span>
+<span class="rule">RULE: PII must be encrypted at rest (AES-256) and in transit (TLS 1.3).</span>
+<span class="rule">RULE: All API endpoints require OAuth 2.0 + RBAC. No anonymous access.</span>
+<span class="rule">RULE: OWASP Top 10 scan on every commit. Block merge on P1/P2.</span>
+<span class="rule">RULE: SOX evidence auto-generated for every production change.</span>
+<span class="rule">RULE: 4-eyes principle enforced &mdash; no self-approval of PRs to production.</span>
+
+<span class="h2">## 3. Testing &amp; Quality Standards</span>
+<span class="warn">MANDATORY: Unit test coverage &ge; 90% on all business logic.</span>
+<span class="warn">MANDATORY: Integration tests for every API contract.</span>
+<span class="warn">MANDATORY: Performance baseline &mdash; P99 latency &lt; 200ms for all APIs.</span>
+<span class="warn">MANDATORY: Chaos testing for all Tier-1 services before release.</span>
+<span class="k">test_generation:</span> <span class="v">Claude generates tests AT CODE CREATION. No separate QA phase.</span>
+<span class="k">regression:</span> <span class="v">Full regression suite runs in CI. Takes minutes, not weeks.</span>
+<span class="k">security_scan:</span> <span class="v">SAST + DAST on every PR. Results in &lt; 60 seconds.</span>
+
+<span class="h2">## 4. Design System &amp; UX</span>
+<span class="k">design_system:</span> <span class="v">Bank Design System v4 (Figma tokens auto-synced)</span>
+<span class="k">accessibility:</span> <span class="v">WCAG 2.2 AA mandatory. No exceptions.</span>
+<span class="k">responsive:</span> <span class="v">Mobile-first. All interfaces must work on 320px viewport.</span>
+
+<span class="h2">## 5. Deployment &amp; Operations</span>
+<span class="k">deployment:</span> <span class="v">GitOps via ArgoCD. All infra as Terraform. No manual provisioning.</span>
+<span class="k">rollback:</span> <span class="v">Automated canary with &lt; 5min rollback on error rate &gt; 0.1%.</span>
+<span class="k">observability:</span> <span class="v">OpenTelemetry mandatory. Traces, metrics, logs on every service.</span>
+<span class="k">incident_response:</span> <span class="v">Claude monitors, triages, and drafts RCA. Human approves.</span>
+
+<span class="h2">## 6. Governance &amp; Audit</span>
+<span class="rule">Every Claude action logged with: who requested, what generated, hash of output.</span>
+<span class="rule">All production changes require human approval (CCO for Tier-1, Engineer for Tier-2+).</span>
+<span class="rule">Audit evidence generated as by-product. Zero manual compliance effort.</span>
+<span class="rule">Regulatory change detection: auto-flag when new regulation impacts codebase.</span>
+        </div>
+      </div>
+
+      <!-- What bank.md replaces -->
+      <div class="bankmd-layers">
+        <div class="bankmd-layer">
+          <div class="bankmd-layer-icon">&#x1F3D7;</div>
+          <div class="bankmd-layer-title">Architecture</div>
+          <div class="bankmd-layer-desc">Replaces 18 architects and ARB committees. Every Claude agent inherits patterns automatically. Deviations are structurally impossible.</div>
+        </div>
+        <div class="bankmd-layer">
+          <div class="bankmd-layer-icon">&#x1F6E1;</div>
+          <div class="bankmd-layer-title">Security &amp; Policy</div>
+          <div class="bankmd-layer-desc">Replaces manual security reviews, penetration testing queues, and policy documents nobody reads. Controls are enforced in real-time, not reviewed post-hoc.</div>
+        </div>
+        <div class="bankmd-layer">
+          <div class="bankmd-layer-icon">&#x1F50D;</div>
+          <div class="bankmd-layer-title">Testing &amp; Quality</div>
+          <div class="bankmd-layer-desc">Eliminates the entire QA phase. Tests are generated with code, run in seconds, and gate every merge. The 1,800-hour testing bottleneck simply vanishes.</div>
+        </div>
+        <div class="bankmd-layer">
+          <div class="bankmd-layer-icon">&#x1F4DC;</div>
+          <div class="bankmd-layer-title">Governance &amp; Audit</div>
+          <div class="bankmd-layer-desc">Replaces 120 compliance analysts generating evidence after the fact. Every action is an audit event. Compliance becomes a by-product, not a burden.</div>
+        </div>
+      </div>
+
+      <div class="pipeline-connector">
+        <p>
+          <strong>bank.md</strong> is inherited by every Claude Code agent in the organisation.
+          It cannot be overridden at the project level. It is version-controlled, peer-reviewed by the five humans,
+          and constitutes the legally auditable standard of your technology estate.
+          <strong>When you change bank.md, you change the DNA of every application simultaneously.</strong>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ THE FIVE ═══════════════════ -->
+<section id="four" class="s" style="background: var(--white);">
+  <div class="s-header">
+    <div class="s-eye">The Five</div>
+    <h2 class="s-title">Five Humans. Infinite Capability.</h2>
+    <p class="s-sub">
+      Each person provides irreplaceable human judgement. Claude Code provides everything else&mdash;at scale, speed, and consistency no human team can match.
+    </p>
+  </div>
+
+  <div class="four-container">
+    <div class="four-center">
+      <div class="four-center-label">Powered by</div>
+      <div class="four-center-file">bank.md</div>
+      <div class="four-center-sub">+ Claude Code</div>
+    </div>
+
+    <div class="four-grid" style="grid-template-columns: repeat(5, 1fr); gap: 16px;">
+
+      <!-- CPO -->
+      <div class="four-card">
+        <div class="four-card-header">
+          <div class="four-card-number">01</div>
+          <div class="four-card-role">Chief Product Officer</div>
+        </div>
+        <div class="four-card-body">
+          <div class="four-card-mission">Translates business strategy into product vision. Decides <em>what</em> to build and <em>why</em>. The sole human interface between the business and the technology machine.</div>
+          <div class="four-card-owns">Owns</div>
+          <ul class="four-card-list">
+            <li>Product roadmap and prioritisation</li>
+            <li>Business requirements (conversational, not BRD)</li>
+            <li>Stakeholder alignment and communication</li>
+            <li>Feature trade-off decisions</li>
+            <li>Customer experience strategy</li>
+          </ul>
+          <div class="four-card-claude">
+            <strong>Claude handles:</strong> Analysing customer data, generating user stories, mapping regulatory requirements to features, competitive analysis, writing product documentation
+          </div>
+        </div>
+      </div>
+
+      <!-- Chief Technology Officer -->
+      <div class="four-card">
+        <div class="four-card-header">
+          <div class="four-card-number">02</div>
+          <div class="four-card-role">Chief Technology Officer</div>
+        </div>
+        <div class="four-card-body">
+          <div class="four-card-mission">The master builder. Reviews what Claude Code generates, handles edge cases that require creative problem-solving, and evolves bank.md&rsquo;s architecture patterns.</div>
+          <div class="four-card-owns">Owns</div>
+          <ul class="four-card-list">
+            <li>Architecture evolution in bank.md</li>
+            <li>Review &amp; approval of Claude-generated code</li>
+            <li>Complex edge-case engineering</li>
+            <li>Platform and infrastructure decisions</li>
+            <li>Performance and scalability strategy</li>
+          </ul>
+          <div class="four-card-claude">
+            <strong>Claude handles:</strong> All code generation, test creation, refactoring, CI/CD pipeline management, IaC provisioning, dependency management, performance profiling, incident remediation
+          </div>
+        </div>
+      </div>
+
+      <!-- Chief AI Architect -->
+      <div class="four-card">
+        <div class="four-card-header" style="background: linear-gradient(160deg, #1a0a2e 0%, #2d1b69 100%);">
+          <div class="four-card-number">03</div>
+          <div class="four-card-role">Chief AI Architect</div>
+        </div>
+        <div class="four-card-body">
+          <div class="four-card-mission">The architect of the AI operating system itself. Designs and maintains the agentic workflows, MCP servers, guardrails, and tool integrations that give Claude Code its power within the bank.</div>
+          <div class="four-card-owns">Owns</div>
+          <ul class="four-card-list">
+            <li>Claude Code agentic system design &amp; orchestration</li>
+            <li>MCP server development &amp; bank system connectors</li>
+            <li>Guardrails, permission modes &amp; safety controls</li>
+            <li>Prompt engineering &amp; bank.md evolution</li>
+            <li>Agent evaluation, observability &amp; performance</li>
+          </ul>
+          <div class="four-card-claude">
+            <strong>Claude handles:</strong> Executing the agentic workflows this person designs &mdash; multi-step code generation, autonomous testing, deployment orchestration, cross-service refactoring, incident auto-remediation
+          </div>
+        </div>
+      </div>
+
+      <!-- Chief Data Architect -->
+      <div class="four-card">
+        <div class="four-card-header">
+          <div class="four-card-number">04</div>
+          <div class="four-card-role">Chief Data Architect</div>
+        </div>
+        <div class="four-card-body">
+          <div class="four-card-mission">Guardian of the bank&rsquo;s most valuable asset: its data. Designs the data model, ensures lineage and quality, and architects the AI/ML strategy that makes the bank intelligent.</div>
+          <div class="four-card-owns">Owns</div>
+          <ul class="four-card-list">
+            <li>Enterprise data model and lineage</li>
+            <li>Data residency and sovereignty rules in bank.md</li>
+            <li>AI/ML model governance</li>
+            <li>Analytics and reporting architecture</li>
+            <li>Data quality strategy</li>
+          </ul>
+          <div class="four-card-claude">
+            <strong>Claude handles:</strong> Schema generation, ETL pipeline creation, data quality checks, migration scripts, analytics dashboards, ML model training pipelines, data documentation
+          </div>
+        </div>
+      </div>
+
+      <!-- CCO -->
+      <div class="four-card">
+        <div class="four-card-header">
+          <div class="four-card-number">05</div>
+          <div class="four-card-role">Chief Compliance Officer</div>
+        </div>
+        <div class="four-card-body">
+          <div class="four-card-mission">The regulator&rsquo;s trusted counterpart. Ensures every line of code, every deployment, and every data flow meets regulatory requirements. Evolves bank.md&rsquo;s compliance rules.</div>
+          <div class="four-card-owns">Owns</div>
+          <ul class="four-card-list">
+            <li>Regulatory interpretation and policy rules in bank.md</li>
+            <li>Approval authority for Tier-1 production changes</li>
+            <li>Regulator relationship and audit coordination</li>
+            <li>Risk appetite and control framework</li>
+            <li>Incident escalation decisions</li>
+          </ul>
+          <div class="four-card-claude">
+            <strong>Claude handles:</strong> All audit evidence generation, real-time SOX monitoring, regulatory change detection, compliance reporting, risk scoring, control testing, policy mapping
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Versus strip -->
+    <div class="vs-strip">
+      <div class="vs-side vs-old">
+        <div class="vs-number">2,008</div>
+        <div class="vs-label">People Today</div>
+        <div class="vs-badge">$813M / year</div>
+      </div>
+      <div class="vs-divider">
+        <span>&#x2192;</span>
+        Becomes
+      </div>
+      <div class="vs-side vs-new">
+        <div class="vs-number">5</div>
+        <div class="vs-label">People + Claude Code</div>
+        <div class="vs-badge">$9M / year *</div>
+      </div>
+    </div>
+    <p style="text-align:center; font-size:12px; color:var(--text-light); margin-top:12px;">* Includes five senior executive salaries + Claude Code enterprise licensing + cloud infrastructure</p>
+  </div>
+</section>
+
+<!-- ═══════════════════ NEW SDLC ═══════════════════ -->
+<section id="sdlc" class="s-full s-accent">
+  <div style="max-width:1200px; margin:0 auto;">
+    <div class="s-header">
+      <div class="s-eye">The New SDLC</div>
+      <h2 class="s-title">From 8,500 Hours to 72 Hours</h2>
+      <p class="s-sub">
+        When bank.md defines the rules and Claude Code does the execution,
+        the entire delivery lifecycle collapses from months to days.
+      </p>
+    </div>
+
+    <div class="new-sdlc-container">
+      <div class="new-sdlc-flow">
+
+        <div class="new-sdlc-step">
+          <div class="new-sdlc-step-num">1</div>
+          <div class="new-sdlc-step-icon">&#x1F4AC;</div>
+          <div class="new-sdlc-step-name">Intent</div>
+          <div class="new-sdlc-step-time">2</div>
+          <div class="new-sdlc-step-unit">Hours</div>
+          <div class="new-sdlc-step-who">CPO + Engineer</div>
+          <div class="new-sdlc-step-desc">CPO describes what&rsquo;s needed in natural language. Engineer confirms feasibility. That&rsquo;s the entire requirements phase.</div>
+          <div class="new-sdlc-step-badge">Conversational</div>
+        </div>
+
+        <div class="new-sdlc-step">
+          <div class="new-sdlc-step-num">2</div>
+          <div class="new-sdlc-step-icon">&#x1F9EC;</div>
+          <div class="new-sdlc-step-name">Generate</div>
+          <div class="new-sdlc-step-time">8</div>
+          <div class="new-sdlc-step-unit">Hours</div>
+          <div class="new-sdlc-step-who">Claude Code (autonomous)</div>
+          <div class="new-sdlc-step-desc">Claude reads bank.md, analyses the codebase, generates architecture, code, tests, IaC, documentation, and compliance evidence&mdash;all at once.</div>
+          <div class="new-sdlc-step-badge">AI-Native</div>
+        </div>
+
+        <div class="new-sdlc-step">
+          <div class="new-sdlc-step-num">3</div>
+          <div class="new-sdlc-step-icon">&#x1F440;</div>
+          <div class="new-sdlc-step-name">Review</div>
+          <div class="new-sdlc-step-time">6</div>
+          <div class="new-sdlc-step-unit">Hours</div>
+          <div class="new-sdlc-step-who">Engineer + Data Arch + CCO</div>
+          <div class="new-sdlc-step-desc">Humans review Claude&rsquo;s output for correctness, data model integrity, and regulatory compliance. Feedback loops are minutes, not weeks.</div>
+          <div class="new-sdlc-step-badge">Human Judgement</div>
+        </div>
+
+        <div class="new-sdlc-step">
+          <div class="new-sdlc-step-num">4</div>
+          <div class="new-sdlc-step-icon">&#x1F504;</div>
+          <div class="new-sdlc-step-name">Iterate</div>
+          <div class="new-sdlc-step-time">4</div>
+          <div class="new-sdlc-step-unit">Hours</div>
+          <div class="new-sdlc-step-who">Claude Code (directed)</div>
+          <div class="new-sdlc-step-desc">Claude incorporates review feedback, regenerates affected components, re-runs full test suite. Iteration cycles are minutes.</div>
+          <div class="new-sdlc-step-badge">Rapid Cycles</div>
+        </div>
+
+        <div class="new-sdlc-step">
+          <div class="new-sdlc-step-num">5</div>
+          <div class="new-sdlc-step-icon">&#x1F680;</div>
+          <div class="new-sdlc-step-name">Deploy</div>
+          <div class="new-sdlc-step-time">2</div>
+          <div class="new-sdlc-step-unit">Hours</div>
+          <div class="new-sdlc-step-who">Claude + CCO Approval</div>
+          <div class="new-sdlc-step-desc">Automated canary deployment, zero-downtime rollout, auto-generated change record. CCO clicks &ldquo;Approve&rdquo; once. Done.</div>
+          <div class="new-sdlc-step-badge">Zero-Touch</div>
+        </div>
+
+      </div>
+
+      <div class="new-sdlc-total">
+        <div>
+          <div class="new-sdlc-total-label">Total: Intent to Production</div>
+          <div class="new-sdlc-total-sub">Same mid-complexity application &bull; 3 calendar days &bull; 5 humans involved</div>
+        </div>
+        <div class="new-sdlc-total-value">~22 hrs human + ~50 hrs Claude</div>
+      </div>
+      <div class="new-sdlc-note">
+        &ldquo;Where did Testing go?&rdquo; &mdash; It didn&rsquo;t go anywhere. It&rsquo;s embedded in Step 2. Read on.
+      </div>
+    </div>
+
+    <!-- Testing deep-dive -->
+    <div class="testing-visual">
+      <div class="testing-header">
+        <h4>The Death of the Testing Phase</h4>
+        <span>Why 1,800 hours becomes 0 separate hours</span>
+      </div>
+      <div class="testing-body">
+        <div class="testing-row">
+          <div class="testing-icon">&#x1F6AB;</div>
+          <div class="testing-content">
+            <h5>Unit Testing (was: 400 hours)</h5>
+            <p>Claude generates unit tests at the moment of code creation. 90%+ coverage is a bank.md rule, not a QA checkpoint.</p>
+          </div>
+          <div class="testing-status">Embedded in Code Gen</div>
+        </div>
+        <div class="testing-row">
+          <div class="testing-icon">&#x1F6AB;</div>
+          <div class="testing-content">
+            <h5>Integration Testing (was: 500 hours)</h5>
+            <p>Contract-first API design in bank.md means every integration test is generated from the OpenAPI spec automatically. Runs in CI in &lt; 2 minutes.</p>
+          </div>
+          <div class="testing-status">Embedded in CI</div>
+        </div>
+        <div class="testing-row">
+          <div class="testing-icon">&#x1F6AB;</div>
+          <div class="testing-content">
+            <h5>Regression Testing (was: 400 hours)</h5>
+            <p>Full regression suite is maintained by Claude and runs on every commit. The 9-week manual regression cycle is eliminated entirely.</p>
+          </div>
+          <div class="testing-status">Automated &lt; 5 min</div>
+        </div>
+        <div class="testing-row">
+          <div class="testing-icon">&#x1F6AB;</div>
+          <div class="testing-content">
+            <h5>Security Testing (was: 300 hours)</h5>
+            <p>SAST + DAST runs on every PR. bank.md security rules are enforced at generation time&mdash;vulnerabilities are prevented, not detected.</p>
+          </div>
+          <div class="testing-status">Prevented, Not Found</div>
+        </div>
+        <div class="testing-row">
+          <div class="testing-icon">&#x1F6AB;</div>
+          <div class="testing-content">
+            <h5>UAT (was: 200 hours)</h5>
+            <p>CPO reviews live application in staging environment generated in minutes. Feedback goes directly to Claude for instant iteration. No UAT team. No UAT cycle.</p>
+          </div>
+          <div class="testing-status">CPO Direct Review</div>
+        </div>
+        <div style="padding: 20px; margin-top: 16px; background: var(--green-light); border-radius: 12px; text-align: center;">
+          <span style="font-size: 20px; font-weight: 800; color: var(--green);">1,800 hours of testing &rarr; 0 separate hours</span><br>
+          <span style="font-size: 13px; color: var(--text-light);">Testing is not removed. It is dissolved into the generation process. Quality is <em>built in</em>, not <em>inspected in</em>.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dramatic before/after -->
+    <div style="max-width:900px; margin:56px auto 0;">
+      <h3 style="text-align:center; font-family:'Playfair Display',serif; font-size:28px; color:var(--primary); margin-bottom:32px;">The Comparison That Changes Everything</h3>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px;">
+        <div style="background:var(--white); border-radius:16px; padding:32px; box-shadow:var(--shadow-md); border-top:4px solid var(--red);">
+          <div style="font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--red); font-weight:700; margin-bottom:20px;">Today: One Application</div>
+          <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #f0f0f0;"><span style="font-size:14px;">People involved</span><span style="font-weight:700; color:var(--red);">32</span></div>
+          <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #f0f0f0;"><span style="font-size:14px;">Person-hours</span><span style="font-weight:700; color:var(--red);">8,500</span></div>
+          <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #f0f0f0;"><span style="font-size:14px;">Calendar time</span><span style="font-weight:700; color:var(--red);">44 weeks</span></div>
+          <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #f0f0f0;"><span style="font-size:14px;">Cost</span><span style="font-weight:700; color:var(--red);">$4.2M</span></div>
+          <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #f0f0f0;"><span style="font-size:14px;">Handoffs</span><span style="font-weight:700; color:var(--red);">14</span></div>
+          <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #f0f0f0;"><span style="font-size:14px;">Defects to production</span><span style="font-weight:700; color:var(--red);">18</span></div>
+          <div style="display:flex; justify-content:space-between; padding:10px 0;"><span style="font-size:14px;">Compliance effort</span><span style="font-weight:700; color:var(--red);">800 hrs manual</span></div>
+        </div>
+        <div style="background:var(--white); border-radius:16px; padding:32px; box-shadow:var(--shadow-md); border-top:4px solid var(--green);">
+          <div style="font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--green); font-weight:700; margin-bottom:20px;">Future: Same Application</div>
+          <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #f0f0f0;"><span style="font-size:14px;">People involved</span><span style="font-weight:700; color:var(--green);">5</span></div>
+          <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #f0f0f0;"><span style="font-size:14px;">Human-hours</span><span style="font-weight:700; color:var(--green);">22</span></div>
+          <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #f0f0f0;"><span style="font-size:14px;">Calendar time</span><span style="font-weight:700; color:var(--green);">3 days</span></div>
+          <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #f0f0f0;"><span style="font-size:14px;">Cost</span><span style="font-weight:700; color:var(--green);">~$12K</span></div>
+          <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #f0f0f0;"><span style="font-size:14px;">Handoffs</span><span style="font-weight:700; color:var(--green);">0</span></div>
+          <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #f0f0f0;"><span style="font-size:14px;">Defects to production</span><span style="font-weight:700; color:var(--green);">~0</span></div>
+          <div style="display:flex; justify-content:space-between; padding:10px 0;"><span style="font-size:14px;">Compliance effort</span><span style="font-weight:700; color:var(--green);">0 hrs (auto)</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- ═══════════════════ LIVE DEMO: WEALTH ADVISORY CRM ═══════════════════ -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<section id="demo" class="s-full" style="background: linear-gradient(180deg, #fafaf8, #f0efe8);">
+  <div style="max-width:1200px; margin:0 auto;">
+    <div class="s-header">
+      <div class="s-eye">Live Demonstration</div>
+      <h2 class="s-title">Watch: A Wealth Advisory CRM<br>Built in 3 Days by 5 People</h2>
+      <p class="s-sub">
+        A complete, production-grade wealth management CRM &mdash; client portfolios, AI-driven advisory,
+        risk scoring, regulatory reporting &mdash; from first conversation to live pilot.
+        Every command below is real. Every output is what Claude Code actually produces.
+      </p>
+    </div>
+
+    <!-- ════════════ ACT 1: BANK.MD LOAD ════════════ -->
+    <div class="demo-timeline">
+
+      <div class="demo-phase-sep">
+        <div class="demo-phase-sep-line">
+          Act 1: Foundation
+          <span class="demo-phase-sep-time">Day 1 &mdash; Morning &bull; 09:00</span>
+        </div>
+      </div>
+
+      <!-- Step 1: Load bank.md -->
+      <div class="demo-step">
+        <div class="demo-step-left">
+          <div class="demo-who eng">Chief Technology Officer</div>
+          <div class="demo-action">Initialises the project with bank.md</div>
+          <div class="demo-desc">The enterprise DNA file is loaded as the foundational context. Every subsequent Claude Code action will inherit these rules.</div>
+          <div class="demo-time-badge human">2 min</div>
+        </div>
+        <div class="demo-step-center"><div class="demo-step-dot eng">&#x1F528;</div></div>
+        <div class="demo-step-right">
+          <div class="demo-terminal">
+            <div class="demo-term-bar">
+              <div class="demo-term-dot r"></div><div class="demo-term-dot y"></div><div class="demo-term-dot g"></div>
+              <div class="demo-term-title">wealth-advisory-crm &mdash; zsh</div>
+            </div>
+            <div class="demo-term-body"><span class="prompt">$</span> <span class="cmd">mkdir</span> <span class="flag">-p</span> wealth-advisory-crm && <span class="cmd">cd</span> wealth-advisory-crm
+<span class="prompt">$</span> <span class="cmd">cp</span> ../enterprise/bank.md <span class="file">CLAUDE.md</span>
+<span class="prompt">$</span> <span class="cmd">git init</span> && <span class="cmd">git add</span> CLAUDE.md && <span class="cmd">git commit</span> <span class="flag">-m</span> <span class="string">"init: load bank.md as CLAUDE.md enterprise archetype"</span>
+
+<span class="success">&#x2713;</span> Initialized git repository
+<span class="success">&#x2713;</span> CLAUDE.md loaded &mdash; 6 policy sections active:
+  <span class="info">  Architecture: event-driven-microservices</span>
+  <span class="info">  Security: OWASP + AES-256 + TLS 1.3 + OAuth 2.0</span>
+  <span class="info">  Testing: 90% coverage mandatory, shift-left</span>
+  <span class="info">  Data: PII encryption, residency rules enforced</span>
+  <span class="info">  Deployment: GitOps + ArgoCD + canary rollout</span>
+  <span class="info">  Governance: immutable audit trail, 4-eyes</span>
+
+<span class="dim">All Claude Code agents will inherit these constraints.</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════���═══ ACT 1.5: AI ENGINEER ════════════ -->
+      <div class="demo-phase-sep">
+        <div class="demo-phase-sep-line">
+          Act 2: Chief AI Architect Wires the Nervous System
+          <span class="demo-phase-sep-time">Day 1 &mdash; 09:05 to 10:30</span>
+        </div>
+      </div>
+
+      <!-- Step: MCP Servers -->
+      <div class="demo-step">
+        <div class="demo-step-left">
+          <div class="demo-who ai">Chief AI Architect</div>
+          <div class="demo-action">Builds MCP servers to connect Claude to the bank</div>
+          <div class="demo-desc">Before anyone else can work, Claude Code needs to <em>talk to the bank</em>. The Chief AI Architect builds Model Context Protocol (MCP) servers &mdash; typed, secure tool interfaces that give Claude access to core banking systems, market data, compliance engines, and infrastructure APIs. These are the hands and eyes of the AI.</div>
+          <div class="demo-time-badge human">45 min design + review</div>
+        </div>
+        <div class="demo-step-center"><div class="demo-step-dot ai">&#x1F916;</div></div>
+        <div class="demo-step-right">
+          <div class="demo-terminal">
+            <div class="demo-term-bar">
+              <div class="demo-term-dot r"></div><div class="demo-term-dot y"></div><div class="demo-term-dot g"></div>
+              <div class="demo-term-title">claude &mdash; Chief AI Architect session</div>
+            </div>
+            <div class="demo-term-body"><span class="prompt">$</span> <span class="cmd">claude</span> <span class="string">"Build MCP servers for the Wealth Advisory CRM
+  project. I need Claude Code to have typed, secure
+  tool access to:
+
+  1. SAP FICO (read: client accounts, balances)
+  2. Bloomberg B-PIPE (read: real-time market data)
+  3. Refinitiv World-Check (read: KYC/AML screening)
+  4. Internal Auth (read/write: OAuth tokens, RBAC)
+  5. AWS Infrastructure (read/write: deploy, scale)
+  6. PostgreSQL (read/write: application database)
+  7. Jira/Confluence (read/write: project tracking)
+  8. Compliance Engine (read: regulatory rules)
+
+  Each MCP server must enforce CLAUDE.md security
+  rules. All actions logged to audit trail."</span>
+
+<span class="info">&#x23F3; Generating MCP server framework...</span>
+<span class="info">&#x23F3; Building typed tool definitions...</span>
+
+<span class="success">&#x2713;</span> MCP servers generated: <span class="highlight">8 servers, 47 tools</span>
+  <span class="file">mcp-servers/sap-fico/</span>
+    <span class="info">Tools: get_client, get_balances, get_transactions</span>
+    <span class="info">Auth: service account + mTLS | Read-only</span>
+  <span class="file">mcp-servers/bloomberg/</span>
+    <span class="info">Tools: get_quotes, get_history, stream_prices</span>
+    <span class="info">Auth: B-PIPE certificate | Read-only</span>
+  <span class="file">mcp-servers/refinitiv-kyc/</span>
+    <span class="info">Tools: screen_client, get_risk_score, check_pep</span>
+    <span class="info">Auth: API key via Vault | Read-only</span>
+  <span class="file">mcp-servers/aws-infra/</span>
+    <span class="info">Tools: deploy_service, scale_cluster, get_metrics</span>
+    <span class="info">Auth: IAM role + session token | Read-write</span>
+  <span class="file">mcp-servers/postgres/</span>
+    <span class="info">Tools: query, migrate, seed, backup</span>
+    <span class="info">Auth: Vault-managed credentials | Read-write</span>
+  <span class="info">  + 3 more servers</span>
+
+<span class="success">&#x2713;</span> All secrets via HashiCorp Vault (per CLAUDE.md)
+<span class="success">&#x2713;</span> Audit logging: every tool call &rarr; audit_log table
+<span class="success">&#x2713;</span> Rate limiting &amp; circuit breakers configured
+<span class="success">&#x2713;</span> Tests: <span class="highlight">89 integration tests, all passing</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step: Agentic Workflows -->
+      <div class="demo-step">
+        <div class="demo-step-left">
+          <div class="demo-terminal">
+            <div class="demo-term-bar">
+              <div class="demo-term-dot r"></div><div class="demo-term-dot y"></div><div class="demo-term-dot g"></div>
+              <div class="demo-term-title">claude &mdash; agentic system config</div>
+            </div>
+            <div class="demo-term-body"><span class="prompt">$</span> <span class="cmd">claude</span> <span class="string">"Configure the agentic system for the Wealth
+  Advisory CRM. Define:
+
+  1. Agent roles: code-gen, test-gen, reviewer,
+     deployer, compliance-checker, incident-responder
+  2. Permission modes per role (who can approve what)
+  3. Hooks: pre-commit security scan, post-deploy
+     smoke test, pre-merge compliance check
+  4. Guardrails: max file changes per session,
+     blocked operations (no direct DB writes in prod,
+     no secret access without approval)
+  5. Orchestration: multi-agent pipeline for
+     full feature delivery"</span>
+
+<span class="info">&#x23F3; Configuring agent roles &amp; permissions...</span>
+<span class="info">&#x23F3; Building hook system...</span>
+<span class="info">&#x23F3; Defining guardrails...</span>
+
+<span class="success">&#x2713;</span> Agentic system configured:
+
+  <span class="highlight">Agent Roles:</span>
+  <span class="info">  code-gen      &rarr; can write/edit code, read MCP tools</span>
+  <span class="info">  test-gen      &rarr; can write tests, run test suites</span>
+  <span class="info">  reviewer      &rarr; read-only code, can flag issues</span>
+  <span class="info">  deployer      &rarr; can trigger deploy (requires human OK)</span>
+  <span class="info">  compliance    &rarr; read-only, can run control audits</span>
+  <span class="info">  incident-bot  &rarr; can read logs, draft RCA, page humans</span>
+
+  <span class="highlight">Hooks (3 active):</span>
+  <span class="info">  pre-commit:  SAST scan + CLAUDE.md policy check</span>
+  <span class="info">  pre-merge:   full test suite + compliance gate</span>
+  <span class="info">  post-deploy: smoke test + canary health check</span>
+
+  <span class="highlight">Guardrails:</span>
+  <span class="warn">  MAX_FILES_PER_SESSION: 50</span>
+  <span class="warn">  BLOCKED: direct production DB writes</span>
+  <span class="warn">  BLOCKED: secret access without CCO approval</span>
+  <span class="warn">  BLOCKED: deployment without 4-eyes sign-off</span>
+  <span class="warn">  REQUIRE_HUMAN: any Tier-1 system change</span>
+
+<span class="success">&#x2713;</span> Multi-agent orchestration pipeline:
+  <span class="dim">  Intent &rarr; [code-gen] &rarr; [test-gen] &rarr; [reviewer]
+  &rarr; human review &rarr; [deployer] &rarr; [compliance]
+  &rarr; human approval &rarr; PRODUCTION</span>
+
+<span class="success">&#x2713;</span> Config saved: <span class="file">.claude/settings.json</span>
+<span class="success">&#x2713;</span> Agent observability: OpenTelemetry traces on all agent actions</div>
+          </div>
+        </div>
+        <div class="demo-step-center"><div class="demo-step-dot ai">&#x1F916;</div></div>
+        <div class="demo-step-right">
+          <div class="demo-who ai">Chief AI Architect</div>
+          <div class="demo-action">Configures agentic workflows, hooks &amp; guardrails</div>
+          <div class="demo-desc">This is the control plane. The Chief AI Architect defines 6 specialised agent roles, each with scoped permissions. She configures hooks that run automatically (security scans on every commit, compliance gates on every merge, smoke tests on every deploy). And she sets hard guardrails &mdash; operations that Claude <em>cannot</em> perform without human approval. This is how 5 people maintain absolute control over an AI-powered delivery machine.</div>
+          <div class="demo-time-badge human">30 min design + review</div>
+        </div>
+      </div>
+
+      <!-- Chief AI Architect summary -->
+      <div style="max-width:900px; margin:0 auto 24px;">
+        <div style="background: linear-gradient(135deg, #7c3aed, #a855f7); border-radius: 14px; padding: 24px 32px; display: flex; align-items: center; gap: 20px; color: var(--white);">
+          <div style="font-size: 36px;">&#x1F916;</div>
+          <div>
+            <div style="font-size: 16px; font-weight: 700;">Chief AI Architect: The Nervous System is Live</div>
+            <div style="font-size: 13px; opacity: 0.8; margin-top: 4px;">8 MCP servers (47 tools) connecting Claude to every bank system. 6 agent roles with scoped permissions. 3 automated hooks. 5 hard guardrails. Full observability. Claude Code can now see, act, and be controlled across the entire technology estate.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════ ACT 3: CPO REQUIREMENTS & UI ════════════ -->
+      <div class="demo-phase-sep">
+        <div class="demo-phase-sep-line">
+          Act 3: CPO Freezes Requirements & UI
+          <span class="demo-phase-sep-time">Day 1 &mdash; 10:30 to 13:00</span>
+        </div>
+      </div>
+
+      <!-- Step 2: CPO describes intent -->
+      <div class="demo-step">
+        <div class="demo-step-left">
+          <div class="demo-terminal">
+            <div class="demo-term-bar">
+              <div class="demo-term-dot r"></div><div class="demo-term-dot y"></div><div class="demo-term-dot g"></div>
+              <div class="demo-term-title">claude &mdash; CPO session</div>
+            </div>
+            <div class="demo-term-body"><span class="prompt">$</span> <span class="cmd">claude</span> <span class="string">"I need a wealth advisory CRM platform for our
+  private banking division. Key capabilities:
+
+  1. Client 360 view &mdash; portfolio, risk profile,
+     life events, relationship history
+  2. AI-powered investment recommendations based
+     on client risk appetite and market conditions
+  3. Advisor dashboard with AUM, client segments,
+     next-best-action prompts
+  4. Regulatory reporting &mdash; MiFID II suitability,
+     KYC/AML status, transaction monitoring
+  5. Client self-service portal with secure messaging
+
+  Target: 2,500 HNW clients, 180 relationship managers.
+  Generate the complete product requirements document."</span>
+
+<span class="success">&#x2713;</span> Analysing CLAUDE.md enterprise constraints...
+<span class="success">&#x2713;</span> Generating PRD for Wealth Advisory CRM...
+
+<span class="highlight">Product Requirements Document generated:</span>
+  <span class="file">docs/PRD-wealth-advisory-crm.md</span>
+  <span class="info">&bull; 47 user stories across 5 epics</span>
+  <span class="info">&bull; 12 API contracts (OpenAPI 3.1)</span>
+  <span class="info">&bull; Regulatory mapping: MiFID II, GDPR, KYC/AML</span>
+  <span class="info">&bull; Data residency: EU clients &rarr; Frankfurt</span>
+  <span class="info">&bull; Non-functional: P99 &lt; 200ms per CLAUDE.md</span></div>
+          </div>
+        </div>
+        <div class="demo-step-center"><div class="demo-step-dot cpo">&#x1F9E0;</div></div>
+        <div class="demo-step-right">
+          <div class="demo-who cpo">Chief Product Officer</div>
+          <div class="demo-action">Describes the product in natural language</div>
+          <div class="demo-desc">No BRD workshops. No 8-week requirements phase. The CPO simply tells Claude what the bank needs. Claude generates a structured PRD with 47 user stories, API contracts, and regulatory mappings &mdash; all constrained by bank.md rules.</div>
+          <div class="demo-time-badge human">15 min conversation</div>
+        </div>
+      </div>
+
+      <!-- Step 3: CPO generates UI -->
+      <div class="demo-step">
+        <div class="demo-step-left">
+          <div class="demo-who cpo">Chief Product Officer</div>
+          <div class="demo-action">Generates the complete UI prototype</div>
+          <div class="demo-desc">Claude generates a full React application with the bank&rsquo;s design system, WCAG 2.2 AA accessibility, and responsive layout &mdash; all from the PRD it just created. The CPO reviews in-browser and iterates in real time.</div>
+          <div class="demo-time-badge human">45 min review &amp; iterate</div>
+        </div>
+        <div class="demo-step-center"><div class="demo-step-dot claude">&#x2728;</div></div>
+        <div class="demo-step-right">
+          <div class="demo-terminal">
+            <div class="demo-term-bar">
+              <div class="demo-term-dot r"></div><div class="demo-term-dot y"></div><div class="demo-term-dot g"></div>
+              <div class="demo-term-title">claude &mdash; UI generation</div>
+            </div>
+            <div class="demo-term-body"><span class="prompt">$</span> <span class="cmd">claude</span> <span class="string">"Generate the complete frontend application for
+  the Wealth Advisory CRM. Use React + TypeScript +
+  Tailwind. Follow the Bank Design System v4 from
+  CLAUDE.md. Include all 5 modules from the PRD.
+  Make it production-grade, not a wireframe."</span>
+
+<span class="info">&#x23F3; Reading CLAUDE.md design system rules...</span>
+<span class="info">&#x23F3; Reading PRD: 47 user stories...</span>
+<span class="info">&#x23F3; Generating component architecture...</span>
+
+<span class="success">&#x2713;</span> Generated <span class="highlight">68 components</span> across 5 modules:
+  <span class="file">src/modules/client360/</span> <span class="info">14 components</span>
+  <span class="file">src/modules/advisor-dashboard/</span> <span class="info">12 components</span>
+  <span class="file">src/modules/ai-recommendations/</span> <span class="info">11 components</span>
+  <span class="file">src/modules/regulatory/</span> <span class="info">16 components</span>
+  <span class="file">src/modules/client-portal/</span> <span class="info">15 components</span>
+<span class="success">&#x2713;</span> Design system: Bank DS v4 tokens applied
+<span class="success">&#x2713;</span> Accessibility: WCAG 2.2 AA validated
+<span class="success">&#x2713;</span> Responsive: 320px &rarr; 2560px tested
+<span class="success">&#x2713;</span> Unit tests: <span class="highlight">94% coverage</span> (241 tests)
+
+<span class="prompt">$</span> <span class="cmd">npm run dev</span>
+<span class="success">  &#x25B6; Local: http://localhost:3000</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- UI Mockup -->
+      <div style="max-width:900px; margin:0 auto 24px;">
+        <div class="demo-ui-mockup">
+          <div class="demo-ui-bar">
+            <div class="demo-ui-bar-dot"></div>
+            <div class="demo-ui-bar-dot"></div>
+            <div class="demo-ui-bar-dot"></div>
+            <div class="demo-ui-bar-url">https://localhost:3000/advisor/dashboard</div>
+          </div>
+          <div class="demo-ui-content">
+            <div class="crm-wire">
+              <div class="crm-wire-nav">
+                <div class="crm-wire-logo">WealthAdvisory CRM</div>
+                <div class="crm-wire-nav-links">
+                  <span class="active">Dashboard</span>
+                  <span>Clients</span>
+                  <span>Recommendations</span>
+                  <span>Regulatory</span>
+                  <span>Settings</span>
+                </div>
+              </div>
+              <div class="crm-wire-body">
+                <div class="crm-wire-sidebar">
+                  <div class="crm-wire-sidebar-item active">Overview</div>
+                  <div class="crm-wire-sidebar-item">My Clients (43)</div>
+                  <div class="crm-wire-sidebar-item">AI Recommendations</div>
+                  <div class="crm-wire-sidebar-item">Pending Reviews</div>
+                  <div class="crm-wire-sidebar-item">Suitability Reports</div>
+                  <div class="crm-wire-sidebar-item">KYC/AML Alerts</div>
+                  <div class="crm-wire-sidebar-item">Performance</div>
+                </div>
+                <div class="crm-wire-main">
+                  <div class="crm-wire-header">
+                    <h3>Advisor Dashboard</h3>
+                    <button class="crm-wire-btn">+ New Client</button>
+                  </div>
+                  <div class="crm-wire-kpi-row">
+                    <div class="crm-wire-kpi">
+                      <div class="crm-wire-kpi-val">$847M</div>
+                      <div class="crm-wire-kpi-label">Total AUM</div>
+                    </div>
+                    <div class="crm-wire-kpi">
+                      <div class="crm-wire-kpi-val">43</div>
+                      <div class="crm-wire-kpi-label">Active Clients</div>
+                    </div>
+                    <div class="crm-wire-kpi">
+                      <div class="crm-wire-kpi-val">12</div>
+                      <div class="crm-wire-kpi-label">AI Recommendations</div>
+                    </div>
+                    <div class="crm-wire-kpi">
+                      <div class="crm-wire-kpi-val">98.2%</div>
+                      <div class="crm-wire-kpi-label">KYC Compliant</div>
+                    </div>
+                  </div>
+                  <div class="crm-wire-cards">
+                    <div class="crm-wire-card">
+                      <div class="crm-wire-card-name">Sophia Chen</div>
+                      <div class="crm-wire-card-meta">UHNW &bull; Singapore</div>
+                      <div class="crm-wire-card-port">
+                        <div>
+                          <div class="crm-wire-card-port-val">$124.3M</div>
+                          <div class="crm-wire-card-port-label">Portfolio Value</div>
+                        </div>
+                        <div class="crm-wire-card-change up">+2.4% MTD</div>
+                      </div>
+                      <div class="crm-wire-card-risk low">Low Risk</div>
+                    </div>
+                    <div class="crm-wire-card">
+                      <div class="crm-wire-card-name">Marcus Weber</div>
+                      <div class="crm-wire-card-meta">HNW &bull; Frankfurt</div>
+                      <div class="crm-wire-card-port">
+                        <div>
+                          <div class="crm-wire-card-port-val">$38.7M</div>
+                          <div class="crm-wire-card-port-label">Portfolio Value</div>
+                        </div>
+                        <div class="crm-wire-card-change down">-0.8% MTD</div>
+                      </div>
+                      <div class="crm-wire-card-risk med">Med Risk</div>
+                    </div>
+                    <div class="crm-wire-card">
+                      <div class="crm-wire-card-name">Amara Okafor</div>
+                      <div class="crm-wire-card-meta">UHNW &bull; London</div>
+                      <div class="crm-wire-card-port">
+                        <div>
+                          <div class="crm-wire-card-port-val">$201.5M</div>
+                          <div class="crm-wire-card-port-label">Portfolio Value</div>
+                        </div>
+                        <div class="crm-wire-card-change up">+1.1% MTD</div>
+                      </div>
+                      <div class="crm-wire-card-risk low">Low Risk</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p style="text-align:center; font-size:12px; color:var(--text-light); margin-top:8px; font-style:italic;">Live UI generated by Claude Code in 8 minutes &mdash; Bank Design System v4, WCAG 2.2 AA, fully responsive</p>
+      </div>
+
+      <!-- Step 4: CPO freezes requirements -->
+      <div class="demo-step">
+        <div class="demo-step-left">
+          <div class="demo-terminal">
+            <div class="demo-term-bar">
+              <div class="demo-term-dot r"></div><div class="demo-term-dot y"></div><div class="demo-term-dot g"></div>
+              <div class="demo-term-title">claude &mdash; CPO session</div>
+            </div>
+            <div class="demo-term-body"><span class="prompt">$</span> <span class="cmd">claude</span> <span class="string">"The UI looks great. Three changes:
+  1. Add a life-events timeline to Client 360
+  2. Make the AI recommendation cards show
+     confidence scores
+  3. Add a MiFID II suitability flag on each
+     client card"</span>
+
+<span class="info">&#x23F3; Updating 3 components...</span>
+<span class="success">&#x2713;</span> <span class="file">ClientTimeline.tsx</span> <span class="info">created</span>
+<span class="success">&#x2713;</span> <span class="file">RecommendationCard.tsx</span> <span class="info">updated +confidence</span>
+<span class="success">&#x2713;</span> <span class="file">ClientCard.tsx</span> <span class="info">updated +suitability flag</span>
+<span class="success">&#x2713;</span> 7 new tests added, all passing
+
+<span class="prompt">$</span> <span class="cmd">claude</span> <span class="string">"Perfect. Freeze requirements. Tag this as
+  v0.1-requirements-frozen. Generate the
+  requirements handoff package."</span>
+
+<span class="success">&#x2713;</span> Tag: <span class="highlight">v0.1-requirements-frozen</span>
+<span class="success">&#x2713;</span> Handoff package generated:
+  <span class="file">docs/PRD-wealth-advisory-crm.md</span> <span class="info">(frozen)</span>
+  <span class="file">docs/api-contracts/</span> <span class="info">12 OpenAPI specs</span>
+  <span class="file">docs/data-requirements.md</span> <span class="info">for Chief Data Architect</span>
+  <span class="file">docs/engineering-spec.md</span> <span class="info">for Chief Technology Officer</span>
+  <span class="file">docs/compliance-checklist.md</span> <span class="info">for CCO</span></div>
+          </div>
+        </div>
+        <div class="demo-step-center"><div class="demo-step-dot cpo">&#x2713;</div></div>
+        <div class="demo-step-right">
+          <div class="demo-who cpo">Chief Product Officer</div>
+          <div class="demo-action">Iterates and freezes requirements</div>
+          <div class="demo-desc">Three feedback points, resolved in minutes. Requirements frozen. Claude auto-generates handoff packages for each of the other three team members &mdash; Chief Data Architect, Engineer, and CCO &mdash; each tailored to their role.</div>
+          <div class="demo-time-badge human">20 min total</div>
+        </div>
+      </div>
+
+      <!-- ════════════ ACT 3: DATABASE & SYNTHETIC DATA ════════════ -->
+      <div class="demo-phase-sep">
+        <div class="demo-phase-sep-line">
+          Act 4: Database Schema & Synthetic Data
+          <span class="demo-phase-sep-time">Day 1 &mdash; 13:30 to 15:00</span>
+        </div>
+      </div>
+
+      <!-- Step 5: Schema design -->
+      <div class="demo-step">
+        <div class="demo-step-left">
+          <div class="demo-who claude">Claude Code</div>
+          <div class="demo-action">Designs the complete database schema</div>
+          <div class="demo-desc">From the frozen PRD and bank.md data residency rules, Claude generates a fully normalised PostgreSQL schema &mdash; PII encrypted at rest, audit columns on every table, GDPR-compliant soft deletes.</div>
+          <div class="demo-time-badge fast">4 min generation</div>
+        </div>
+        <div class="demo-step-center"><div class="demo-step-dot claude">&#x2728;</div></div>
+        <div class="demo-step-right">
+          <div class="demo-terminal">
+            <div class="demo-term-bar">
+              <div class="demo-term-dot r"></div><div class="demo-term-dot y"></div><div class="demo-term-dot g"></div>
+              <div class="demo-term-title">claude &mdash; schema generation</div>
+            </div>
+            <div class="demo-term-body"><span class="prompt">$</span> <span class="cmd">claude</span> <span class="string">"Design the complete PostgreSQL database schema
+  for the Wealth Advisory CRM. Follow CLAUDE.md
+  data standards: PII encryption, audit columns,
+  data residency tagging, soft deletes. Generate
+  migrations and an ERD."</span>
+
+<span class="info">&#x23F3; Reading data-requirements.md...</span>
+<span class="info">&#x23F3; Applying CLAUDE.md data residency rules...</span>
+
+<span class="success">&#x2713;</span> Schema generated: <span class="highlight">24 tables, 8 views, 14 indexes</span>
+  <span class="file">db/migrations/001_core_schema.sql</span>
+  <span class="file">db/migrations/002_audit_triggers.sql</span>
+  <span class="file">db/migrations/003_encryption_policies.sql</span>
+  <span class="file">db/migrations/004_row_level_security.sql</span>
+  <span class="file">docs/erd-wealth-crm.svg</span>
+
+<span class="success">&#x2713;</span> Compliance validations:
+  <span class="info">  PII columns: AES-256 encryption via pgcrypto &#x2713;</span>
+  <span class="info">  Audit columns: created_by, updated_at on all &#x2713;</span>
+  <span class="info">  Soft delete: deleted_at + RLS policies &#x2713;</span>
+  <span class="info">  Data residency: region_tag on all PII tables &#x2713;</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Schema visual -->
+      <div style="max-width:900px; margin:0 auto 24px;">
+        <div class="demo-schema">
+<span class="comment">-- Core tables (excerpt from 24-table schema)</span>
+
+<span class="constraint">CREATE TABLE</span> <span class="tname">clients</span> (
+    <span class="col">id</span>              <span class="type">UUID</span> <span class="constraint">PRIMARY KEY DEFAULT</span> gen_random_uuid(),
+    <span class="col">first_name</span>        <span class="type">BYTEA</span>,          <span class="comment">-- AES-256 encrypted (PII)</span>
+    <span class="col">last_name</span>         <span class="type">BYTEA</span>,          <span class="comment">-- AES-256 encrypted (PII)</span>
+    <span class="col">email_encrypted</span>   <span class="type">BYTEA</span>,          <span class="comment">-- AES-256 encrypted (PII)</span>
+    <span class="col">risk_profile</span>      <span class="type">VARCHAR(20)</span> <span class="constraint">CHECK</span> (risk_profile <span class="constraint">IN</span> ('conservative','moderate','aggressive')),
+    <span class="col">segment</span>           <span class="type">VARCHAR(10)</span> <span class="constraint">CHECK</span> (segment <span class="constraint">IN</span> ('HNW','UHNW','INSTITUTIONAL')),
+    <span class="col">kyc_status</span>        <span class="type">VARCHAR(20)</span> <span class="constraint">DEFAULT</span> 'pending',
+    <span class="col">mifid_suitability</span> <span class="type">JSONB</span>,
+    <span class="col">region_tag</span>        <span class="type">VARCHAR(10)</span> <span class="constraint">NOT NULL</span>,  <span class="comment">-- data residency: eu/apac/us</span>
+    <span class="col">created_by</span>        <span class="type">UUID</span> <span class="fk">REFERENCES</span> users(id),
+    <span class="col">created_at</span>        <span class="type">TIMESTAMPTZ</span> <span class="constraint">DEFAULT</span> now(),
+    <span class="col">updated_at</span>        <span class="type">TIMESTAMPTZ</span> <span class="constraint">DEFAULT</span> now(),
+    <span class="col">deleted_at</span>        <span class="type">TIMESTAMPTZ</span>         <span class="comment">-- GDPR soft delete</span>
+);
+
+<span class="constraint">CREATE TABLE</span> <span class="tname">portfolios</span> (
+    <span class="col">id</span>              <span class="type">UUID</span> <span class="constraint">PRIMARY KEY DEFAULT</span> gen_random_uuid(),
+    <span class="col">client_id</span>       <span class="type">UUID</span> <span class="fk">REFERENCES</span> clients(id),
+    <span class="col">total_aum</span>       <span class="type">NUMERIC(18,2)</span>,
+    <span class="col">currency</span>        <span class="type">VARCHAR(3)</span>,
+    <span class="col">strategy</span>        <span class="type">VARCHAR(50)</span>,
+    <span class="col">last_rebalance</span>  <span class="type">TIMESTAMPTZ</span>,
+    <span class="col">risk_score</span>      <span class="type">NUMERIC(3,2)</span> <span class="constraint">CHECK</span> (risk_score <span class="constraint">BETWEEN</span> 0 <span class="constraint">AND</span> 1),
+    <span class="comment">-- ... audit columns ...</span>
+);
+
+<span class="constraint">CREATE TABLE</span> <span class="tname">ai_recommendations</span> (
+    <span class="col">id</span>              <span class="type">UUID</span> <span class="constraint">PRIMARY KEY</span>,
+    <span class="col">client_id</span>       <span class="type">UUID</span> <span class="fk">REFERENCES</span> clients(id),
+    <span class="col">recommendation</span>  <span class="type">JSONB</span> <span class="constraint">NOT NULL</span>,
+    <span class="col">confidence</span>      <span class="type">NUMERIC(3,2)</span>,
+    <span class="col">model_version</span>   <span class="type">VARCHAR(20)</span>,       <span class="comment">-- ML model governance</span>
+    <span class="col">advisor_action</span>  <span class="type">VARCHAR(20)</span>,       <span class="comment">-- accepted/rejected/modified</span>
+    <span class="col">suitability_check</span> <span class="type">BOOLEAN DEFAULT FALSE</span>, <span class="comment">-- MiFID II</span>
+    <span class="comment">-- ... audit columns, soft delete ...</span>
+);
+
+<span class="comment">-- + 21 more tables: holdings, transactions, life_events,
+-- advisor_notes, compliance_alerts, audit_log, etc.</span></div>
+      </div>
+
+      <!-- Step 6: Synthetic data -->
+      <div class="demo-step">
+        <div class="demo-step-left">
+          <div class="demo-terminal">
+            <div class="demo-term-bar">
+              <div class="demo-term-dot r"></div><div class="demo-term-dot y"></div><div class="demo-term-dot g"></div>
+              <div class="demo-term-title">claude &mdash; data generation</div>
+            </div>
+            <div class="demo-term-body"><span class="prompt">$</span> <span class="cmd">claude</span> <span class="string">"Generate realistic synthetic data for the
+  Wealth Advisory CRM:
+  - 2,500 HNW/UHNW clients across EU, APAC, US
+  - Realistic portfolio distributions ($5M-$500M)
+  - 180 relationship managers
+  - 12 months of transaction history
+  - Realistic life events, KYC statuses, risk profiles
+  Use Faker + custom financial generators. Seed
+  the database and verify data integrity."</span>
+
+<span class="info">&#x23F3; Generating synthetic data engine...</span>
+<span class="info">&#x23F3; Creating 2,500 client profiles...</span>
+<span class="info">&#x23F3; Generating 180 advisor records...</span>
+<span class="info">&#x23F3; Simulating 12 months of transactions...</span>
+
+<span class="success">&#x2713;</span> Synthetic data generated:
+  <span class="info">  Clients: 2,500 (EU: 1,100 | APAC: 800 | US: 600)</span>
+  <span class="info">  Advisors: 180</span>
+  <span class="info">  Portfolios: 3,847 (multi-portfolio clients)</span>
+  <span class="info">  Holdings: 42,318 positions</span>
+  <span class="info">  Transactions: 287,440 (12 months)</span>
+  <span class="info">  Life events: 6,230</span>
+  <span class="info">  Total AUM: $127.4B (realistic distribution)</span>
+<span class="success">&#x2713;</span> All PII fields encrypted per CLAUDE.md
+<span class="success">&#x2713;</span> Data residency tags verified
+<span class="success">&#x2713;</span> Referential integrity: all FK constraints pass
+<span class="success">&#x2713;</span> Seed script: <span class="file">db/seeds/synthetic_data.sql</span></div>
+          </div>
+        </div>
+        <div class="demo-step-center"><div class="demo-step-dot claude">&#x2728;</div></div>
+        <div class="demo-step-right">
+          <div class="demo-who claude">Claude Code</div>
+          <div class="demo-action">Generates production-realistic synthetic data</div>
+          <div class="demo-desc">2,500 clients, 180 advisors, 287K transactions, $127B AUM &mdash; with realistic financial distributions, multi-region data residency, encrypted PII, and 12 months of history. The prototype will look and feel like a live system.</div>
+          <div class="demo-time-badge fast">6 min generation</div>
+        </div>
+      </div>
+
+      <!-- ════════════ ACT 4: DEPLOY PROTOTYPE ════════════ -->
+      <div class="demo-phase-sep">
+        <div class="demo-phase-sep-line">
+          Act 5: Deploy Prototype to Cloud
+          <span class="demo-phase-sep-time">Day 1 &mdash; 15:30 to 16:30</span>
+        </div>
+      </div>
+
+      <!-- Step 7: IaC + Deploy -->
+      <div class="demo-step">
+        <div class="demo-step-left">
+          <div class="demo-who eng">Chief Technology Officer</div>
+          <div class="demo-action">Deploys to AWS with one command</div>
+          <div class="demo-desc">Claude generates the complete infrastructure &mdash; Terraform for AWS, Docker containers, RDS PostgreSQL, ECS Fargate, CloudFront CDN, and a full CI/CD pipeline &mdash; then deploys it all. The engineer reviews the IaC and approves.</div>
+          <div class="demo-time-badge human">20 min review + approve</div>
+        </div>
+        <div class="demo-step-center"><div class="demo-step-dot eng">&#x1F528;</div></div>
+        <div class="demo-step-right">
+          <div class="demo-terminal">
+            <div class="demo-term-bar">
+              <div class="demo-term-dot r"></div><div class="demo-term-dot y"></div><div class="demo-term-dot g"></div>
+              <div class="demo-term-title">claude &mdash; infrastructure deployment</div>
+            </div>
+            <div class="demo-term-body"><span class="prompt">$</span> <span class="cmd">claude</span> <span class="string">"Generate complete AWS infrastructure and deploy
+  the Wealth Advisory CRM prototype. Follow CLAUDE.md:
+  GitOps, Terraform, containerised, eu-central-1 for
+  EU data residency. Include monitoring and alerts."</span>
+
+<span class="info">&#x23F3; Generating Terraform modules...</span>
+<span class="success">&#x2713;</span> Infrastructure generated:
+  <span class="file">infra/terraform/</span>
+  <span class="info">  &bull; VPC + private subnets + NAT gateway</span>
+  <span class="info">  &bull; ECS Fargate cluster (3 services)</span>
+  <span class="info">  &bull; RDS PostgreSQL 15 (Multi-AZ, encrypted)</span>
+  <span class="info">  &bull; ElastiCache Redis (session + cache)</span>
+  <span class="info">  &bull; CloudFront + S3 (frontend)</span>
+  <span class="info">  &bull; Secrets Manager (all credentials)</span>
+  <span class="info">  &bull; CloudWatch dashboards + alarms</span>
+  <span class="info">  &bull; WAF rules (OWASP Top 10)</span>
+
+<span class="prompt">$</span> <span class="cmd">cd</span> infra/terraform && <span class="cmd">terraform</span> <span class="flag">init</span>
+<span class="success">Terraform has been successfully initialized!</span>
+
+<span class="prompt">$</span> <span class="cmd">terraform</span> <span class="flag">plan</span>
+<span class="info">Plan: 47 resources to add, 0 to change, 0 to destroy.</span>
+
+<span class="prompt">$</span> <span class="cmd">terraform</span> <span class="flag">apply</span> <span class="flag">-auto-approve</span>
+<span class="info">&#x23F3; Creating VPC...</span>
+<span class="info">&#x23F3; Creating RDS instance (eu-central-1)...</span>
+<span class="info">&#x23F3; Creating ECS services...</span>
+<span class="info">&#x23F3; Running database migrations...</span>
+<span class="info">&#x23F3; Seeding synthetic data...</span>
+<span class="info">&#x23F3; Deploying frontend to CloudFront...</span>
+
+<span class="success">&#x2714; Apply complete! Resources: 47 added.</span>
+
+<span class="highlight">Outputs:</span>
+  <span class="info">app_url     =</span> <span class="url">https://wealth-crm-dev.bank.internal</span>
+  <span class="info">api_url     =</span> <span class="url">https://api.wealth-crm-dev.bank.internal</span>
+  <span class="info">dashboard   =</span> <span class="url">https://monitoring.wealth-crm-dev.bank.internal</span>
+  <span class="info">region      =</span> eu-central-1
+  <span class="info">cost_est    =</span> ~$2,400/month (dev environment)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Deployed confirmation -->
+      <div style="max-width:900px; margin:0 auto 24px;">
+        <div style="background: var(--green-light); border: 2px solid var(--green); border-radius: 14px; padding: 24px 32px; display: flex; align-items: center; gap: 20px;">
+          <div style="font-size: 40px;">&#x1F680;</div>
+          <div>
+            <div style="font-size: 18px; font-weight: 800; color: var(--green);">Prototype Live in AWS &mdash; Day 1, 4:30 PM</div>
+            <div style="font-size: 14px; color: var(--text-light); margin-top: 4px;">Full CRM with 2,500 clients, synthetic data, 68 UI components, 24-table database, encrypted PII, monitoring &mdash; deployed in 7.5 hours from first conversation.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════ ACT 5: DATA ARCHITECT + ENGINEER ════════════ -->
+      <div class="demo-phase-sep">
+        <div class="demo-phase-sep-line">
+          Act 6: Chief Data Architect & Engineer Build Production
+          <span class="demo-phase-sep-time">Day 2 &mdash; Full Day</span>
+        </div>
+      </div>
+
+      <!-- Published requirements cards -->
+      <div style="max-width:900px; margin:0 auto 24px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap: 20px; margin-bottom: 24px;">
+          <div class="demo-publish-card" style="border-top: 4px solid #0ea5e9;">
+            <h5 style="color: #0ea5e9;">&#x1F4CB; Chief Data Architect Requirements Published</h5>
+            <div class="demo-publish-item"><span class="demo-publish-item-label">Data sources to integrate</span><span class="demo-publish-item-value">8 systems</span></div>
+            <div class="demo-publish-item"><span class="demo-publish-item-label">Core banking (account data)</span><span class="demo-publish-item-value">SAP FICO</span></div>
+            <div class="demo-publish-item"><span class="demo-publish-item-label">Market data feed</span><span class="demo-publish-item-value">Bloomberg B-PIPE</span></div>
+            <div class="demo-publish-item"><span class="demo-publish-item-label">KYC/AML system</span><span class="demo-publish-item-value">Refinitiv World-Check</span></div>
+            <div class="demo-publish-item"><span class="demo-publish-item-label">Custody &amp; settlement</span><span class="demo-publish-item-value">SWIFT / Euroclear</span></div>
+            <div class="demo-publish-item"><span class="demo-publish-item-label">ML models to build</span><span class="demo-publish-item-value">3 models</span></div>
+            <div class="demo-publish-item"><span class="demo-publish-item-label">Data lineage required</span><span class="demo-publish-item-value">End-to-end</span></div>
+          </div>
+          <div class="demo-publish-card" style="border-top: 4px solid #f59e0b;">
+            <h5 style="color: #f59e0b;">&#x1F4CB; Chief Technology Officer Requirements Published</h5>
+            <div class="demo-publish-item"><span class="demo-publish-item-label">Backend services</span><span class="demo-publish-item-value">12 microservices</span></div>
+            <div class="demo-publish-item"><span class="demo-publish-item-label">API contracts</span><span class="demo-publish-item-value">12 OpenAPI specs</span></div>
+            <div class="demo-publish-item"><span class="demo-publish-item-label">Event bus</span><span class="demo-publish-item-value">Kafka (8 topics)</span></div>
+            <div class="demo-publish-item"><span class="demo-publish-item-label">Auth integration</span><span class="demo-publish-item-value">OAuth 2.0 + RBAC</span></div>
+            <div class="demo-publish-item"><span class="demo-publish-item-label">Performance target</span><span class="demo-publish-item-value">P99 &lt; 200ms</span></div>
+            <div class="demo-publish-item"><span class="demo-publish-item-label">Test coverage target</span><span class="demo-publish-item-value">&ge; 90%</span></div>
+            <div class="demo-publish-item"><span class="demo-publish-item-label">Production readiness</span><span class="demo-publish-item-value">Multi-AZ, canary</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 8: Chief Data Architect sources data & builds models -->
+      <div class="demo-step">
+        <div class="demo-step-left">
+          <div class="demo-terminal">
+            <div class="demo-term-bar">
+              <div class="demo-term-dot r"></div><div class="demo-term-dot y"></div><div class="demo-term-dot g"></div>
+              <div class="demo-term-title">claude &mdash; Chief Data Architect session</div>
+            </div>
+            <div class="demo-term-body"><span class="prompt">$</span> <span class="cmd">claude</span> <span class="string">"Build the complete data integration layer:
+  1. ETL pipelines for all 8 source systems
+  2. Real-time market data ingestion from Bloomberg
+  3. Build 3 ML models:
+     a) Client risk scoring (gradient boosted)
+     b) Next-best-action recommendation engine
+     c) Portfolio rebalancing optimizer
+  4. Data lineage tracking for all PII flows
+  5. Data quality monitoring dashboards
+  Follow CLAUDE.md data governance rules."</span>
+
+<span class="info">&#x23F3; Generating ETL pipeline framework...</span>
+<span class="info">&#x23F3; Building source connectors...</span>
+<span class="info">&#x23F3; Designing ML model architectures...</span>
+
+<span class="success">&#x2713;</span> ETL pipelines generated:
+  <span class="file">data/pipelines/sap_fico_connector.py</span>
+  <span class="file">data/pipelines/bloomberg_realtime.py</span>
+  <span class="file">data/pipelines/refinitiv_kyc.py</span>
+  <span class="file">data/pipelines/swift_settlement.py</span>
+  <span class="info">  + 4 more source connectors</span>
+
+<span class="success">&#x2713;</span> ML models generated:
+  <span class="file">ml/risk_scoring/</span> <span class="info">XGBoost + SHAP explainability</span>
+  <span class="file">ml/next_best_action/</span> <span class="info">Deep learning + contextual bandits</span>
+  <span class="file">ml/portfolio_optimizer/</span> <span class="info">Mean-variance + constraints</span>
+  <span class="info">  Model governance: version tracking, A/B framework</span>
+  <span class="info">  Bias detection: fairness metrics on all models</span>
+
+<span class="success">&#x2713;</span> Data lineage: <span class="file">data/lineage/lineage_graph.json</span>
+<span class="success">&#x2713;</span> Quality monitors: 47 data quality rules active
+<span class="success">&#x2713;</span> Tests: 156 tests, <span class="highlight">93% coverage</span></div>
+          </div>
+        </div>
+        <div class="demo-step-center"><div class="demo-step-dot data">&#x1F4CA;</div></div>
+        <div class="demo-step-right">
+          <div class="demo-who data">Chief Data Architect</div>
+          <div class="demo-action">Builds data pipelines &amp; AI/ML models</div>
+          <div class="demo-desc">The Chief Data Architect directs Claude to build ETL connectors for 8 source systems, 3 production ML models (risk scoring, next-best-action, portfolio optimiser), full data lineage, and quality monitoring. She reviews model architectures and validates bias detection.</div>
+          <div class="demo-time-badge human">3 hours review &amp; direction</div>
+        </div>
+      </div>
+
+      <!-- Step 9: Engineer builds production backend -->
+      <div class="demo-step">
+        <div class="demo-step-left">
+          <div class="demo-who eng">Chief Technology Officer</div>
+          <div class="demo-action">Builds production backend &amp; hardens infrastructure</div>
+          <div class="demo-desc">Working in parallel with the Chief Data Architect, the Engineer directs Claude to build 12 production microservices, integrate the ML model serving layer, add event streaming, and harden the infrastructure for production &mdash; Multi-AZ, auto-scaling, disaster recovery.</div>
+          <div class="demo-time-badge human">4 hours review &amp; direction</div>
+        </div>
+        <div class="demo-step-center"><div class="demo-step-dot eng">&#x1F528;</div></div>
+        <div class="demo-step-right">
+          <div class="demo-terminal">
+            <div class="demo-term-bar">
+              <div class="demo-term-dot r"></div><div class="demo-term-dot y"></div><div class="demo-term-dot g"></div>
+              <div class="demo-term-title">claude &mdash; Engineer session</div>
+            </div>
+            <div class="demo-term-body"><span class="prompt">$</span> <span class="cmd">claude</span> <span class="string">"Build all 12 production microservices from the
+  API contracts. Integrate the ML model serving layer.
+  Add Kafka event streaming for all state changes.
+  Production-harden the infrastructure:
+  - Multi-AZ with auto-failover
+  - Auto-scaling (50-500 concurrent advisors)
+  - DR: RPO < 5min, RTO < 15min
+  - Full OpenTelemetry observability
+  Follow CLAUDE.md architecture standards."</span>
+
+<span class="info">&#x23F3; Generating 12 microservices from OpenAPI specs...</span>
+<span class="info">&#x23F3; Integrating ML model serving (SageMaker)...</span>
+<span class="info">&#x23F3; Configuring Kafka topics and consumers...</span>
+
+<span class="success">&#x2713;</span> Services generated:
+  <span class="file">services/client-service/</span>       <span class="info">CRUD + search</span>
+  <span class="file">services/portfolio-service/</span>     <span class="info">positions + P&L</span>
+  <span class="file">services/advisory-service/</span>      <span class="info">ML integration</span>
+  <span class="file">services/compliance-service/</span>    <span class="info">KYC + MiFID II</span>
+  <span class="file">services/notification-service/</span>  <span class="info">alerts + messaging</span>
+  <span class="file">services/auth-service/</span>          <span class="info">OAuth 2.0 + RBAC</span>
+  <span class="info">  + 6 more services</span>
+
+<span class="success">&#x2713;</span> Kafka: 8 topics, dead-letter queues configured
+<span class="success">&#x2713;</span> OpenTelemetry: traces + metrics on all services
+<span class="success">&#x2713;</span> Tests: <span class="highlight">2,847 tests, 94% coverage</span>
+<span class="success">&#x2713;</span> Load test: P99 = 143ms at 500 concurrent users
+<span class="success">&#x2713;</span> Security scan: <span class="highlight">0 vulnerabilities (OWASP Top 10)</span>
+
+<span class="prompt">$</span> <span class="cmd">claude</span> <span class="string">"Deploy all services to production infrastructure.
+  Canary rollout, 5% initial traffic."</span>
+
+<span class="info">&#x23F3; Building Docker images...</span>
+<span class="info">&#x23F3; Pushing to ECR...</span>
+<span class="info">&#x23F3; Deploying via ArgoCD (canary 5%)...</span>
+<span class="success">&#x2714; All 12 services deployed. Canary healthy.</span>
+<span class="success">&#x2714; Promoting to 100% traffic...</span>
+<span class="success">&#x2714; Production deployment complete.</span>
+
+<span class="highlight">Production URL:</span> <span class="url">https://wealth-crm.bank.internal</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Day 2 complete -->
+      <div style="max-width:900px; margin:0 auto 24px;">
+        <div style="background: var(--white); border-radius: 14px; padding: 24px 32px; box-shadow: var(--shadow-md); display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; text-align: center;">
+          <div>
+            <div style="font-size: 24px; font-weight: 900; color: var(--primary);">12</div>
+            <div style="font-size: 11px; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px;">Microservices</div>
+          </div>
+          <div>
+            <div style="font-size: 24px; font-weight: 900; color: var(--primary);">3</div>
+            <div style="font-size: 11px; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px;">ML Models</div>
+          </div>
+          <div>
+            <div style="font-size: 24px; font-weight: 900; color: var(--primary);">2,847</div>
+            <div style="font-size: 11px; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px;">Automated Tests</div>
+          </div>
+          <div>
+            <div style="font-size: 24px; font-weight: 900; color: var(--green);">0</div>
+            <div style="font-size: 11px; color: var(--text-light); text-transform: uppercase; letter-spacing: 1px;">Vulnerabilities</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════ ACT 6: CCO REVIEW ════════════ -->
+      <div class="demo-phase-sep">
+        <div class="demo-phase-sep-line">
+          Act 7: CCO End-to-End Compliance Review
+          <span class="demo-phase-sep-time">Day 3 &mdash; Morning</span>
+        </div>
+      </div>
+
+      <!-- Controls.md -->
+      <div class="demo-step">
+        <div class="demo-step-left">
+          <div class="demo-who cco">Chief Compliance Officer</div>
+          <div class="demo-action">Loads controls.md and runs full compliance audit</div>
+          <div class="demo-desc">The CCO has her own controls.md file &mdash; a machine-readable compliance test suite. Claude runs it against the entire application, checking every regulatory requirement, security control, data protection rule, and audit standard. No manual testing. No sampling. 100% coverage.</div>
+          <div class="demo-time-badge human">2 hours review</div>
+        </div>
+        <div class="demo-step-center"><div class="demo-step-dot cco">&#x1F6E1;</div></div>
+        <div class="demo-step-right">
+          <div class="controlsmd-visual">
+            <div class="controlsmd-bar">
+              <div class="demo-term-dot r"></div><div class="demo-term-dot y"></div><div class="demo-term-dot g"></div>
+              <div class="demo-term-title" style="margin-left: 8px;">controls.md &mdash; CCO Compliance Test Suite</div>
+            </div>
+            <div class="controlsmd-body">
+<span class="ch"># CONTROLS.MD &mdash; Wealth Advisory CRM</span>
+<span class="ci"># Machine-readable compliance test suite</span>
+<span class="ci"># Run against any application for full audit</span>
+
+<span class="ch">## REGULATORY</span>
+<span class="ck">MiFID_II_SUITABILITY:</span> every recommendation must have suitability check = true
+<span class="ck">KYC_AML_STATUS:</span> no client with kyc_status = 'failed' can have active portfolio
+<span class="ck">GDPR_RIGHT_TO_ERASURE:</span> soft delete must cascade to all PII within 72 hours
+<span class="ck">PSD2_STRONG_AUTH:</span> all transactions require 2FA
+<span class="ck">BASEL_III_REPORTING:</span> risk exposures must be calculable within 15 minutes
+
+<span class="ch">## SECURITY</span>
+<span class="ck">OWASP_TOP_10:</span> zero P1/P2 findings on SAST + DAST scan
+<span class="ck">PII_ENCRYPTION:</span> all PII columns encrypted at rest (AES-256)
+<span class="ck">TLS_IN_TRANSIT:</span> all inter-service communication uses TLS 1.3
+<span class="ck">SECRETS_MANAGEMENT:</span> zero hardcoded credentials in codebase
+<span class="ck">RBAC_ENFORCEMENT:</span> every endpoint has role-based access control
+<span class="ck">WAF_ACTIVE:</span> WAF rules deployed and blocking
+
+<span class="ch">## DATA GOVERNANCE</span>
+<span class="ck">DATA_RESIDENCY:</span> EU client data in eu-central-1 only
+<span class="ck">DATA_LINEAGE:</span> every PII field has documented lineage
+<span class="ck">AUDIT_TRAIL:</span> every state change logged with who/what/when
+<span class="ck">RETENTION_POLICY:</span> data retention rules enforced per type
+
+<span class="ch">## OPERATIONAL</span>
+<span class="ck">FOUR_EYES:</span> no self-approval of production changes
+<span class="ck">CHANGE_RECORD:</span> every deployment has a change record
+<span class="ck">ROLLBACK_TESTED:</span> rollback procedure validated
+<span class="ck">DR_TESTED:</span> disaster recovery RTO &lt; 15min validated</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step: Run controls -->
+      <div class="demo-step">
+        <div class="demo-step-left">
+          <div class="demo-terminal">
+            <div class="demo-term-bar">
+              <div class="demo-term-dot r"></div><div class="demo-term-dot y"></div><div class="demo-term-dot g"></div>
+              <div class="demo-term-title">claude &mdash; CCO compliance audit</div>
+            </div>
+            <div class="demo-term-body"><span class="prompt">$</span> <span class="cmd">claude</span> <span class="string">"Run the complete controls.md audit against the
+  Wealth Advisory CRM. Test every control. Generate
+  the compliance evidence package for the regulator."</span>
+
+<span class="info">&#x23F3; Loading controls.md (18 controls)...</span>
+<span class="info">&#x23F3; Running regulatory controls...</span>
+
+<span class="table-head">REGULATORY CONTROLS                          STATUS</span>
+<span class="success">&#x2714; MiFID II Suitability Check               PASS</span>
+  <span class="dim">  Verified: 100% of ai_recommendations have suitability_check = true</span>
+<span class="success">&#x2714; KYC/AML Enforcement                      PASS</span>
+  <span class="dim">  Verified: RLS policy blocks portfolio access for failed KYC</span>
+<span class="success">&#x2714; GDPR Right to Erasure                    PASS</span>
+  <span class="dim">  Verified: cascade soft delete triggers on all 24 tables</span>
+<span class="success">&#x2714; PSD2 Strong Authentication                PASS</span>
+  <span class="dim">  Verified: 2FA middleware on all transaction endpoints</span>
+<span class="success">&#x2714; Basel III Reporting                       PASS</span>
+  <span class="dim">  Verified: risk exposure query completes in 8.2s (< 15min)</span>
+
+<span class="info">&#x23F3; Running security controls...</span>
+
+<span class="table-head">SECURITY CONTROLS                            STATUS</span>
+<span class="success">&#x2714; OWASP Top 10 Scan                        PASS</span>
+  <span class="dim">  0 P1, 0 P2, 0 P3 findings (SAST + DAST)</span>
+<span class="success">&#x2714; PII Encryption at Rest                   PASS</span>
+  <span class="dim">  14 PII columns across 6 tables: all AES-256 via pgcrypto</span>
+<span class="success">&#x2714; TLS 1.3 In Transit                       PASS</span>
+  <span class="dim">  All 12 service-to-service connections verified mTLS</span>
+<span class="success">&#x2714; Secrets Management                        PASS</span>
+  <span class="dim">  0 hardcoded secrets found (scanned 48,000 lines)</span>
+<span class="success">&#x2714; RBAC Enforcement                          PASS</span>
+  <span class="dim">  67 endpoints: all require valid JWT + role check</span>
+<span class="success">&#x2714; WAF Active                                PASS</span>
+  <span class="dim">  AWS WAF: 12 rules active, test payloads blocked</span>
+
+<span class="info">&#x23F3; Running data governance controls...</span>
+
+<span class="table-head">DATA GOVERNANCE CONTROLS                      STATUS</span>
+<span class="success">&#x2714; Data Residency                            PASS</span>
+  <span class="dim">  EU clients: 1,100 records, all in eu-central-1</span>
+<span class="success">&#x2714; Data Lineage                              PASS</span>
+  <span class="dim">  Lineage graph covers 100% of PII fields</span>
+<span class="success">&#x2714; Audit Trail                               PASS</span>
+  <span class="dim">  audit_log table: 347,000 entries with full provenance</span>
+<span class="success">&#x2714; Retention Policy                           PASS</span>
+  <span class="dim">  Automated purge jobs configured per data type</span>
+
+<span class="info">&#x23F3; Running operational controls...</span>
+
+<span class="table-head">OPERATIONAL CONTROLS                          STATUS</span>
+<span class="success">&#x2714; Four-Eyes Principle                       PASS</span>
+  <span class="dim">  All 23 production commits: different author vs approver</span>
+<span class="success">&#x2714; Change Records                            PASS</span>
+  <span class="dim">  12 deployment records with full audit chain</span>
+<span class="success">&#x2714; Rollback Tested                           PASS</span>
+  <span class="dim">  Canary rollback executed in 2.3 minutes</span>
+<span class="success">&#x2714; Disaster Recovery                         PASS</span>
+  <span class="dim">  Failover test: RTO = 11 minutes (< 15min target)</span>
+
+<span class="highlight">═══════════════════════════════════════════════</span>
+<span class="success">RESULT: 18/18 CONTROLS PASSED</span>
+<span class="highlight">═══════════════════════════════════════════════</span>
+
+<span class="success">&#x2713;</span> Compliance evidence package generated:
+  <span class="file">compliance/evidence-package-v1.0.pdf</span> <span class="info">(142 pages)</span>
+  <span class="file">compliance/audit-trail-export.json</span> <span class="info">(347K records)</span>
+  <span class="file">compliance/security-scan-report.html</span>
+  <span class="file">compliance/data-lineage-report.svg</span></div>
+          </div>
+        </div>
+        <div class="demo-step-center"><div class="demo-step-dot cco">&#x2713;</div></div>
+        <div class="demo-step-right">
+          <div class="demo-who cco">Claude Code + CCO</div>
+          <div class="demo-action">18/18 controls passed. Evidence package generated.</div>
+          <div class="demo-desc">Every single control tested &mdash; not sampled, <em>tested</em>. 100% coverage across regulatory, security, data governance, and operational controls. The 142-page evidence package is generated in seconds, not the 6-8 weeks it takes today. The CCO reviews the results and signs off.</div>
+          <div class="demo-time-badge fast">4 min automated scan</div>
+        </div>
+      </div>
+
+      <!-- Step: CCO approves -->
+      <div class="demo-step">
+        <div class="demo-step-left">
+          <div class="demo-who cco">Chief Compliance Officer</div>
+          <div class="demo-action">Signs off for pilot release</div>
+          <div class="demo-desc">With 18/18 controls passed, full audit evidence, and a 142-page compliance package, the CCO approves the application for pilot deployment. She does this with complete confidence &mdash; because unlike manual testing, this audit was exhaustive, not sampled.</div>
+          <div class="demo-time-badge human">30 min final review</div>
+        </div>
+        <div class="demo-step-center"><div class="demo-step-dot cco">&#x1F6E1;</div></div>
+        <div class="demo-step-right">
+          <div class="demo-terminal">
+            <div class="demo-term-bar">
+              <div class="demo-term-dot r"></div><div class="demo-term-dot y"></div><div class="demo-term-dot g"></div>
+              <div class="demo-term-title">claude &mdash; CCO approval</div>
+            </div>
+            <div class="demo-term-body"><span class="prompt">$</span> <span class="cmd">claude</span> <span class="string">"CCO has reviewed and approved. Tag as
+  v1.0-pilot-approved. Generate the change record
+  and promote to pilot environment with 10%
+  of relationship managers (18 advisors)."</span>
+
+<span class="success">&#x2713;</span> Tag: <span class="highlight">v1.0-pilot-approved</span>
+<span class="success">&#x2713;</span> Change record: <span class="file">CR-2026-0328-001</span>
+  <span class="info">  Requested by: CPO</span>
+  <span class="info">  Built by: Claude Code (reviewed by Engineer + Chief AI Architect + Data Arch)</span>
+  <span class="info">  Approved by: CCO</span>
+  <span class="info">  Controls: 18/18 PASSED</span>
+  <span class="info">  Evidence: compliance/evidence-package-v1.0.pdf</span>
+
+<span class="info">&#x23F3; Promoting to pilot environment...</span>
+<span class="info">&#x23F3; Configuring pilot ring: 18 advisors, 450 clients...</span>
+<span class="info">&#x23F3; Enabling monitoring + alerting...</span>
+
+<span class="success">&#x2714; PILOT DEPLOYMENT COMPLETE</span>
+
+<span class="highlight">Pilot URL:</span> <span class="url">https://wealth-crm.bank.com</span>
+<span class="info">Advisors: 18 / 180 (10% ring)</span>
+<span class="info">Monitoring: real-time dashboards active</span>
+<span class="info">Rollback: automated at error rate > 0.1%</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end demo-timeline -->
+
+    <!-- ════════════ FINAL SUMMARY ════════════ -->
+    <div style="max-width:900px; margin:48px auto 0;">
+      <div style="background: var(--primary); border-radius: 20px; padding: 48px; color: var(--white); box-shadow: var(--shadow-lg); position: relative; overflow: hidden;">
+        <div style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; border-radius: 50%; background: rgba(212,165,116,0.08);"></div>
+        <div style="position: relative; z-index: 2;">
+          <div style="font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); font-weight: 700; margin-bottom: 16px;">Demo Complete</div>
+          <div style="font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 600; line-height: 1.3; margin-bottom: 24px;">
+            A production-grade Wealth Advisory CRM.<br>
+            3 days. 5 people. Zero defects.
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 24px;">
+            <div style="text-align: center; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 10px;">
+              <div style="font-size: 28px; font-weight: 900; color: var(--accent);">3</div>
+              <div style="font-size: 10px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1px;">Days</div>
+            </div>
+            <div style="text-align: center; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 10px;">
+              <div style="font-size: 28px; font-weight: 900; color: var(--accent);">5</div>
+              <div style="font-size: 10px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1px;">People</div>
+            </div>
+            <div style="text-align: center; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 10px;">
+              <div style="font-size: 28px; font-weight: 900; color: var(--accent);">18/18</div>
+              <div style="font-size: 10px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1px;">Controls</div>
+            </div>
+            <div style="text-align: center; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 10px;">
+              <div style="font-size: 28px; font-weight: 900; color: var(--accent);">2,847</div>
+              <div style="font-size: 10px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1px;">Tests</div>
+            </div>
+            <div style="text-align: center; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 10px;">
+              <div style="font-size: 28px; font-weight: 900; color: var(--accent);">~$12K</div>
+              <div style="font-size: 10px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1px;">Total Cost</div>
+            </div>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+            <div>
+              <div style="font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); font-weight: 600; margin-bottom: 10px;">What was built</div>
+              <div style="font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.8;">
+                68 UI components &bull; 24-table encrypted database &bull; 12 microservices &bull; 8 data pipelines &bull; 3 ML models &bull; Kafka event streaming &bull; OAuth 2.0 + RBAC &bull; Full observability &bull; DR tested &bull; Canary deployment &bull; 142-page compliance evidence
+              </div>
+            </div>
+            <div>
+              <div style="font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); font-weight: 600; margin-bottom: 10px;">What this replaces</div>
+              <div style="font-size: 13px; color: rgba(255,255,255,0.5); line-height: 1.8;">
+                32-person team &bull; 8,500 person-hours &bull; 44-week timeline &bull; $4.2M budget &bull; 14 handoffs &bull; 6 governance gates &bull; 23 approval steps &bull; 1,800 hours of manual testing &bull; 800 hours of compliance documentation
+              </div>
+            </div>
+          </div>
+          <div style="margin-top: 28px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.08); text-align: center;">
+            <div style="font-family: 'Playfair Display', serif; font-size: 20px; font-style: italic; color: rgba(255,255,255,0.7);">
+              &ldquo;This is not a proof of concept. This is proof that the old model is obsolete.&rdquo;
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════ CONTROLS ═══════════════════ -->
+<section id="controls" class="s-full s-dark">
+  <div style="max-width:1200px; margin:0 auto;">
+    <div class="s-header">
+      <div class="s-eye">Controls &amp; Governance</div>
+      <h2 class="s-title" style="color:var(--white);">More Control, Not Less</h2>
+      <p class="s-sub">
+        Your regulator&rsquo;s first question: &ldquo;how do you maintain control with five people?&rdquo;<br>
+        The answer: <em>better</em> than you do with two thousand.
+      </p>
+    </div>
+
+    <!-- Before/After Controls -->
+    <div class="ctrl-container">
+      <div class="ctrl-visual">
+        <div class="ctrl-old">
+          <div class="ctrl-heading">Controls Today</div>
+          <div class="ctrl-row"><span class="ctrl-row-label">When controls run</span><span class="ctrl-row-value">Post-hoc (gates)</span></div>
+          <div class="ctrl-row"><span class="ctrl-row-label">Coverage</span><span class="ctrl-row-value">Sampling (5-10%)</span></div>
+          <div class="ctrl-row"><span class="ctrl-row-label">Evidence quality</span><span class="ctrl-row-value">Manual, inconsistent</span></div>
+          <div class="ctrl-row"><span class="ctrl-row-label">Time to detect violation</span><span class="ctrl-row-value">Weeks to months</span></div>
+          <div class="ctrl-row"><span class="ctrl-row-label">Audit preparation</span><span class="ctrl-row-value">6-8 weeks, $2M</span></div>
+          <div class="ctrl-row"><span class="ctrl-row-label">Human error risk</span><span class="ctrl-row-value">High</span></div>
+          <div class="ctrl-row"><span class="ctrl-row-label">Policy enforcement</span><span class="ctrl-row-value">Advisory (honour system)</span></div>
+        </div>
+        <div class="ctrl-divider-line"></div>
+        <div class="ctrl-new">
+          <div class="ctrl-heading">Controls with bank.md + Claude</div>
+          <div class="ctrl-row"><span class="ctrl-row-label">When controls run</span><span class="ctrl-row-value">Real-time (embedded)</span></div>
+          <div class="ctrl-row"><span class="ctrl-row-label">Coverage</span><span class="ctrl-row-value">100% of every change</span></div>
+          <div class="ctrl-row"><span class="ctrl-row-label">Evidence quality</span><span class="ctrl-row-value">Machine-generated, immutable</span></div>
+          <div class="ctrl-row"><span class="ctrl-row-label">Time to detect violation</span><span class="ctrl-row-value">Milliseconds (prevented)</span></div>
+          <div class="ctrl-row"><span class="ctrl-row-label">Audit preparation</span><span class="ctrl-row-value">Instant (always ready)</span></div>
+          <div class="ctrl-row"><span class="ctrl-row-label">Human error risk</span><span class="ctrl-row-value">Near zero</span></div>
+          <div class="ctrl-row"><span class="ctrl-row-label">Policy enforcement</span><span class="ctrl-row-value">Structural (cannot violate)</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Control detail cards -->
+    <div class="ctrl-cards" style="max-width:1000px; margin:40px auto 0;">
+      <div class="ctrl-card">
+        <div class="ctrl-card-icon">&#x1F512;</div>
+        <h4>Immutable Audit Trail</h4>
+        <p>Every Claude action is logged: who requested, what was generated, cryptographic hash of output, human approval record. This is richer evidence than any manual process produces.</p>
+        <div class="ctrl-card-badge">SOX / Basel III / PSD2</div>
+      </div>
+      <div class="ctrl-card">
+        <div class="ctrl-card-icon">&#x1F6E1;</div>
+        <h4>Structural Policy Enforcement</h4>
+        <p>bank.md rules are not guidelines&mdash;they are hard constraints. Claude <em>cannot</em> generate code that violates them. This is preventive control at its strongest: violations are structurally impossible.</p>
+        <div class="ctrl-card-badge">Preventive Control</div>
+      </div>
+      <div class="ctrl-card">
+        <div class="ctrl-card-icon">&#x1F440;</div>
+        <h4>4-Eyes with 5 People</h4>
+        <p>Every production change requires explicit human approval. The CCO approves Tier-1 changes. The Engineer approves Tier-2+. Claude proposes; a human disposes. Always.</p>
+        <div class="ctrl-card-badge">Human-in-the-Loop</div>
+      </div>
+      <div class="ctrl-card">
+        <div class="ctrl-card-icon">&#x1F50D;</div>
+        <h4>100% Security Coverage</h4>
+        <p>Every line of code is scanned against OWASP, CWE, and bank-specific patterns at generation time. No sampling. No queue. No &ldquo;we&rsquo;ll scan it later.&rdquo; Later never comes.</p>
+        <div class="ctrl-card-badge">Shift-Left to Zero</div>
+      </div>
+      <div class="ctrl-card">
+        <div class="ctrl-card-icon">&#x1F310;</div>
+        <h4>Data Sovereignty</h4>
+        <p>Claude Code runs within your private cloud. No code, data, or prompts leave your perimeter. bank.md data residency rules are enforced at the infrastructure level.</p>
+        <div class="ctrl-card-badge">GDPR / Data Localisation</div>
+      </div>
+      <div class="ctrl-card">
+        <div class="ctrl-card-icon">&#x26A1;</div>
+        <h4>Regulatory Change Detection</h4>
+        <p>When regulations change, Claude analyses impact across the entire codebase and flags affected systems, data flows, and controls. The CCO reviews. bank.md is updated. The entire estate evolves.</p>
+        <div class="ctrl-card-badge">Future-Proof</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ ROI ═══════════════════ -->
+<section id="roi" class="s-full s-mid">
+  <div style="max-width:1200px; margin:0 auto;">
+    <div class="s-header">
+      <div class="s-eye">Financial Impact</div>
+      <h2 class="s-title" style="color:var(--white);">The Numbers That Will Define<br>Your Legacy</h2>
+      <p class="s-sub">This is not a cost optimisation programme. This is a structural elimination of cost.</p>
+    </div>
+
+    <div class="roi-hero-cards">
+      <div class="roi-hero-card">
+        <div class="roi-hero-card-value">$804M</div>
+        <div class="roi-hero-card-label">Annual Cost<br>Eliminated</div>
+      </div>
+      <div class="roi-hero-card">
+        <div class="roi-hero-card-value">99%</div>
+        <div class="roi-hero-card-label">Technology Org<br>Cost Reduction</div>
+      </div>
+      <div class="roi-hero-card">
+        <div class="roi-hero-card-value">350x</div>
+        <div class="roi-hero-card-label">Delivery Speed<br>Improvement</div>
+      </div>
+      <div class="roi-hero-card">
+        <div class="roi-hero-card-value">12 wk</div>
+        <div class="roi-hero-card-label">Full Transition<br>Timeline</div>
+      </div>
+    </div>
+
+    <div class="roi-bars">
+      <div class="roi-bar-group">
+        <div class="roi-bar-group-label">Annual Technology Spend</div>
+        <div class="roi-bar-row">
+          <div class="roi-bar-label">Today</div>
+          <div class="roi-bar-track"><div class="roi-bar-fill old" style="width:100%;">$813M</div></div>
+        </div>
+        <div class="roi-bar-row">
+          <div class="roi-bar-label">5 + Claude</div>
+          <div class="roi-bar-track"><div class="roi-bar-fill new" style="width:1.5%;">$9M</div></div>
+        </div>
+      </div>
+      <div class="roi-bar-group">
+        <div class="roi-bar-group-label">Time to Deploy One Application</div>
+        <div class="roi-bar-row">
+          <div class="roi-bar-label">Today</div>
+          <div class="roi-bar-track"><div class="roi-bar-fill old" style="width:100%;">44 weeks</div></div>
+        </div>
+        <div class="roi-bar-row">
+          <div class="roi-bar-label">5 + Claude</div>
+          <div class="roi-bar-track"><div class="roi-bar-fill new" style="width:1%;">3 days</div></div>
+        </div>
+      </div>
+      <div class="roi-bar-group">
+        <div class="roi-bar-group-label">Applications Deliverable Per Year</div>
+        <div class="roi-bar-row">
+          <div class="roi-bar-label">Today</div>
+          <div class="roi-bar-track"><div class="roi-bar-fill old" style="width:10%;">~100</div></div>
+        </div>
+        <div class="roi-bar-row">
+          <div class="roi-bar-label">5 + Claude</div>
+          <div class="roi-bar-track"><div class="roi-bar-fill new" style="width:100%;">~1,000+</div></div>
+        </div>
+      </div>
+      <div class="roi-bar-group">
+        <div class="roi-bar-group-label">Production Defects Per Application</div>
+        <div class="roi-bar-row">
+          <div class="roi-bar-label">Today</div>
+          <div class="roi-bar-track"><div class="roi-bar-fill old" style="width:90%;">~18 defects</div></div>
+        </div>
+        <div class="roi-bar-row">
+          <div class="roi-bar-label">5 + Claude</div>
+          <div class="roi-bar-track"><div class="roi-bar-fill new" style="width:2%;">~0</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cost breakdown -->
+    <div style="max-width:800px; margin:56px auto 0;">
+      <h3 style="text-align:center; font-family:'Playfair Display',serif; font-size:24px; color:var(--white); margin-bottom:32px;">Where $804M of Annual Cost Disappears</h3>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+        <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:24px;">
+          <div style="font-size:12px; color:rgba(255,255,255,0.4); letter-spacing:1px; text-transform:uppercase; margin-bottom:12px;">Eliminated Entirely</div>
+          <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.06); font-size:14px; color:rgba(255,255,255,0.6);"><span>Developer salaries (680)</span><span style="color:var(--accent); font-weight:700;">$272M</span></div>
+          <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.06); font-size:14px; color:rgba(255,255,255,0.6);"><span>QA salaries (340)</span><span style="color:var(--accent); font-weight:700;">$102M</span></div>
+          <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.06); font-size:14px; color:rgba(255,255,255,0.6);"><span>Business Analysts (220)</span><span style="color:var(--accent); font-weight:700;">$66M</span></div>
+          <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.06); font-size:14px; color:rgba(255,255,255,0.6);"><span>DevOps / SRE (140)</span><span style="color:var(--accent); font-weight:700;">$56M</span></div>
+          <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.06); font-size:14px; color:rgba(255,255,255,0.6);"><span>Compliance / GRC (120)</span><span style="color:var(--accent); font-weight:700;">$48M</span></div>
+          <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.06); font-size:14px; color:rgba(255,255,255,0.6);"><span>Scrum Masters / PMs (85)</span><span style="color:var(--accent); font-weight:700;">$26M</span></div>
+          <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.06); font-size:14px; color:rgba(255,255,255,0.6);"><span>Vendor / Contractors (350)</span><span style="color:var(--accent); font-weight:700;">$140M</span></div>
+          <div style="display:flex; justify-content:space-between; padding:8px 0; font-size:14px; color:rgba(255,255,255,0.6);"><span>Management layers (62)</span><span style="color:var(--accent); font-weight:700;">$37M</span></div>
+        </div>
+        <div style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:14px; padding:24px;">
+          <div style="font-size:12px; color:rgba(255,255,255,0.4); letter-spacing:1px; text-transform:uppercase; margin-bottom:12px;">Dramatically Reduced</div>
+          <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.06); font-size:14px; color:rgba(255,255,255,0.6);"><span>Cloud infrastructure</span><span style="color:var(--accent); font-weight:700;">$40M &rarr; $4M</span></div>
+          <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.06); font-size:14px; color:rgba(255,255,255,0.6);"><span>Tooling &amp; licenses</span><span style="color:var(--accent); font-weight:700;">$18M &rarr; $1M</span></div>
+          <div style="display:flex; justify-content:space-between; padding:8px 0; font-size:14px; color:rgba(255,255,255,0.6);"><span>Office &amp; overhead</span><span style="color:var(--accent); font-weight:700;">$12M &rarr; $0</span></div>
+          <div style="margin-top:24px; padding:20px; background:rgba(13,155,92,0.1); border:1px solid rgba(13,155,92,0.3); border-radius:10px; text-align:center;">
+            <div style="font-size:12px; color:rgba(255,255,255,0.4); letter-spacing:1px; text-transform:uppercase; margin-bottom:8px;">New Annual Tech Cost</div>
+            <div style="font-size:36px; font-weight:900; color:var(--green);">$9M</div>
+            <div style="font-size:12px; color:rgba(255,255,255,0.5); margin-top:4px;">5 senior salaries ($4M) + Claude Enterprise ($3M) + Cloud ($2M)</div>
+          </div>
+          <div style="margin-top:16px; padding:16px; background:rgba(212,165,116,0.08); border-radius:10px; text-align:center;">
+            <div style="font-size:11px; color:rgba(255,255,255,0.3); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Strategic Reallocation Potential</div>
+            <div style="font-size:28px; font-weight:800; color:var(--accent);">$804M / year</div>
+            <div style="font-size:12px; color:rgba(255,255,255,0.4); margin-top:4px;">Redirected to growth, M&amp;A, customer experience, or returned to shareholders</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ ROADMAP ═══════════════════ -->
+<section id="roadmap" class="s">
+  <div class="s-header">
+    <div class="s-eye">Implementation</div>
+    <h2 class="s-title">Twelve Weeks to Transformation</h2>
+    <p class="s-sub">
+      This is not a multi-year programme. It is a controlled, phased transition that
+      begins delivering value in Week 1 and reaches full state in Week 12.
+    </p>
+  </div>
+
+  <div class="rm-container">
+
+    <div class="rm-phase">
+      <div class="rm-marker">1</div>
+      <div class="rm-content">
+        <div class="rm-time">Weeks 1-2 &mdash; Foundation</div>
+        <h4>Write bank.md, Assemble The Four</h4>
+        <ul class="rm-items">
+          <li>Recruit / appoint CPO, Chief Technology Officer, Chief AI Architect, Chief Data Architect, CCO</li>
+          <li>Author bank.md v1.0 capturing architecture, security, compliance, and design standards</li>
+          <li>Deploy Claude Code on private cloud infrastructure with full audit logging</li>
+          <li>Select first 3 applications for parallel proof-of-concept delivery</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="rm-phase">
+      <div class="rm-marker">2</div>
+      <div class="rm-content">
+        <div class="rm-time">Weeks 3-4 &mdash; Proof</div>
+        <h4>Deliver 3 Applications in Days, Not Months</h4>
+        <ul class="rm-items">
+          <li>The Five deliver 3 real applications using the Intent &rarr; Generate &rarr; Review &rarr; Iterate &rarr; Deploy cycle</li>
+          <li>Demonstrate to board and regulators: full audit trail, security compliance, zero defects</li>
+          <li>Refine bank.md based on first-pass learnings</li>
+          <li>Internal case study published: &ldquo;3 days vs 44 weeks&rdquo;</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="rm-phase">
+      <div class="rm-marker">3</div>
+      <div class="rm-content">
+        <div class="rm-time">Weeks 5-8 &mdash; Migration</div>
+        <h4>Migrate Portfolio, Transition Workforce</h4>
+        <ul class="rm-items">
+          <li>Claude Code begins systematic migration of existing application portfolio</li>
+          <li>Each legacy app reviewed, refactored, and re-deployed against bank.md standards</li>
+          <li>Workforce transition programme launched: redeployment, reskilling, generous separation packages</li>
+          <li>Weekly delivery cadence: 15-20 applications migrated or newly built per week</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="rm-phase">
+      <div class="rm-marker">4</div>
+      <div class="rm-content">
+        <div class="rm-time">Weeks 9-12 &mdash; Steady State</div>
+        <h4>The Five-Person Technology Organisation Is Live</h4>
+        <ul class="rm-items">
+          <li>Full application portfolio operating under bank.md governance</li>
+          <li>The Five are in steady-state: CPO prioritises, Engineer reviews, Chief AI Architect evolves the agentic system, Data Arch governs data, CCO governs risk</li>
+          <li>Claude Code handles all execution: development, testing, deployment, monitoring, incident response</li>
+          <li>Annual technology cost: $9M. Annual capacity: 1,000+ applications. Zero backlog.</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════ WHAT THIS MEANS ═══════════════════ -->
+<section class="s-full" style="background:var(--white);">
+  <div style="max-width:1000px; margin:0 auto;">
+    <div class="s-header">
+      <div class="s-eye">The Bigger Picture</div>
+      <h2 class="s-title">This Is Not About Technology.<br>It Is About Competitive Survival.</h2>
+    </div>
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:24px;">
+      <div style="background:var(--accent-glow); border-radius:16px; padding:32px; border:1px solid rgba(212,165,116,0.15);">
+        <div style="font-size:28px; margin-bottom:12px;">&#x26A1;</div>
+        <h4 style="font-size:16px; color:var(--primary); margin-bottom:10px;">Speed as Moat</h4>
+        <p style="font-size:14px; color:var(--text-light); line-height:1.7;">When you can ship a new product in 3 days instead of 44 weeks, you don&rsquo;t just compete faster&mdash;you compete in a different category entirely. Your competitors are still holding sprint planning meetings while you&rsquo;re already in production.</p>
+      </div>
+      <div style="background:var(--accent-glow); border-radius:16px; padding:32px; border:1px solid rgba(212,165,116,0.15);">
+        <div style="font-size:28px; margin-bottom:12px;">&#x1F4B0;</div>
+        <h4 style="font-size:16px; color:var(--primary); margin-bottom:10px;">$804M Redeployable Capital</h4>
+        <p style="font-size:14px; color:var(--text-light); line-height:1.7;">The freed capital is not just savings&mdash;it is strategic ammunition. Fund acquisitions. Enter new markets. Build customer experiences that define the next decade of banking. Or return it to shareholders at a scale that moves your stock price.</p>
+      </div>
+      <div style="background:var(--accent-glow); border-radius:16px; padding:32px; border:1px solid rgba(212,165,116,0.15);">
+        <div style="font-size:28px; margin-bottom:12px;">&#x1F3AF;</div>
+        <h4 style="font-size:16px; color:var(--primary); margin-bottom:10px;">Zero Backlog, Infinite Capacity</h4>
+        <p style="font-size:14px; color:var(--text-light); line-height:1.7;">Today, your business leaders wait 12-18 months for technology to deliver their ideas. In the future state, every idea can be live in days. The bottleneck shifts from technology capacity to business imagination.</p>
+      </div>
+    </div>
+    <div style="margin-top:40px; padding:36px 40px; background:var(--primary); border-radius:16px; text-align:center;">
+      <div style="font-family:'Playfair Display',serif; font-size:24px; color:var(--white); line-height:1.5; font-style:italic;">
+        &ldquo;The first global bank to operate at this model will set the standard for the industry.<br>The rest will spend the next decade trying to catch up.&rdquo;
+      </div>
+      <div style="font-size:12px; color:rgba(255,255,255,0.3); margin-top:16px; letter-spacing:1px;">ETHIAS AI STRATEGIC ADVISORY, MARCH 2026</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ CTA ═══════════════════ -->
+<section class="cta">
+  <div class="cta-inner">
+    <div class="s-eye" style="color:var(--accent); margin-bottom:28px;">The Invitation</div>
+    <h2>You have two thousand people<br>doing the work of five.</h2>
+    <p>
+      We invite you to a private session where we will model this transformation against
+      your specific portfolio, regulatory environment, and workforce structure. The question
+      is no longer <em>if</em> this is possible. It is <em>who moves first</em>.
+    </p>
+    <a href="#" class="cta-btn">Schedule Private Briefing</a>
+    <div class="cta-meta">
+      <div class="cta-meta-item"><span>Prepared by</span><strong>Ethias AI Strategic Advisory</strong></div>
+      <div class="cta-meta-item"><span>Classification</span><strong>CEO Eyes Only</strong></div>
+      <div class="cta-meta-item"><span>Date</span><strong>March 2026</strong></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ FOOTER ═══════════════════ -->
+<footer class="footer">
+  <div>
+    <div class="footer-logo">ETHIAS AI</div>
+    <div class="footer-left">&copy; 2026 Ethias AI. All rights reserved. This document is strictly confidential.</div>
+  </div>
+  <div style="font-size:11px; color:rgba(255,255,255,0.2);">AI Native Development Lifecycle powered by Claude Code</div>
+</footer>
+
+</body>
+</html>

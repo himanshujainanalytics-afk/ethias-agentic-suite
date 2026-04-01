@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RegLens — Regulatory Reporting Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-primary: #f8fafc;
+    --bg-glass: rgba(255,255,255,0.4);
+    --bg-glass-strong: rgba(255,255,255,0.72);
+    --bg-glass-card: rgba(255,255,255,0.60);
+    --border-glass: rgba(255,255,255,0.7);
+    --border-light: rgba(0,0,0,0.07);
+    --shadow-card: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
+    --shadow-hover: 0 20px 25px -5px rgba(0,0,0,0.10), 0 10px 10px -5px rgba(0,0,0,0.04);
+    --shadow-deep: 0 25px 50px -12px rgba(0,0,0,0.15);
+    --accent-blue: #635bff;
+    --accent-blue-light: #ede9ff;
+    --accent-green: #00c896;
+    --accent-green-light: #d4f7ef;
+    --accent-amber: #f59e0b;
+    --accent-amber-light: #fef3c7;
+    --accent-red: #ef4444;
+    --accent-red-light: #fee2e2;
+    --accent-indigo: #4f46e5;
+    --text-primary: #0f172a;
+    --text-secondary: #64748b;
+    --text-tertiary: #94a3b8;
+    --text-mono: 'Geist Mono', monospace;
+    --font-sans: 'Inter', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--bg-primary);
+    background-image:
+      radial-gradient(ellipse at 20% 50%, rgba(99,91,255,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(0,200,150,0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 60% 80%, rgba(245,158,11,0.04) 0%, transparent 50%);
+    min-height: 100vh;
+    color: var(--text-primary);
+  }
+
+  /* ── Sidebar ── */
+  .sidebar {
+    position: fixed; top: 0; left: 0; bottom: 0; width: 220px;
+    background: var(--bg-glass-strong);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border-right: 1px solid var(--border-glass);
+    z-index: 100;
+    display: flex; flex-direction: column;
+    padding: 0;
+  }
+
+  .sidebar-logo {
+    padding: 24px 20px;
+    border-bottom: 1px solid var(--border-light);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .logo-mark {
+    width: 32px; height: 32px;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-indigo));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--text-mono); font-size: 13px; font-weight: 700; color: white;
+    letter-spacing: -1px;
+  }
+  .logo-text { font-weight: 700; font-size: 15px; letter-spacing: -0.3px; color: var(--text-primary); }
+  .logo-badge {
+    font-family: var(--text-mono); font-size: 9px; font-weight: 600;
+    background: var(--accent-blue-light); color: var(--accent-blue);
+    padding: 2px 6px; border-radius: 4px; margin-left: auto;
+  }
+
+  .sidebar-nav { flex: 1; padding: 12px 0; overflow-y: auto; }
+  .nav-section-label {
+    font-size: 10px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--text-tertiary);
+    padding: 8px 20px 4px;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 20px; margin: 1px 8px;
+    border-radius: 8px; cursor: pointer;
+    font-size: 13.5px; font-weight: 500; color: var(--text-secondary);
+    transition: all 0.15s ease;
+  }
+  .nav-item:hover { background: rgba(99,91,255,0.08); color: var(--accent-blue); }
+  .nav-item.active { background: var(--accent-blue-light); color: var(--accent-blue); font-weight: 600; }
+  .nav-item svg { width: 16px; height: 16px; flex-shrink: 0; }
+  .nav-badge {
+    margin-left: auto; font-family: var(--text-mono); font-size: 10px;
+    background: var(--accent-red); color: white;
+    padding: 1px 6px; border-radius: 10px;
+  }
+
+  .sidebar-footer {
+    padding: 16px; border-top: 1px solid var(--border-light);
+  }
+  .user-card {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px; border-radius: 8px;
+    background: rgba(0,0,0,0.03); cursor: pointer;
+  }
+  .avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: white;
+  }
+  .user-info { flex: 1; min-width: 0; }
+  .user-name { font-size: 12px; font-weight: 600; color: var(--text-primary); }
+  .user-role { font-size: 10px; color: var(--text-tertiary); font-family: var(--text-mono); }
+
+  /* ── Main Layout ── */
+  .main {
+    margin-left: 220px;
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+  }
+
+  /* ── Top Bar ── */
+  .topbar {
+    position: sticky; top: 0; z-index: 50;
+    background: rgba(248,250,252,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-light);
+    padding: 0 32px;
+    height: 60px;
+    display: flex; align-items: center; gap: 20px;
+  }
+  .topbar-title { font-size: 15px; font-weight: 700; color: var(--text-primary); flex: 1; }
+  .topbar-period {
+    font-family: var(--text-mono); font-size: 11px; font-weight: 500;
+    background: var(--bg-glass-card); border: 1px solid var(--border-light);
+    padding: 5px 12px; border-radius: 20px; color: var(--text-secondary);
+    backdrop-filter: blur(12px);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .period-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-green); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.85); } }
+
+  .btn {
+    display: flex; align-items: center; gap: 6px;
+    padding: 7px 14px; border-radius: 8px; border: none; cursor: pointer;
+    font-size: 13px; font-weight: 600; font-family: var(--font-sans);
+    transition: all 0.15s ease;
+  }
+  .btn-primary {
+    background: var(--accent-blue); color: white;
+    box-shadow: 0 2px 8px rgba(99,91,255,0.35);
+  }
+  .btn-primary:hover { background: #5046e5; box-shadow: 0 4px 12px rgba(99,91,255,0.45); transform: translateY(-1px); }
+  .btn-ghost {
+    background: var(--bg-glass-card); color: var(--text-secondary);
+    border: 1px solid var(--border-light); backdrop-filter: blur(12px);
+  }
+  .btn-ghost:hover { background: rgba(255,255,255,0.85); color: var(--text-primary); }
+
+  /* ── Content ── */
+  .content { padding: 28px 32px; flex: 1; }
+
+  /* ── KPI Strip ── */
+  .kpi-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+    margin-bottom: 24px;
+  }
+  .kpi-card {
+    background: var(--bg-glass-card);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--border-glass);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: var(--shadow-card);
+    transition: all 0.2s ease;
+    cursor: default;
+  }
+  .kpi-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+  .kpi-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+  .kpi-label { font-size: 12px; font-weight: 500; color: var(--text-secondary); letter-spacing: 0.01em; }
+  .kpi-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+  .kpi-icon.blue { background: var(--accent-blue-light); color: var(--accent-blue); }
+  .kpi-icon.green { background: var(--accent-green-light); color: var(--accent-green); }
+  .kpi-icon.amber { background: var(--accent-amber-light); color: var(--accent-amber); }
+  .kpi-icon.red { background: var(--accent-red-light); color: var(--accent-red); }
+  .kpi-value { font-family: var(--text-mono); font-size: 26px; font-weight: 700; color: var(--text-primary); letter-spacing: -1px; line-height: 1; }
+  .kpi-meta { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+  .kpi-delta {
+    font-family: var(--text-mono); font-size: 11px; font-weight: 600;
+    padding: 2px 7px; border-radius: 5px;
+  }
+  .kpi-delta.up { background: var(--accent-green-light); color: #059669; }
+  .kpi-delta.down { background: var(--accent-red-light); color: var(--accent-red); }
+  .kpi-delta.warn { background: var(--accent-amber-light); color: #d97706; }
+  .kpi-sub { font-size: 11px; color: var(--text-tertiary); }
+
+  /* ── Two-column body ── */
+  .body-grid { display: grid; grid-template-columns: 1fr 380px; gap: 20px; margin-bottom: 20px; }
+  .body-grid-wide { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+
+  /* ── Glass Card ── */
+  .glass-card {
+    background: var(--bg-glass-card);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--border-glass);
+    border-radius: 16px;
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+  }
+  .card-header {
+    padding: 18px 20px 14px;
+    border-bottom: 1px solid var(--border-light);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .card-title { font-size: 13.5px; font-weight: 700; color: var(--text-primary); flex: 1; }
+  .card-subtitle { font-size: 11.5px; color: var(--text-tertiary); font-family: var(--text-mono); }
+  .card-body { padding: 20px; }
+
+  /* ── Ledger Table ── */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th {
+    text-align: left; padding: 0 12px 10px;
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--text-tertiary);
+    border-bottom: 1px solid var(--border-light);
+  }
+  tbody tr {
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+    transition: background 0.1s;
+    cursor: pointer;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: rgba(99,91,255,0.04); }
+  tbody td { padding: 11px 12px; color: var(--text-secondary); vertical-align: middle; }
+  .td-name { font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 8px; }
+  .td-mono { font-family: var(--text-mono); font-size: 12px; }
+  .td-value { font-family: var(--text-mono); font-weight: 700; color: var(--text-primary); font-size: 13px; }
+  .td-drill {
+    font-family: var(--text-mono); font-size: 11px; font-weight: 600;
+    color: var(--accent-blue); background: var(--accent-blue-light);
+    padding: 3px 9px; border-radius: 6px;
+    cursor: pointer; transition: all 0.15s;
+    white-space: nowrap;
+    text-decoration: none; display: inline-block;
+  }
+  .td-drill:hover { background: var(--accent-blue); color: white; }
+
+  .status-pill {
+    font-size: 10.5px; font-weight: 600; font-family: var(--text-mono);
+    padding: 2px 8px; border-radius: 5px;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .status-pill.ok { background: var(--accent-green-light); color: #059669; }
+  .status-pill.warn { background: var(--accent-amber-light); color: #d97706; }
+  .status-pill.err { background: var(--accent-red-light); color: var(--accent-red); }
+  .status-pill.pending { background: rgba(0,0,0,0.06); color: var(--text-secondary); }
+  .status-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+  /* ── Pre-Flight Pipeline ── */
+  .pipeline { padding: 20px; }
+  .pipeline-track {
+    display: flex; align-items: center; gap: 0;
+    position: relative; margin-bottom: 20px;
+  }
+  .pipeline-stage { flex: 1; display: flex; flex-direction: column; align-items: center; position: relative; }
+  .pipeline-connector {
+    flex: 1; height: 2px; margin-top: -28px;
+    background: linear-gradient(to right, var(--accent-green), var(--accent-blue));
+    opacity: 0.3; max-width: 60px;
+  }
+  .pipeline-connector.active { opacity: 1; }
+  .pipeline-connector.inactive { background: rgba(0,0,0,0.1); opacity: 1; }
+
+  /* Progress Ring */
+  .ring-wrap { position: relative; width: 60px; height: 60px; margin-bottom: 10px; }
+  .ring-svg { transform: rotate(-90deg); }
+  .ring-bg { fill: none; stroke: rgba(0,0,0,0.07); stroke-width: 5; }
+  .ring-progress { fill: none; stroke-width: 5; stroke-linecap: round; transition: stroke-dashoffset 1s ease; }
+  .ring-progress.green { stroke: var(--accent-green); }
+  .ring-progress.blue { stroke: var(--accent-blue); }
+  .ring-progress.amber { stroke: var(--accent-amber); }
+  .ring-progress.gray { stroke: #cbd5e1; }
+  .ring-label {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-family: var(--text-mono); font-size: 11px; font-weight: 700; color: var(--text-primary);
+  }
+  .stage-name { font-size: 11px; font-weight: 600; color: var(--text-primary); text-align: center; }
+  .stage-sub { font-size: 10px; color: var(--text-tertiary); font-family: var(--text-mono); text-align: center; margin-top: 2px; }
+
+  .pipeline-log {
+    background: rgba(0,0,0,0.03); border-radius: 8px; padding: 12px 14px;
+    font-family: var(--text-mono); font-size: 11px; color: var(--text-secondary);
+    border: 1px solid var(--border-light); max-height: 90px; overflow-y: auto;
+  }
+  .log-line { padding: 1.5px 0; }
+  .log-line.ok { color: var(--accent-green); }
+  .log-line.warn { color: var(--accent-amber); }
+  .log-line.err { color: var(--accent-red); }
+  .log-ts { color: var(--text-tertiary); margin-right: 6px; }
+
+  /* ── Divergence AI Alert ── */
+  .ai-card {
+    background: linear-gradient(135deg, rgba(99,91,255,0.07) 0%, rgba(79,70,229,0.04) 100%);
+    border: 1px solid rgba(99,91,255,0.2);
+    border-radius: 16px; padding: 20px;
+    box-shadow: var(--shadow-card);
+  }
+  .ai-header { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 16px; }
+  .ai-icon {
+    width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-indigo));
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 12px rgba(99,91,255,0.3);
+    font-size: 18px;
+  }
+  .ai-title { font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 3px; }
+  .ai-rule { font-size: 11px; font-family: var(--text-mono); color: var(--text-tertiary); }
+
+  .divergence-bar-wrap { margin-bottom: 16px; }
+  .div-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .div-label { font-size: 11px; font-weight: 600; color: var(--text-secondary); width: 90px; flex-shrink: 0; }
+  .div-bar-bg { flex: 1; height: 6px; background: rgba(0,0,0,0.07); border-radius: 999px; overflow: hidden; }
+  .div-bar { height: 100%; border-radius: 999px; transition: width 1s ease; }
+  .div-bar.last { background: linear-gradient(to right, #94a3b8, #cbd5e1); }
+  .div-bar.current { background: linear-gradient(to right, var(--accent-amber), #f97316); }
+  .div-val { font-family: var(--text-mono); font-size: 11px; font-weight: 700; width: 60px; text-align: right; color: var(--text-primary); }
+
+  .ai-insight {
+    background: rgba(255,255,255,0.6); backdrop-filter: blur(12px);
+    border: 1px solid rgba(99,91,255,0.15); border-radius: 10px; padding: 12px 14px;
+    font-size: 12.5px; color: var(--text-primary); line-height: 1.6;
+  }
+  .ai-insight strong { color: var(--accent-indigo); }
+  .ai-actions { display: flex; gap: 8px; margin-top: 12px; }
+  .btn-ai-primary {
+    flex: 1; padding: 8px 12px; border-radius: 8px; border: none; cursor: pointer;
+    background: var(--accent-blue); color: white;
+    font-size: 12px; font-weight: 600; font-family: var(--font-sans);
+    transition: all 0.15s;
+  }
+  .btn-ai-primary:hover { background: #5046e5; }
+  .btn-ai-ghost {
+    padding: 8px 12px; border-radius: 8px; cursor: pointer;
+    background: rgba(255,255,255,0.6); border: 1px solid var(--border-light); color: var(--text-secondary);
+    font-size: 12px; font-weight: 600; font-family: var(--font-sans);
+    transition: all 0.15s;
+  }
+  .btn-ai-ghost:hover { background: rgba(255,255,255,0.9); }
+
+  /* ── Regulator Portal Sync ── */
+  .portal-card { padding: 20px; }
+  .portal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .portal-title-group {}
+  .portal-name { font-size: 13.5px; font-weight: 700; color: var(--text-primary); }
+  .portal-desc { font-size: 11px; color: var(--text-tertiary); font-family: var(--text-mono); margin-top: 2px; }
+
+  /* Toggle */
+  .toggle-wrap { display: flex; align-items: center; gap: 10px; }
+  .toggle-label { font-size: 12px; font-weight: 600; color: var(--text-secondary); }
+  .toggle {
+    position: relative; width: 48px; height: 26px;
+    background: #cbd5e1; border-radius: 999px; cursor: pointer;
+    transition: background 0.3s ease; flex-shrink: 0;
+  }
+  .toggle.on { background: var(--accent-green); }
+  .toggle-knob {
+    position: absolute; top: 3px; left: 3px;
+    width: 20px; height: 20px; border-radius: 50%; background: white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease;
+  }
+  .toggle.on .toggle-knob { transform: translateX(22px); }
+
+  /* Heartbeat */
+  .heartbeat-wrap {
+    background: rgba(0,0,0,0.03); border-radius: 10px; padding: 14px;
+    border: 1px solid var(--border-light); margin-bottom: 16px;
+    position: relative; overflow: hidden;
+  }
+  .hb-top { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .hb-live-dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--accent-green);
+    animation: heartbeat-pulse 1.4s ease infinite;
+    box-shadow: 0 0 0 0 rgba(0,200,150,0.4);
+  }
+  @keyframes heartbeat-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(0,200,150,0.4); }
+    50% { box-shadow: 0 0 0 8px rgba(0,200,150,0); }
+    100% { box-shadow: 0 0 0 0 rgba(0,200,150,0); }
+  }
+  .hb-status-text { font-size: 12px; font-weight: 700; color: var(--accent-green); font-family: var(--text-mono); }
+  .hb-meta { font-size: 10px; color: var(--text-tertiary); margin-left: auto; font-family: var(--text-mono); }
+  .hb-svg-wrap { width: 100%; height: 48px; }
+  .hb-svg { width: 100%; height: 100%; }
+  .hb-path {
+    fill: none; stroke: var(--accent-green); stroke-width: 2; stroke-linecap: round;
+    animation: hb-draw 2.8s linear infinite;
+    stroke-dasharray: 400; stroke-dashoffset: 0;
+  }
+  @keyframes hb-draw {
+    0% { stroke-dashoffset: 400; opacity: 1; }
+    70% { stroke-dashoffset: 0; opacity: 1; }
+    100% { stroke-dashoffset: 0; opacity: 0.3; }
+  }
+
+  .endpoint-list {}
+  .endpoint-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.04);
+    font-size: 12px;
+  }
+  .endpoint-row:last-child { border-bottom: none; }
+  .endpoint-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .endpoint-dot.live { background: var(--accent-green); }
+  .endpoint-dot.degraded { background: var(--accent-amber); }
+  .endpoint-dot.offline { background: var(--accent-red); }
+  .endpoint-name { flex: 1; font-weight: 500; color: var(--text-primary); font-family: var(--text-mono); font-size: 11px; }
+  .endpoint-latency { font-family: var(--text-mono); font-size: 11px; color: var(--text-tertiary); margin-left: auto; }
+  .endpoint-code { font-family: var(--text-mono); font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; }
+  .endpoint-code.ok { background: var(--accent-green-light); color: #059669; }
+  .endpoint-code.warn { background: var(--accent-amber-light); color: #d97706; }
+
+  /* ── Slide-Over ── */
+  .slideover-overlay {
+    position: fixed; inset: 0; background: rgba(15,23,42,0.3);
+    backdrop-filter: blur(4px); z-index: 200;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+  }
+  .slideover-overlay.open { opacity: 1; pointer-events: all; }
+  .slideover {
+    position: fixed; top: 0; right: 0; bottom: 0; width: 680px;
+    background: rgba(255,255,255,0.88);
+    backdrop-filter: blur(32px) saturate(200%);
+    -webkit-backdrop-filter: blur(32px) saturate(200%);
+    border-left: 1px solid var(--border-glass);
+    box-shadow: -20px 0 60px rgba(0,0,0,0.12);
+    z-index: 201; display: flex; flex-direction: column;
+    transform: translateX(100%); transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+  }
+  .slideover.open { transform: translateX(0); }
+
+  .so-header {
+    padding: 20px 24px; border-bottom: 1px solid var(--border-light);
+    display: flex; align-items: flex-start; gap: 14px;
+  }
+  .so-close {
+    width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--border-light);
+    background: rgba(255,255,255,0.7); cursor: pointer; display: flex; align-items: center; justify-content: center;
+    color: var(--text-secondary); font-size: 16px; margin-left: auto; flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .so-close:hover { background: var(--accent-red-light); color: var(--accent-red); }
+  .so-title { font-size: 16px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.3px; }
+  .so-subtitle { font-size: 12px; color: var(--text-tertiary); font-family: var(--text-mono); margin-top: 4px; }
+
+  .so-body { flex: 1; overflow-y: auto; padding: 20px 24px; }
+
+  .so-summary {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px;
+  }
+  .so-sum-card {
+    background: rgba(255,255,255,0.6); border: 1px solid var(--border-light);
+    border-radius: 10px; padding: 12px;
+  }
+  .so-sum-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-tertiary); margin-bottom: 4px; }
+  .so-sum-val { font-family: var(--text-mono); font-size: 16px; font-weight: 800; color: var(--text-primary); }
+
+  .so-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-tertiary); margin-bottom: 10px; }
+
+  .ledger-entries { display: flex; flex-direction: column; gap: 6px; }
+  .ledger-entry {
+    background: rgba(255,255,255,0.6); border: 1px solid var(--border-light);
+    border-radius: 10px; padding: 12px 14px;
+    display: grid; grid-template-columns: 1fr auto;
+    align-items: center; gap: 10px;
+    transition: all 0.15s; cursor: default;
+  }
+  .ledger-entry:hover { border-color: rgba(99,91,255,0.3); background: rgba(255,255,255,0.85); box-shadow: var(--shadow-card); }
+  .le-main {}
+  .le-txid { font-family: var(--text-mono); font-size: 11px; font-weight: 700; color: var(--accent-blue); letter-spacing: 0.02em; }
+  .le-desc { font-size: 12px; color: var(--text-primary); font-weight: 500; margin-top: 2px; }
+  .le-meta { font-size: 10.5px; color: var(--text-tertiary); font-family: var(--text-mono); margin-top: 2px; }
+  .le-amount { text-align: right; }
+  .le-amount-val { font-family: var(--text-mono); font-size: 14px; font-weight: 800; color: var(--text-primary); }
+  .le-amount-ccy { font-family: var(--text-mono); font-size: 10px; color: var(--text-tertiary); }
+  .le-tag {
+    font-size: 10px; font-weight: 600; font-family: var(--text-mono);
+    padding: 2px 6px; border-radius: 4px; margin-top: 4px; display: inline-block;
+  }
+  .le-tag.fx { background: rgba(245,158,11,0.12); color: #d97706; }
+  .le-tag.interco { background: var(--accent-blue-light); color: var(--accent-blue); }
+  .le-tag.cash { background: var(--accent-green-light); color: #059669; }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 999px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.25); }
+
+  /* ── Misc ── */
+  .section-full { margin-bottom: 20px; }
+  .tag { display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; font-weight: 600; font-family: var(--text-mono); padding: 3px 8px; border-radius: 5px; }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════ SIDEBAR ════════════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">RL</div>
+    <span class="logo-text">RegLens</span>
+    <span class="logo-badge">v3.1</span>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Reporting</div>
+    <div class="nav-item active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Overview
+    </div>
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      Submissions
+      <span class="nav-badge">3</span>
+    </div>
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
+      Ledger Drill
+    </div>
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+      Pre-Flight
+    </div>
+    <div class="nav-section-label" style="margin-top:8px;">Analytics</div>
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Trend Analysis
+    </div>
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      AI Divergence
+      <span class="nav-badge" style="background:var(--accent-amber);">2</span>
+    </div>
+    <div class="nav-section-label" style="margin-top:8px;">System</div>
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93A10 10 0 0 1 21 12a10 10 0 0 1-1.93 7.07"/><path d="M4.93 4.93A10 10 0 0 0 3 12a10 10 0 0 0 1.93 7.07"/></svg>
+      Portal Sync
+    </div>
+    <div class="nav-item">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.09 13.05A8 8 0 1 1 4.91 10.95"/></svg>
+      Settings
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-card">
+      <div class="avatar">AK</div>
+      <div class="user-info">
+        <div class="user-name">Ayesha Khan</div>
+        <div class="user-role">Compliance Lead</div>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+    </div>
+  </div>
+</aside>
+
+<!-- ════════════════════ MAIN ════════════════════ -->
+<div class="main">
+
+  <!-- Top Bar -->
+  <header class="topbar">
+    <div class="topbar-title">Regulatory Dashboard</div>
+    <div class="topbar-period">
+      <span class="period-dot"></span>
+      Reporting Period: Feb 2026
+    </div>
+    <button class="btn btn-ghost">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Export
+    </button>
+    <button class="btn btn-primary">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22,2 15,22 11,13 2,9"/></svg>
+      Submit Report
+    </button>
+  </header>
+
+  <div class="content">
+
+    <!-- ── KPI Strip ── -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <div class="kpi-label">Total Reported Value</div>
+          <div class="kpi-icon blue">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 1 0 0 7h5a3.5 3.5 0 1 1 0 7H6"/></svg>
+          </div>
+        </div>
+        <div class="kpi-value">$4.82B</div>
+        <div class="kpi-meta">
+          <span class="kpi-delta up">+3.1%</span>
+          <span class="kpi-sub">vs Jan 2026</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <div class="kpi-label">Validation Score</div>
+          <div class="kpi-icon green">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20,6 9,17 4,12"/></svg>
+          </div>
+        </div>
+        <div class="kpi-value">98.4%</div>
+        <div class="kpi-meta">
+          <span class="kpi-delta up">+0.6%</span>
+          <span class="kpi-sub">2 warnings</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <div class="kpi-label">AI Divergence Flags</div>
+          <div class="kpi-icon amber">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+        </div>
+        <div class="kpi-value">2</div>
+        <div class="kpi-meta">
+          <span class="kpi-delta warn">Review</span>
+          <span class="kpi-sub">14% deviation</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-header">
+          <div class="kpi-label">Submission Deadline</div>
+          <div class="kpi-icon red">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
+          </div>
+        </div>
+        <div class="kpi-value">6d 4h</div>
+        <div class="kpi-meta">
+          <span class="kpi-delta warn">Mar 17</span>
+          <span class="kpi-sub">Central Bank</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Body Row 1: Ledger Table + AI Alert ── -->
+    <div class="body-grid">
+      <!-- Ledger Table -->
+      <div class="glass-card">
+        <div class="card-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="9" x2="9" y2="21"/></svg>
+          <span class="card-title">Drill-to-Source Ledger</span>
+          <span class="card-subtitle">Click value to trace</span>
+          <span class="status-pill ok"><span class="status-dot"></span>Reconciled</span>
+        </div>
+        <div class="card-body" style="padding:0;">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Report Line Item</th>
+                  <th>Schedule</th>
+                  <th>Reported Value</th>
+                  <th>Source Records</th>
+                  <th>Status</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr onclick="openSlideover('Capital Adequacy Ratio', 'SCH-CAR-01', '$1,240,000,000', 847)">
+                  <td>
+                    <div class="td-name">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                      Capital Adequacy Ratio
+                    </div>
+                  </td>
+                  <td class="td-mono" style="color:var(--text-tertiary)">SCH-CAR-01</td>
+                  <td class="td-value">$1,240,000,000</td>
+                  <td class="td-mono" style="color:var(--text-tertiary)">847 records</td>
+                  <td><span class="status-pill ok"><span class="status-dot"></span>Verified</span></td>
+                  <td><span class="td-drill">Drill →</span></td>
+                </tr>
+                <tr onclick="openSlideover('Liquidity Coverage Ratio', 'SCH-LCR-02', '$892,450,000', 1203)">
+                  <td><div class="td-name"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Liquidity Coverage Ratio</div></td>
+                  <td class="td-mono" style="color:var(--text-tertiary)">SCH-LCR-02</td>
+                  <td class="td-value" style="color:var(--accent-amber)">$892,450,000</td>
+                  <td class="td-mono" style="color:var(--text-tertiary)">1,203 records</td>
+                  <td><span class="status-pill warn"><span class="status-dot"></span>AI Flag</span></td>
+                  <td><span class="td-drill">Drill →</span></td>
+                </tr>
+                <tr onclick="openSlideover('Non-Performing Loans', 'SCH-NPL-03', '$318,200,000', 412)">
+                  <td><div class="td-name"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Non-Performing Loans</div></td>
+                  <td class="td-mono" style="color:var(--text-tertiary)">SCH-NPL-03</td>
+                  <td class="td-value">$318,200,000</td>
+                  <td class="td-mono" style="color:var(--text-tertiary)">412 records</td>
+                  <td><span class="status-pill ok"><span class="status-dot"></span>Verified</span></td>
+                  <td><span class="td-drill">Drill →</span></td>
+                </tr>
+                <tr onclick="openSlideover('FX Exposure Report', 'SCH-FX-04', '$2,371,350,000', 2891)">
+                  <td><div class="td-name"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>FX Exposure Report</div></td>
+                  <td class="td-mono" style="color:var(--text-tertiary)">SCH-FX-04</td>
+                  <td class="td-value" style="color:var(--accent-amber)">$2,371,350,000</td>
+                  <td class="td-mono" style="color:var(--text-tertiary)">2,891 records</td>
+                  <td><span class="status-pill warn"><span class="status-dot"></span>AI Flag</span></td>
+                  <td><span class="td-drill">Drill →</span></td>
+                </tr>
+                <tr onclick="openSlideover('Tier 1 Capital', 'SCH-T1C-05', '$687,100,000', 234)">
+                  <td><div class="td-name"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Tier 1 Capital</div></td>
+                  <td class="td-mono" style="color:var(--text-tertiary)">SCH-T1C-05</td>
+                  <td class="td-value">$687,100,000</td>
+                  <td class="td-mono" style="color:var(--text-tertiary)">234 records</td>
+                  <td><span class="status-pill ok"><span class="status-dot"></span>Verified</span></td>
+                  <td><span class="td-drill">Drill →</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column -->
+      <div style="display:flex; flex-direction:column; gap:16px;">
+
+        <!-- AI Divergence -->
+        <div class="ai-card">
+          <div class="ai-header">
+            <div class="ai-icon">🧠</div>
+            <div>
+              <div class="ai-title">Divergence AI Alert</div>
+              <div class="ai-rule">Rule: TREND_DEVIATION_14PCT</div>
+            </div>
+          </div>
+
+          <div class="divergence-bar-wrap">
+            <div class="div-row">
+              <div class="div-label">Jan 2026</div>
+              <div class="div-bar-bg"><div class="div-bar last" style="width:68%"></div></div>
+              <div class="div-val">$783M</div>
+            </div>
+            <div class="div-row">
+              <div class="div-label">Feb 2026</div>
+              <div class="div-bar-bg"><div class="div-bar current" style="width:78%"></div></div>
+              <div class="div-val" style="color:var(--accent-amber)">$892M</div>
+            </div>
+          </div>
+
+          <div class="ai-insight">
+            <strong>⚠ Liquidity Coverage Ratio</strong> deviates <strong>+14.0%</strong> from last month's trend.<br>
+            AI suggests checking <strong>FX conversion rates</strong> applied to EUR/USD positions on 2026-02-14 — 3 batch jobs may have used stale rates (ECB fix: 1.0847 vs live 1.0712).
+          </div>
+          <div class="ai-actions">
+            <button class="btn-ai-primary">Investigate FX Rates</button>
+            <button class="btn-ai-ghost">Dismiss</button>
+            <button class="btn-ai-ghost">Snooze</button>
+          </div>
+        </div>
+
+        <!-- Regulator Portal Sync -->
+        <div class="glass-card">
+          <div class="card-header">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-green)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12,8 12,12 14,14"/></svg>
+            <span class="card-title">Regulator Portal Sync</span>
+          </div>
+          <div class="portal-card">
+            <div class="portal-header">
+              <div class="portal-title-group">
+                <div class="portal-name">Central Bank API</div>
+                <div class="portal-desc">api.centralbank.gov · v2.3.1</div>
+              </div>
+              <div class="toggle-wrap">
+                <span class="toggle-label" id="toggle-label">Live</span>
+                <div class="toggle on" id="portal-toggle" onclick="togglePortal()">
+                  <div class="toggle-knob"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="heartbeat-wrap" id="hb-wrap">
+              <div class="hb-top">
+                <div class="hb-live-dot" id="hb-dot"></div>
+                <span class="hb-status-text" id="hb-status">CONNECTED · LIVE</span>
+                <span class="hb-meta" id="hb-meta">Latency: 42ms</span>
+              </div>
+              <div class="hb-svg-wrap">
+                <svg class="hb-svg" viewBox="0 0 300 48" preserveAspectRatio="none">
+                  <path class="hb-path" id="hb-path"
+                    d="M0,24 L40,24 L50,24 L58,4 L66,44 L74,24 L82,24
+                       L90,24 L100,24 L108,8 L116,40 L124,24 L132,24
+                       L140,24 L150,24 L158,6 L166,42 L174,24 L182,24
+                       L190,24 L200,24 L208,10 L216,38 L224,24 L232,24
+                       L240,24 L250,24 L258,5 L266,43 L274,24 L300,24"/>
+                </svg>
+              </div>
+            </div>
+
+            <div class="endpoint-list">
+              <div class="endpoint-row">
+                <div class="endpoint-dot live"></div>
+                <div class="endpoint-name">/submit/regulatory</div>
+                <div class="endpoint-latency">42ms</div>
+                <span class="endpoint-code ok">200</span>
+              </div>
+              <div class="endpoint-row">
+                <div class="endpoint-dot live"></div>
+                <div class="endpoint-name">/validate/schema</div>
+                <div class="endpoint-latency">18ms</div>
+                <span class="endpoint-code ok">200</span>
+              </div>
+              <div class="endpoint-row">
+                <div class="endpoint-dot degraded"></div>
+                <div class="endpoint-name">/fetch/taxonomy</div>
+                <div class="endpoint-latency">381ms</div>
+                <span class="endpoint-code warn">206</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Pre-Flight Pipeline ── -->
+    <div class="glass-card section-full">
+      <div class="card-header">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-indigo)" stroke-width="2"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10 13,2"/></svg>
+        <span class="card-title">Pre-Flight Validation Pipeline</span>
+        <span class="card-subtitle">Feb 2026 cycle · Run #FL-2026-02-047</span>
+        <span class="status-pill warn" style="margin-left:auto;"><span class="status-dot"></span>In Progress</span>
+      </div>
+      <div class="pipeline">
+        <div class="pipeline-track">
+          <div class="pipeline-stage">
+            <div class="ring-wrap">
+              <svg class="ring-svg" width="60" height="60" viewBox="0 0 60 60">
+                <circle class="ring-bg" cx="30" cy="30" r="25"/>
+                <circle class="ring-progress green" cx="30" cy="30" r="25"
+                  stroke-dasharray="157" stroke-dashoffset="0"/>
+              </svg>
+              <div class="ring-label">100%</div>
+            </div>
+            <div class="stage-name">Data Ingestion</div>
+            <div class="stage-sub">4,157 records</div>
+          </div>
+          <div class="pipeline-connector active"></div>
+          <div class="pipeline-stage">
+            <div class="ring-wrap">
+              <svg class="ring-svg" width="60" height="60" viewBox="0 0 60 60">
+                <circle class="ring-bg" cx="30" cy="30" r="25"/>
+                <circle class="ring-progress green" cx="30" cy="30" r="25"
+                  stroke-dasharray="157" stroke-dashoffset="0"/>
+              </svg>
+              <div class="ring-label">100%</div>
+            </div>
+            <div class="stage-name">Normalization</div>
+            <div class="stage-sub">FX + CCY</div>
+          </div>
+          <div class="pipeline-connector active"></div>
+          <div class="pipeline-stage">
+            <div class="ring-wrap">
+              <svg class="ring-svg" width="60" height="60" viewBox="0 0 60 60">
+                <circle class="ring-bg" cx="30" cy="30" r="25"/>
+                <circle class="ring-progress amber" cx="30" cy="30" r="25"
+                  stroke-dasharray="157" stroke-dashoffset="25" id="ring-schema"/>
+              </svg>
+              <div class="ring-label" id="ring-schema-label">84%</div>
+            </div>
+            <div class="stage-name">Schema Validation</div>
+            <div class="stage-sub">2 warnings</div>
+          </div>
+          <div class="pipeline-connector inactive"></div>
+          <div class="pipeline-stage">
+            <div class="ring-wrap">
+              <svg class="ring-svg" width="60" height="60" viewBox="0 0 60 60">
+                <circle class="ring-bg" cx="30" cy="30" r="25"/>
+                <circle class="ring-progress gray" cx="30" cy="30" r="25"
+                  stroke-dasharray="157" stroke-dashoffset="157"/>
+              </svg>
+              <div class="ring-label" style="color:var(--text-tertiary)">—</div>
+            </div>
+            <div class="stage-name" style="color:var(--text-tertiary)">Submission</div>
+            <div class="stage-sub">Pending</div>
+          </div>
+        </div>
+
+        <div class="pipeline-log">
+          <div class="log-line ok"><span class="log-ts">14:23:01</span>[INGEST]  ✓ GL source connected · 4,157 transactions loaded</div>
+          <div class="log-line ok"><span class="log-ts">14:23:04</span>[NORM]    ✓ EUR→USD applied (rate: 1.0712) · AED→USD applied (rate: 0.2722)</div>
+          <div class="log-line ok"><span class="log-ts">14:23:07</span>[NORM]    ✓ Intercompany eliminations: 143 pairs resolved</div>
+          <div class="log-line warn"><span class="log-ts">14:23:11</span>[SCHEMA]  ⚠ SCH-LCR-02 field 'hqla_buffer' exceeds tolerance ±5% (actual: +14%)</div>
+          <div class="log-line warn"><span class="log-ts">14:23:11</span>[SCHEMA]  ⚠ SCH-FX-04 nested ref mismatch · taxonomy v2.3 vs v2.2 received</div>
+          <div class="log-line"><span class="log-ts">14:23:12</span>[SUBMIT]  ⏳ Awaiting schema sign-off before submission</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- ════════════════════ SLIDE-OVER ════════════════════ -->
+<div class="slideover-overlay" id="overlay" onclick="closeSlideover()"></div>
+<div class="slideover" id="slideover">
+  <div class="so-header">
+    <div>
+      <div class="so-title" id="so-title">Capital Adequacy Ratio</div>
+      <div class="so-subtitle" id="so-subtitle">Schedule SCH-CAR-01 · Drill-to-Source View</div>
+    </div>
+    <button class="so-close" onclick="closeSlideover()">✕</button>
+  </div>
+  <div class="so-body">
+    <div class="so-summary" id="so-summary">
+      <div class="so-sum-card">
+        <div class="so-sum-label">Reported Value</div>
+        <div class="so-sum-val" id="so-reported">$1,240,000,000</div>
+      </div>
+      <div class="so-sum-card">
+        <div class="so-sum-label">Source Records</div>
+        <div class="so-sum-val" id="so-records">847</div>
+      </div>
+      <div class="so-sum-card">
+        <div class="so-sum-label">Reconciliation</div>
+        <div class="so-sum-val" style="color:var(--accent-green)">✓ 100%</div>
+      </div>
+    </div>
+
+    <div class="so-section-title" style="margin-bottom:10px;">Raw Ledger Entries</div>
+    <div class="ledger-entries" id="ledger-entries">
+      <!-- injected by JS -->
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Slide-over logic ──
+const entries = [
+  { txid:'TXN-2026-0214-00831', desc:'Tier 1 Capital contribution — HQ Treasury', date:'2026-02-14 09:22:14', amount:'+$340,000,000', ccy:'USD', tag:'cash' },
+  { txid:'TXN-2026-0214-00832', desc:'EUR capital injection (ECB rate 1.0712)', date:'2026-02-14 09:22:51', amount:'+$215,000,000', ccy:'USD via EUR', tag:'fx' },
+  { txid:'TXN-2026-0218-01102', desc:'Intercompany transfer — Gulf Subsidiary', date:'2026-02-18 11:40:03', amount:'+$190,000,000', ccy:'USD', tag:'interco' },
+  { txid:'TXN-2026-0220-01455', desc:'Regulatory capital deduction — IFRS 9', date:'2026-02-20 14:05:29', amount:'-$85,000,000', ccy:'USD', tag:'cash' },
+  { txid:'TXN-2026-0221-01601', desc:'AED revaluation gain (rate 0.2722)', date:'2026-02-21 08:17:44', amount:'+$120,000,000', ccy:'USD via AED', tag:'fx' },
+  { txid:'TXN-2026-0225-02010', desc:'Hybrid instrument classification', date:'2026-02-25 16:30:00', amount:'+$460,000,000', ccy:'USD', tag:'interco' },
+];
+
+function openSlideover(name, schedule, value, records) {
+  document.getElementById('so-title').textContent = name;
+  document.getElementById('so-subtitle').textContent = `Schedule ${schedule} · Drill-to-Source View`;
+  document.getElementById('so-reported').textContent = value;
+  document.getElementById('so-records').textContent = records.toLocaleString();
+
+  const container = document.getElementById('ledger-entries');
+  container.innerHTML = entries.map(e => `
+    <div class="ledger-entry">
+      <div class="le-main">
+        <div class="le-txid">${e.txid}</div>
+        <div class="le-desc">${e.desc}</div>
+        <div class="le-meta">${e.date} · ${e.ccy} <span class="le-tag ${e.tag}">${e.tag.toUpperCase()}</span></div>
+      </div>
+      <div class="le-amount">
+        <div class="le-amount-val" style="color:${e.amount.startsWith('+') ? 'var(--text-primary)' : 'var(--accent-red)'}">${e.amount}</div>
+        <div class="le-amount-ccy">${e.ccy}</div>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('overlay').classList.add('open');
+  document.getElementById('slideover').classList.add('open');
+}
+
+function closeSlideover() {
+  document.getElementById('overlay').classList.remove('open');
+  document.getElementById('slideover').classList.remove('open');
+}
+
+// ── Portal Toggle ──
+let portalOn = true;
+function togglePortal() {
+  portalOn = !portalOn;
+  const toggle = document.getElementById('portal-toggle');
+  const label = document.getElementById('toggle-label');
+  const status = document.getElementById('hb-status');
+  const dot = document.getElementById('hb-dot');
+  const meta = document.getElementById('hb-meta');
+  const path = document.getElementById('hb-path');
+
+  if (portalOn) {
+    toggle.classList.add('on');
+    label.textContent = 'Live';
+    status.textContent = 'CONNECTED · LIVE';
+    status.style.color = 'var(--accent-green)';
+    dot.style.background = 'var(--accent-green)';
+    dot.style.animationName = 'heartbeat-pulse';
+    meta.textContent = 'Latency: 42ms';
+    path.style.animationName = 'hb-draw';
+    path.style.stroke = 'var(--accent-green)';
+  } else {
+    toggle.classList.remove('on');
+    label.textContent = 'Off';
+    status.textContent = 'DISCONNECTED';
+    status.style.color = 'var(--text-tertiary)';
+    dot.style.background = 'var(--text-tertiary)';
+    dot.style.animationName = 'none';
+    meta.textContent = '—';
+    path.style.animationName = 'none';
+    path.style.stroke = '#cbd5e1';
+    path.style.strokeDashoffset = '0';
+    path.style.opacity = '0.2';
+  }
+}
+
+// ── Animate schema ring on load ──
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    // Pulse the amber ring to show it's in-progress
+    const ring = document.getElementById('ring-schema');
+    let offset = 25;
+    let dir = 1;
+    setInterval(() => {
+      offset += dir * 0.8;
+      if (offset > 35) dir = -1;
+      if (offset < 20) dir = 1;
+      ring.setAttribute('stroke-dashoffset', offset);
+    }, 60);
+  }, 500);
+});
+</script>
+
+</body>
+</html>

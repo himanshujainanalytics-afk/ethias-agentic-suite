@@ -1,0 +1,1586 @@
+<!DOCTYPE html>
+<!-- saved from url=(0122)file:///Users/himanshujain/Library/Messages/Attachments/99/09/91CD2015-10AD-401B-B553-0ABD9EBA284F/sentinel-dashboard.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sentinel Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link href="./Sentinel Dashboard_files/css2" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg-base:#070b14;--bg-surface:#0d1117;--bg-elevated:#161b27}
+body{background:var(--bg-base);color:rgba(255,255,255,.9);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.10);border-radius:2px}
+button{cursor:pointer;font-family:inherit;border:none;background:none}
+input{font-family:inherit}
+
+/* Layout */
+.sidebar{position:fixed;left:0;top:0;height:100vh;width:240px;display:flex;flex-direction:column;z-index:20;background:#0d1117;border-right:1px solid rgba(255,255,255,.06)}
+.main{margin-left:240px;min-height:100vh;display:flex;flex-direction:column}
+.page{display:none;flex:1;flex-direction:column}
+.page.active{display:flex}
+
+/* Sidebar brand */
+.brand{padding:20px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;gap:12px}
+.brand-icon{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(135deg,#dc2626,#ea580c)}
+.brand-icon svg{width:16px;height:16px;color:#fff;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.brand-title{font-size:13px;font-weight:700;color:#fff;line-height:1}
+.brand-sub{font-size:10px;color:rgba(255,255,255,.28);margin-top:3px}
+
+/* Nav */
+nav{flex:1;padding:12px;overflow-y:auto}
+.nav-label{font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.22);padding:0 12px;margin-bottom:8px}
+.nav-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;font-size:13px;font-weight:500;transition:all .2s;color:rgba(255,255,255,.38);text-decoration:none;width:100%;margin-bottom:2px;position:relative}
+.nav-item:hover{background:rgba(255,255,255,.04);color:rgba(255,255,255,.6)}
+.nav-item.active{background:rgba(255,255,255,.07);color:rgba(255,255,255,.92)}
+.nav-item svg{width:16px;height:16px;flex-shrink:0;fill:none;stroke:rgba(255,255,255,.3);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:stroke .2s}
+.nav-item.active svg{stroke:#f87171}
+.nav-badge{margin-left:auto;font-size:10px;font-weight:700;padding:2px 6px;border-radius:20px;background:rgba(239,68,68,.18);color:#f87171;border:1px solid rgba(239,68,68,.28)}
+.nav-divider{border-top:1px solid rgba(255,255,255,.04);margin:12px 0 12px}
+.nav-sys-btn{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;font-size:13px;color:rgba(255,255,255,.30);width:100%;margin-bottom:2px}
+.nav-sys-btn svg{width:16px;height:16px;flex-shrink:0;fill:none;stroke:rgba(255,255,255,.3);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* Engine status */
+.engine-status{padding:12px 16px 16px;border-top:1px solid rgba(255,255,255,.06)}
+.status-pill{display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;transition:all .3s}
+.status-pill.online{background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.12)}
+.status-pill.offline{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15)}
+.status-icon{width:14px;height:14px;flex-shrink:0;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.status-pill.online .status-icon{stroke:#34d399}
+.status-pill.offline .status-icon{stroke:#f87171}
+.status-text{flex:1;min-width:0}
+.status-label{font-size:11px;font-weight:600}
+.status-pill.online .status-label{color:#34d399}
+.status-pill.offline .status-label{color:#f87171}
+.status-sub{font-size:9px;color:rgba(255,255,255,.22);margin-top:1px}
+.status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.status-pill.online .status-dot{background:#34d399;animation:pulse 2s infinite}
+.status-pill.offline .status-dot{background:#f87171}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* TopBar */
+.topbar{padding:20px 24px;border-bottom:1px solid rgba(255,255,255,.05);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.topbar-left h2{font-size:20px;font-weight:700;color:#fff}
+.topbar-left p{font-size:12px;color:rgba(255,255,255,.38);margin-top:2px}
+.topbar-actions{display:flex;align-items:center;gap:8px}
+
+/* Content */
+.content{padding:24px;flex:1;display:flex;flex-direction:column;gap:20px;overflow-y:auto}
+
+/* Stat cards */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.stat-card{background:var(--bg-surface);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.stat-header{display:flex;align-items:center;justify-content:space-between}
+.stat-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.35)}
+.stat-icon-wrap{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center}
+.stat-icon-wrap svg{width:15px;height:15px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.stat-value{font-size:26px;font-weight:800;color:#fff;line-height:1}
+.stat-footer{font-size:10px;color:rgba(255,255,255,.25)}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;transition:all .2s;cursor:pointer}
+.btn svg{width:14px;height:14px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.btn-ghost{background:rgba(255,255,255,.06);color:rgba(255,255,255,.65);border:1px solid rgba(255,255,255,.10)}
+.btn-ghost:hover{background:rgba(255,255,255,.10)}
+.btn-danger{background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.25)}
+.btn-danger:hover{background:rgba(239,68,68,.18)}
+.btn-dot{width:6px;height:6px;border-radius:50%;background:#f87171;animation:pulse 1.2s infinite;display:inline-block}
+
+/* Badges */
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.badge-channel-ATM{background:rgba(59,130,246,.15);color:#93c5fd;border:1px solid rgba(59,130,246,.25)}
+.badge-channel-WEB{background:rgba(139,92,246,.15);color:#c4b5fd;border:1px solid rgba(139,92,246,.25)}
+.badge-channel-MOBILE{background:rgba(16,185,129,.15);color:#6ee7b7;border:1px solid rgba(16,185,129,.25)}
+.badge-channel-POS{background:rgba(245,158,11,.15);color:#fcd34d;border:1px solid rgba(245,158,11,.25)}
+.badge-channel-WIRE{background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.25)}
+.badge-status-FLAGGED{background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.22)}
+.badge-status-CLEAN{background:rgba(16,185,129,.10);color:#34d399;border:1px solid rgba(16,185,129,.18)}
+.badge-status-PROCESSING{background:rgba(245,158,11,.10);color:#fbbf24;border:1px solid rgba(245,158,11,.18)}
+.badge-sev-CRITICAL{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.28)}
+.badge-sev-HIGH{background:rgba(249,115,22,.15);color:#fb923c;border:1px solid rgba(249,115,22,.25)}
+.badge-sev-MEDIUM{background:rgba(245,158,11,.15);color:#fbbf24;border:1px solid rgba(245,158,11,.25)}
+.badge-sev-LOW{background:rgba(59,130,246,.15);color:#60a5fa;border:1px solid rgba(59,130,246,.22)}
+.badge-alert-OPEN{background:rgba(239,68,68,.10);color:#f87171;border:1px solid rgba(239,68,68,.18)}
+.badge-alert-REVIEWED{background:rgba(59,130,246,.10);color:#60a5fa;border:1px solid rgba(59,130,246,.18)}
+.badge-alert-CLOSED{background:rgba(255,255,255,.06);color:rgba(255,255,255,.35);border:1px solid rgba(255,255,255,.10)}
+
+/* Table */
+.table-card{background:var(--bg-surface);border:1px solid rgba(255,255,255,.06);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+.table-header{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.05)}
+.table-header-left{display:flex;align-items:center;gap:10px}
+.table-pulse{width:8px;height:8px;border-radius:50%;background:#34d399;animation:pulse 2s infinite}
+.table-title{font-size:14px;font-weight:600;color:#fff}
+.table-count{font-size:11px;padding:2px 8px;border-radius:20px;background:rgba(255,255,255,.06);color:rgba(255,255,255,.35)}
+.table-status{font-size:11px;color:rgba(255,255,255,.25);display:flex;align-items:center;gap:6px}
+.table-status svg{width:14px;height:14px;fill:none;stroke:rgba(255,255,255,.25);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+thead tr{background:rgba(255,255,255,.02);border-bottom:1px solid rgba(255,255,255,.04)}
+th{padding:10px 20px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.28);text-align:left}
+th.right{text-align:right}
+tbody tr{border-bottom:1px solid rgba(255,255,255,.04);transition:background .15s}
+tbody tr:hover{background:rgba(255,255,255,.02)}
+tbody tr:last-child{border-bottom:none}
+td{padding:12px 20px;font-size:12px}
+.txn-id{font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,.45)}
+.route{display:flex;align-items:center;gap:6px}
+.route-src{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:rgba(255,255,255,.75)}
+.route-arr{color:rgba(255,255,255,.2);font-size:11px}
+.route-dst{font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(255,255,255,.38)}
+.amount-high{font-size:12px;font-weight:700;color:#f87171;font-variant-numeric:tabular-nums}
+.amount-norm{font-size:12px;font-weight:700;color:#fff;font-variant-numeric:tabular-nums}
+.loc{display:flex;align-items:center;gap:6px;color:rgba(255,255,255,.45);font-size:11px}
+.loc svg{width:12px;height:12px;fill:none;stroke:rgba(255,255,255,.45);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.time-cell{font-size:11px;color:rgba(255,255,255,.32)}
+.table-footer{padding:10px 20px;font-size:11px;color:rgba(255,255,255,.22);border-top:1px solid rgba(255,255,255,.04)}
+
+/* Row animation */
+@keyframes rowEnter{from{opacity:0;transform:translateY(-8px);background:rgba(239,68,68,.12)}60%{background:rgba(239,68,68,.06)}to{opacity:1;transform:translateY(0);background:transparent}}
+.row-new{animation:rowEnter 1.6s ease-out forwards}
+
+/* Offline banner */
+.offline-banner{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.20);font-size:12px;color:rgba(255,255,255,.65)}
+.offline-banner svg{width:16px;height:16px;flex-shrink:0;stroke:#f87171;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* Alert cards */
+.alert-card{border-radius:16px;overflow:hidden;transition:all .2s}
+.alert-main{display:flex;align-items:flex-start;gap:16px;padding:16px}
+.alert-icon{width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.alert-icon svg{width:16px;height:16px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.alert-content{flex:1;min-width:0}
+.alert-title-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.alert-title{font-size:14px;font-weight:700;color:#fff}
+.alert-desc{font-size:12px;line-height:1.6;color:rgba(255,255,255,.55)}
+.alert-meta{display:flex;align-items:center;gap:20px;margin-top:10px;flex-wrap:wrap}
+.alert-meta-item{display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(255,255,255,.32)}
+.alert-meta-item svg{width:12px;height:12px;fill:none;stroke:rgba(255,255,255,.32);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.alert-meta-item .mono{font-family:'JetBrains Mono',monospace}
+.alert-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.btn-investigate{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:8px;font-size:11px;font-weight:600;background:rgba(59,130,246,.10);color:#60a5fa;border:1px solid rgba(59,130,246,.18);cursor:pointer;transition:all .2s}
+.btn-investigate:hover{background:rgba(59,130,246,.16)}
+.btn-dismiss{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:8px;font-size:11px;font-weight:600;background:rgba(255,255,255,.05);color:rgba(255,255,255,.40);border:1px solid rgba(255,255,255,.08);cursor:pointer;transition:all .2s}
+.btn-dismiss:hover{background:rgba(255,255,255,.09)}
+.btn-expand{padding:6px;border-radius:8px;color:rgba(255,255,255,.25);cursor:pointer;transition:all .2s;display:flex;align-items:center}
+.btn-expand:hover{background:rgba(255,255,255,.06)}
+.btn-expand svg{width:16px;height:16px;fill:none;stroke:rgba(255,255,255,.25);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.alert-metadata{padding:0 16px 16px}
+.yaml-block{font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.9;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.05);border-radius:8px;padding:12px 14px}
+.yaml-key{color:rgba(139,92,246,.9)}
+.yaml-val{color:rgba(255,255,255,.65)}
+.yaml-str{color:rgba(16,185,129,.85)}
+.yaml-num{color:rgba(251,146,60,.85)}
+
+/* Filter tabs */
+.filter-bar{display:flex;align-items:center;gap:4px;padding:4px;border-radius:12px;width:fit-content;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06)}
+.filter-btn{padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;transition:all .2s;color:rgba(255,255,255,.38);cursor:pointer;border:none;background:transparent}
+.filter-btn.active{background:rgba(255,255,255,.10);color:rgba(255,255,255,.90)}
+.filter-count{font-size:9px;padding:0 4px;border-radius:4px;background:rgba(239,68,68,.2);color:#f87171;font-weight:700;margin-left:4px}
+
+/* Skeleton */
+.skeleton-card{border-radius:16px;padding:16px;background:var(--bg-surface);border:1px solid rgba(255,255,255,.06);animation:shimmer 1.5s infinite}
+@keyframes shimmer{0%{opacity:.6}50%{opacity:1}100%{opacity:.6}}
+.skeleton-block{border-radius:6px;background:rgba(255,255,255,.06)}
+
+/* Empty state */
+.empty-state{border-radius:16px;padding:48px;text-align:center;background:var(--bg-surface);border:1px solid rgba(255,255,255,.06)}
+.empty-state svg{width:32px;height:32px;margin:0 auto 12px;fill:none;stroke:rgba(255,255,255,.2);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.empty-state p{font-size:14px;font-weight:600;color:rgba(255,255,255,.4)}
+
+/* Rule cards */
+.rules-grid{display:flex;flex-direction:column;gap:16px}
+.rule-card{border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px;transition:all .25s}
+.rule-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.rule-icon-wrap{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rule-icon-wrap svg{width:20px;height:20px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.rule-title-group{flex:1;min-width:0}
+.rule-name-row{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.rule-name{font-size:14px;font-weight:700;color:#fff}
+.rule-tagline{font-size:11px;color:rgba(255,255,255,.32)}
+.rule-toggle-group{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.rule-toggle-label{font-size:11px;font-weight:600}
+.toggle{position:relative;display:inline-block;width:36px;height:20px}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-slider{position:absolute;cursor:pointer;inset:0;background:rgba(255,255,255,.1);border-radius:20px;transition:.25s}
+.toggle-slider::before{content:'';position:absolute;height:14px;width:14px;left:3px;bottom:3px;background:rgba(255,255,255,.5);border-radius:50%;transition:.25s}
+.toggle input:checked+.toggle-slider{background:rgba(16,185,129,.4)}
+.toggle input:checked+.toggle-slider::before{transform:translateX(16px);background:#10b981}
+.rule-desc{font-size:12px;line-height:1.7;color:rgba(255,255,255,.50)}
+.rule-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding-top:4px;border-top:1px solid rgba(255,255,255,.05)}
+.rule-stat-item{text-align:center}
+.rule-stat-label{display:flex;align-items:center;justify-content:center;gap:4px;margin-bottom:2px}
+.rule-stat-label svg{width:12px;height:12px;fill:none;stroke:rgba(255,255,255,.25);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.rule-stat-label span{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.25)}
+.rule-stat-value{font-size:20px;font-weight:800;line-height:1}
+.rule-stat-value-sm{font-size:14px;font-weight:600;color:#fff}
+.rule-cat{display:flex;align-items:center;gap:6px;margin-top:-4px}
+.rule-cat svg{width:12px;height:12px;fill:none;stroke:rgba(255,255,255,.20);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.rule-cat span{font-size:10px;font-weight:500;color:rgba(255,255,255,.22)}
+.add-rule{border-radius:16px;padding:32px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(255,255,255,.02);border:2px dashed rgba(255,255,255,.08)}
+.add-rule:hover{border-color:rgba(255,255,255,.14);background:rgba(255,255,255,.03)}
+.add-rule svg{width:24px;height:24px;margin:0 auto 8px;fill:none;stroke:rgba(255,255,255,.18);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.add-rule p{font-size:14px;font-weight:600;color:rgba(255,255,255,.35)}
+.add-rule .mono{font-family:'JetBrains Mono',monospace;color:rgba(139,92,246,.6)}
+.arch-note{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;font-size:12px;background:rgba(139,92,246,.07);border:1px solid rgba(139,92,246,.15)}
+.arch-note svg{width:16px;height:16px;flex-shrink:0;fill:none;stroke:#a78bfa;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.arch-note span{color:rgba(255,255,255,.55);line-height:1.6}
+.arch-note .mono{font-family:'JetBrains Mono',monospace;color:#c4b5fd}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════ SIDEBAR ═══════════════════════════ -->
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-icon">
+      <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+    </div>
+    <div>
+      <div class="brand-title">Project Sentinel</div>
+      <div class="brand-sub">Fraud Engine v1.0</div>
+    </div>
+  </div>
+
+  <nav>
+    <div class="nav-label">Monitoring</div>
+    <button class="nav-item" onclick="showPage(&#39;feed&#39;)">
+      <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+      Live Feed
+    </button>
+    <button class="nav-item active" onclick="showPage(&#39;alerts&#39;)" id="nav-alerts">
+      <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path><circle cx="19" cy="5" r="3"></circle></svg>
+      Alerts Center
+      <span class="nav-badge" id="alert-badge">6</span>
+    </button>
+    <button class="nav-item" onclick="showPage(&#39;rules&#39;)">
+      <svg viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+      Rule Manager
+    </button>
+
+    <div class="nav-divider"></div>
+    <div class="nav-label">System</div>
+    <button class="nav-sys-btn">
+      <svg viewBox="0 0 24 24"><line x1="6" y1="3" x2="6" y2="15"></line><circle cx="18" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><path d="M18 9a9 9 0 0 1-9 9"></path></svg>
+      API Docs
+    </button>
+    <button class="nav-sys-btn">
+      <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      Sign Out
+    </button>
+  </nav>
+
+  <div class="engine-status">
+    <div class="status-pill offline" id="status-pill">
+      <svg class="status-icon" viewBox="0 0 24 24"><line x1="1" y1="1" x2="23" y2="23"></line><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path><path d="M10.71 5.05A16 16 0 0 1 22.56 9"></path><path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
+      <div class="status-text">
+        <div class="status-label" id="status-label">Engine: Offline</div>
+        <div class="status-sub">:8080 · 3 rules active</div>
+      </div>
+      <div class="status-dot"></div>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══════════════════════════ MAIN ═══════════════════════════ -->
+<main class="main">
+
+<!-- ────────────────── FEED PAGE ────────────────── -->
+<div class="page" id="page-feed">
+  <div class="topbar">
+    <div class="topbar-left">
+      <h2>Live Feed</h2>
+      <p>Real-time transaction ingestion stream</p>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn btn-ghost" id="btn-auto" onclick="toggleAuto()">
+        <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+        Auto-Simulate
+      </button>
+      <button class="btn btn-ghost" onclick="simulateTx()">
+        <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+        Simulate TX
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div id="offline-banner" class="offline-banner" style="display:none">
+      <svg viewBox="0 0 24 24"><line x1="1" y1="1" x2="23" y2="23"></line><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path><path d="M10.71 5.05A16 16 0 0 1 22.56 9"></path><path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
+      Engine offline — showing local data only. Start the Go server on :8080.
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">Total Shown</span>
+          <div class="stat-icon-wrap" style="background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.20)">
+            <svg viewBox="0 0 24 24" style="stroke:#60a5fa"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+          </div>
+        </div>
+        <div class="stat-value" id="feed-total">10</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">Flagged</span>
+          <div class="stat-icon-wrap" style="background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.20)">
+            <svg viewBox="0 0 24 24" style="stroke:#f87171"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          </div>
+        </div>
+        <div class="stat-value" id="feed-flagged">6</div>
+        <div class="stat-footer">+2 from yesterday</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">Clean</span>
+          <div class="stat-icon-wrap" style="background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.20)">
+            <svg viewBox="0 0 24 24" style="stroke:#34d399"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          </div>
+        </div>
+        <div class="stat-value" id="feed-clean">4</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">Avg Processing</span>
+          <div class="stat-icon-wrap" style="background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.20)">
+            <svg viewBox="0 0 24 24" style="stroke:#a78bfa"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          </div>
+        </div>
+        <div class="stat-value">1.2 ms</div>
+        <div class="stat-footer">p99: 4.8ms</div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-header">
+        <div class="table-header-left">
+          <div class="table-pulse"></div>
+          <span class="table-title">Transaction Stream</span>
+          <span class="table-count" id="feed-shown">10 shown · max 50</span>
+        </div>
+        <div class="table-status" id="feed-stream-status">
+          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+          idle
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>TXN ID</th><th>Route</th><th class="right">Amount</th>
+              <th>Channel</th><th>Location</th><th>Time</th><th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="feed-tbody">
+    <tr class="" style="border-bottom:1px solid rgba(255,255,255,.04)">
+      <td><span class="txn-id">txn-4f8a2c1d</span></td>
+      <td><div class="route">
+        <span class="route-src">ACC-7291</span>
+        <span class="route-arr">→</span>
+        <span class="route-dst">ACC-APEX-001</span>
+      </div></td>
+      <td style="text-align:right"><span class="amount-high">$47,200.00</span></td>
+      <td><span class="badge badge-channel-WIRE">WIRE</span></td>
+      <td><div class="loc"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>New York</div></td>
+      <td><span class="time-cell">21h ago</span></td>
+      <td><span class="badge badge-status-FLAGGED">FLAGGED · 2 alerts</span></td>
+    </tr>
+  
+    <tr class="" style="border-bottom:1px solid rgba(255,255,255,.04)">
+      <td><span class="txn-id">txn-9b3e7f12</span></td>
+      <td><div class="route">
+        <span class="route-src">ACC-8834</span>
+        <span class="route-arr">→</span>
+        <span class="route-dst">ACC-PRIME-007</span>
+      </div></td>
+      <td style="text-align:right"><span class="amount-norm">$150.00</span></td>
+      <td><span class="badge badge-channel-WEB">WEB</span></td>
+      <td><div class="loc"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>San Francisco</div></td>
+      <td><span class="time-cell">14h ago</span></td>
+      <td><span class="badge badge-status-CLEAN">CLEAN</span></td>
+    </tr>
+  
+    <tr class="" style="border-bottom:1px solid rgba(255,255,255,.04)">
+      <td><span class="txn-id">txn-2d5c8a31</span></td>
+      <td><div class="route">
+        <span class="route-src">ACC-GEO-01</span>
+        <span class="route-arr">→</span>
+        <span class="route-dst">ACC-SMITH-789</span>
+      </div></td>
+      <td style="text-align:right"><span class="amount-norm">$300.00</span></td>
+      <td><span class="badge badge-channel-ATM">ATM</span></td>
+      <td><div class="loc"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>Los Angeles</div></td>
+      <td><span class="time-cell">12h ago</span></td>
+      <td><span class="badge badge-status-FLAGGED">FLAGGED · 1 alert</span></td>
+    </tr>
+  
+    <tr class="" style="border-bottom:1px solid rgba(255,255,255,.04)">
+      <td><span class="txn-id">txn-7a1f4e9b</span></td>
+      <td><div class="route">
+        <span class="route-src">ACC-1199</span>
+        <span class="route-arr">→</span>
+        <span class="route-dst">ACC-RETAIL-44</span>
+      </div></td>
+      <td style="text-align:right"><span class="amount-norm">$89.99</span></td>
+      <td><span class="badge badge-channel-POS">POS</span></td>
+      <td><div class="loc"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>Chicago</div></td>
+      <td><span class="time-cell">12h ago</span></td>
+      <td><span class="badge badge-status-CLEAN">CLEAN</span></td>
+    </tr>
+  
+    <tr class="" style="border-bottom:1px solid rgba(255,255,255,.04)">
+      <td><span class="txn-id">txn-c3d9b7a2</span></td>
+      <td><div class="route">
+        <span class="route-src">ACC-VEL-01</span>
+        <span class="route-arr">→</span>
+        <span class="route-dst">ACC-FAST-001</span>
+      </div></td>
+      <td style="text-align:right"><span class="amount-norm">$300.00</span></td>
+      <td><span class="badge badge-channel-MOBILE">MOBILE</span></td>
+      <td><div class="loc"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>New York</div></td>
+      <td><span class="time-cell">12h ago</span></td>
+      <td><span class="badge badge-status-FLAGGED">FLAGGED · 1 alert</span></td>
+    </tr>
+  
+    <tr class="" style="border-bottom:1px solid rgba(255,255,255,.04)">
+      <td><span class="txn-id">txn-5e8f2c07</span></td>
+      <td><div class="route">
+        <span class="route-src">ACC-4455</span>
+        <span class="route-arr">→</span>
+        <span class="route-dst">ACC-INTL-003</span>
+      </div></td>
+      <td style="text-align:right"><span class="amount-high">$15,000.00</span></td>
+      <td><span class="badge badge-channel-WIRE">WIRE</span></td>
+      <td><div class="loc"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>London</div></td>
+      <td><span class="time-cell">11h ago</span></td>
+      <td><span class="badge badge-status-FLAGGED">FLAGGED · 1 alert</span></td>
+    </tr>
+  
+    <tr class="" style="border-bottom:1px solid rgba(255,255,255,.04)">
+      <td><span class="txn-id">txn-0a4d6e19</span></td>
+      <td><div class="route">
+        <span class="route-src">ACC-9923</span>
+        <span class="route-arr">→</span>
+        <span class="route-dst">ACC-SAVE-112</span>
+      </div></td>
+      <td style="text-align:right"><span class="amount-norm">$5,000.00</span></td>
+      <td><span class="badge badge-channel-WEB">WEB</span></td>
+      <td><div class="loc"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>Houston</div></td>
+      <td><span class="time-cell">11h ago</span></td>
+      <td><span class="badge badge-status-CLEAN">CLEAN</span></td>
+    </tr>
+  
+    <tr class="" style="border-bottom:1px solid rgba(255,255,255,.04)">
+      <td><span class="txn-id">txn-b6f3a812</span></td>
+      <td><div class="route">
+        <span class="route-src">ACC-3317</span>
+        <span class="route-arr">→</span>
+        <span class="route-dst">ACC-APEX-002</span>
+      </div></td>
+      <td style="text-align:right"><span class="amount-high">$11,200.00</span></td>
+      <td><span class="badge badge-channel-ATM">ATM</span></td>
+      <td><div class="loc"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>Amsterdam</div></td>
+      <td><span class="time-cell">11h ago</span></td>
+      <td><span class="badge badge-status-FLAGGED">FLAGGED · 1 alert</span></td>
+    </tr>
+  
+    <tr class="" style="border-bottom:1px solid rgba(255,255,255,.04)">
+      <td><span class="txn-id">txn-d1c7e540</span></td>
+      <td><div class="route">
+        <span class="route-src">ACC-5588</span>
+        <span class="route-arr">→</span>
+        <span class="route-dst">ACC-SHOP-001</span>
+      </div></td>
+      <td style="text-align:right"><span class="amount-norm">$450.00</span></td>
+      <td><span class="badge badge-channel-MOBILE">MOBILE</span></td>
+      <td><div class="loc"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>Phoenix</div></td>
+      <td><span class="time-cell">11h ago</span></td>
+      <td><span class="badge badge-status-CLEAN">CLEAN</span></td>
+    </tr>
+  
+    <tr class="" style="border-bottom:1px solid rgba(255,255,255,.04)">
+      <td><span class="txn-id">txn-e9a2f671</span></td>
+      <td><div class="route">
+        <span class="route-src">ACC-7291</span>
+        <span class="route-arr">→</span>
+        <span class="route-dst">ACC-APEX-001</span>
+      </div></td>
+      <td style="text-align:right"><span class="amount-norm">$9,800.00</span></td>
+      <td><span class="badge badge-channel-WEB">WEB</span></td>
+      <td><div class="loc"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>New York</div></td>
+      <td><span class="time-cell">11h ago</span></td>
+      <td><span class="badge badge-status-FLAGGED">FLAGGED · 1 alert</span></td>
+    </tr>
+  </tbody>
+        </table>
+      </div>
+      <div class="table-footer">Showing latest transactions · older records stored in TimescaleDB hypertable</div>
+    </div>
+  </div>
+</div>
+
+<!-- ────────────────── ALERTS PAGE ────────────────── -->
+<div class="page active" id="page-alerts">
+  <div class="topbar">
+    <div class="topbar-left">
+      <h2>Alerts Center</h2>
+      <p>Prioritised fraud signals requiring analyst review</p>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">Open Alerts</span>
+          <div class="stat-icon-wrap" style="background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.20)">
+            <svg viewBox="0 0 24 24" style="stroke:#f87171"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path><circle cx="19" cy="5" r="3"></circle></svg>
+          </div>
+        </div>
+        <div class="stat-value" id="a-open">6</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">Critical</span>
+          <div class="stat-icon-wrap" style="background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.20)">
+            <svg viewBox="0 0 24 24" style="stroke:#f87171"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+          </div>
+        </div>
+        <div class="stat-value" id="a-critical">2</div>
+        <div class="stat-footer">Requires immediate action</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">High</span>
+          <div class="stat-icon-wrap" style="background:rgba(249,115,22,.12);border:1px solid rgba(249,115,22,.20)">
+            <svg viewBox="0 0 24 24" style="stroke:#fb923c"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>
+          </div>
+        </div>
+        <div class="stat-value" id="a-high">2</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">Resolved Today</span>
+          <div class="stat-icon-wrap" style="background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.20)">
+            <svg viewBox="0 0 24 24" style="stroke:#34d399"><polyline points="20 6 9 17 4 12"></polyline><polyline points="20 12 9 23 4 18"></polyline></svg>
+          </div>
+        </div>
+        <div class="stat-value" id="a-resolved">0</div>
+      </div>
+    </div>
+
+    <div class="filter-bar" id="alert-filters">
+      <button class="filter-btn active" data-filter="ALL" onclick="setFilter(&#39;ALL&#39;,this)">All</button>
+      <button class="filter-btn" data-filter="CRITICAL" onclick="setFilter(&#39;CRITICAL&#39;,this)">Critical <span class="filter-count" id="fc-critical">2</span></button>
+      <button class="filter-btn" data-filter="HIGH" onclick="setFilter(&#39;HIGH&#39;,this)">High</button>
+      <button class="filter-btn" data-filter="MEDIUM" onclick="setFilter(&#39;MEDIUM&#39;,this)">Medium</button>
+      <button class="filter-btn" data-filter="LOW" onclick="setFilter(&#39;LOW&#39;,this)">Low</button>
+      <button class="filter-btn" data-filter="REVIEWED" onclick="setFilter(&#39;REVIEWED&#39;,this)">Reviewed</button>
+    </div>
+
+    <div id="alerts-list" style="display:flex;flex-direction:column;gap:12px">
+    <div class="alert-card" style="background:#0d1117;border:1px solid rgba(245,158,11,.22);box-shadow:0 0 24px rgba(0,0,0,.2)">
+      <div class="alert-main">
+        <div class="alert-icon" style="background:rgba(245,158,11,.13)">
+          <svg viewBox="0 0 24 24" style="stroke:#fbbf24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+        </div>
+        <div class="alert-content">
+          <div class="alert-title-row">
+            <span class="alert-title">High-Value Threshold</span>
+            <span class="badge badge-sev-MEDIUM">MEDIUM</span>
+            <span class="badge badge-alert-OPEN">OPEN</span>
+          </div>
+          <p class="alert-desc">Transaction txn-4f8a2c1d amount 47,200.00 USD exceeds high-value threshold of 10,000.00 (overage: +372.0%)</p>
+          <div class="alert-meta">
+            <div class="alert-meta-item">
+              <svg viewBox="0 0 24 24"><line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line></svg>
+              <span class="mono">txn-4f8a2c1d</span>
+            </div>
+            <div class="alert-meta-item">
+              <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path></svg>
+              ACC-7291
+            </div>
+            <div class="alert-meta-item">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              21h ago
+            </div>
+          </div>
+        </div>
+        <div class="alert-actions">
+          
+            <button class="btn-investigate" onclick="reviewAlert(&#39;alrt-001a4b&#39;)">
+              <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              Investigate
+            </button>
+            <button class="btn-dismiss" onclick="dismissAlert(&#39;alrt-001a4b&#39;)">
+              <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><polyline points="20 6 9 17 4 12"></polyline><polyline points="20 12 9 23 4 18"></polyline></svg>
+              Dismiss
+            </button>
+          
+          <button class="btn-expand" onclick="toggleExpand(&#39;alrt-001a4b&#39;)">
+            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+        </div>
+      </div>
+      
+    </div>
+    <div class="alert-card" style="background:#0d1117;border:1px solid rgba(239,68,68,.30);box-shadow:0 0 24px rgba(0,0,0,.2)">
+      <div class="alert-main">
+        <div class="alert-icon" style="background:rgba(239,68,68,.15)">
+          <svg viewBox="0 0 24 24" style="stroke:#f87171"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+        </div>
+        <div class="alert-content">
+          <div class="alert-title-row">
+            <span class="alert-title">Geographic Jump</span>
+            <span class="badge badge-sev-CRITICAL">CRITICAL</span>
+            <span class="badge badge-alert-OPEN">OPEN</span>
+          </div>
+          <p class="alert-desc">Impossible geographic jump for account ACC-7291: 3459.2 miles in 18.0 minutes (max allowed: 500 miles)</p>
+          <div class="alert-meta">
+            <div class="alert-meta-item">
+              <svg viewBox="0 0 24 24"><line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line></svg>
+              <span class="mono">txn-4f8a2c1d</span>
+            </div>
+            <div class="alert-meta-item">
+              <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path></svg>
+              ACC-7291
+            </div>
+            <div class="alert-meta-item">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              21h ago
+            </div>
+          </div>
+        </div>
+        <div class="alert-actions">
+          
+            <button class="btn-investigate" onclick="reviewAlert(&#39;alrt-002c9f&#39;)">
+              <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              Investigate
+            </button>
+            <button class="btn-dismiss" onclick="dismissAlert(&#39;alrt-002c9f&#39;)">
+              <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><polyline points="20 6 9 17 4 12"></polyline><polyline points="20 12 9 23 4 18"></polyline></svg>
+              Dismiss
+            </button>
+          
+          <button class="btn-expand" onclick="toggleExpand(&#39;alrt-002c9f&#39;)">
+            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+        </div>
+      </div>
+      
+    </div>
+    <div class="alert-card" style="background:#0d1117;border:1px solid rgba(249,115,22,.25);box-shadow:0 0 24px rgba(0,0,0,.2)">
+      <div class="alert-main">
+        <div class="alert-icon" style="background:rgba(249,115,22,.13)">
+          <svg viewBox="0 0 24 24" style="stroke:#fb923c"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>
+        </div>
+        <div class="alert-content">
+          <div class="alert-title-row">
+            <span class="alert-title">Velocity Check</span>
+            <span class="badge badge-sev-HIGH">HIGH</span>
+            <span class="badge badge-alert-OPEN">OPEN</span>
+          </div>
+          <p class="alert-desc">Account ACC-VEL-01 made 6 transactions in the last 60s (threshold: &gt;5)</p>
+          <div class="alert-meta">
+            <div class="alert-meta-item">
+              <svg viewBox="0 0 24 24"><line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line></svg>
+              <span class="mono">txn-c3d9b7a2</span>
+            </div>
+            <div class="alert-meta-item">
+              <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path></svg>
+              ACC-VEL-01
+            </div>
+            <div class="alert-meta-item">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              12h ago
+            </div>
+          </div>
+        </div>
+        <div class="alert-actions">
+          
+            <button class="btn-investigate" onclick="reviewAlert(&#39;alrt-003e1d&#39;)">
+              <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              Investigate
+            </button>
+            <button class="btn-dismiss" onclick="dismissAlert(&#39;alrt-003e1d&#39;)">
+              <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><polyline points="20 6 9 17 4 12"></polyline><polyline points="20 12 9 23 4 18"></polyline></svg>
+              Dismiss
+            </button>
+          
+          <button class="btn-expand" onclick="toggleExpand(&#39;alrt-003e1d&#39;)">
+            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+        </div>
+      </div>
+      
+    </div>
+    <div class="alert-card" style="background:#0d1117;border:1px solid rgba(245,158,11,.22);box-shadow:0 0 24px rgba(0,0,0,.2)">
+      <div class="alert-main">
+        <div class="alert-icon" style="background:rgba(245,158,11,.13)">
+          <svg viewBox="0 0 24 24" style="stroke:#fbbf24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+        </div>
+        <div class="alert-content">
+          <div class="alert-title-row">
+            <span class="alert-title">High-Value Threshold</span>
+            <span class="badge badge-sev-MEDIUM">MEDIUM</span>
+            <span class="badge badge-alert-OPEN">OPEN</span>
+          </div>
+          <p class="alert-desc">Transaction txn-5e8f2c07 amount 15,000.00 USD exceeds high-value threshold of 10,000.00 (overage: +50.0%)</p>
+          <div class="alert-meta">
+            <div class="alert-meta-item">
+              <svg viewBox="0 0 24 24"><line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line></svg>
+              <span class="mono">txn-5e8f2c07</span>
+            </div>
+            <div class="alert-meta-item">
+              <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path></svg>
+              ACC-4455
+            </div>
+            <div class="alert-meta-item">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              11h ago
+            </div>
+          </div>
+        </div>
+        <div class="alert-actions">
+          
+            <button class="btn-investigate" onclick="reviewAlert(&#39;alrt-004f2a&#39;)">
+              <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              Investigate
+            </button>
+            <button class="btn-dismiss" onclick="dismissAlert(&#39;alrt-004f2a&#39;)">
+              <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><polyline points="20 6 9 17 4 12"></polyline><polyline points="20 12 9 23 4 18"></polyline></svg>
+              Dismiss
+            </button>
+          
+          <button class="btn-expand" onclick="toggleExpand(&#39;alrt-004f2a&#39;)">
+            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+        </div>
+      </div>
+      
+    </div>
+    <div class="alert-card" style="background:#0d1117;border:1px solid rgba(239,68,68,.30);box-shadow:0 0 24px rgba(0,0,0,.2)">
+      <div class="alert-main">
+        <div class="alert-icon" style="background:rgba(239,68,68,.15)">
+          <svg viewBox="0 0 24 24" style="stroke:#f87171"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+        </div>
+        <div class="alert-content">
+          <div class="alert-title-row">
+            <span class="alert-title">Geographic Jump</span>
+            <span class="badge badge-sev-CRITICAL">CRITICAL</span>
+            <span class="badge badge-alert-OPEN">OPEN</span>
+          </div>
+          <p class="alert-desc">Impossible geographic jump for account ACC-GEO-01: 2451.0 miles in 30.0 minutes</p>
+          <div class="alert-meta">
+            <div class="alert-meta-item">
+              <svg viewBox="0 0 24 24"><line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line></svg>
+              <span class="mono">txn-2d5c8a31</span>
+            </div>
+            <div class="alert-meta-item">
+              <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path></svg>
+              ACC-GEO-01
+            </div>
+            <div class="alert-meta-item">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              12h ago
+            </div>
+          </div>
+        </div>
+        <div class="alert-actions">
+          
+            <button class="btn-investigate" onclick="reviewAlert(&#39;alrt-005b3c&#39;)">
+              <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              Investigate
+            </button>
+            <button class="btn-dismiss" onclick="dismissAlert(&#39;alrt-005b3c&#39;)">
+              <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><polyline points="20 6 9 17 4 12"></polyline><polyline points="20 12 9 23 4 18"></polyline></svg>
+              Dismiss
+            </button>
+          
+          <button class="btn-expand" onclick="toggleExpand(&#39;alrt-005b3c&#39;)">
+            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+        </div>
+      </div>
+      
+    </div>
+    <div class="alert-card" style="background:#0d1117;border:1px solid rgba(245,158,11,.22);box-shadow:0 0 24px rgba(0,0,0,.2)">
+      <div class="alert-main">
+        <div class="alert-icon" style="background:rgba(245,158,11,.13)">
+          <svg viewBox="0 0 24 24" style="stroke:#fbbf24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+        </div>
+        <div class="alert-content">
+          <div class="alert-title-row">
+            <span class="alert-title">High-Value Threshold</span>
+            <span class="badge badge-sev-MEDIUM">MEDIUM</span>
+            <span class="badge badge-alert-REVIEWED">REVIEWED</span>
+          </div>
+          <p class="alert-desc">Transaction txn-b6f3a812 amount 11,200.00 USD exceeds high-value threshold of 10,000.00 (overage: +12.0%)</p>
+          <div class="alert-meta">
+            <div class="alert-meta-item">
+              <svg viewBox="0 0 24 24"><line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line></svg>
+              <span class="mono">txn-b6f3a812</span>
+            </div>
+            <div class="alert-meta-item">
+              <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path></svg>
+              ACC-3317
+            </div>
+            <div class="alert-meta-item">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              11h ago
+            </div>
+          </div>
+        </div>
+        <div class="alert-actions">
+          
+          <button class="btn-expand" onclick="toggleExpand(&#39;alrt-006d7e&#39;)">
+            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+        </div>
+      </div>
+      
+    </div>
+    <div class="alert-card" style="background:#0d1117;border:1px solid rgba(249,115,22,.25);box-shadow:0 0 24px rgba(0,0,0,.2)">
+      <div class="alert-main">
+        <div class="alert-icon" style="background:rgba(249,115,22,.13)">
+          <svg viewBox="0 0 24 24" style="stroke:#fb923c"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>
+        </div>
+        <div class="alert-content">
+          <div class="alert-title-row">
+            <span class="alert-title">Velocity Check</span>
+            <span class="badge badge-sev-HIGH">HIGH</span>
+            <span class="badge badge-alert-OPEN">OPEN</span>
+          </div>
+          <p class="alert-desc">Account ACC-7291 made 7 transactions in the last 60s (threshold: &gt;5). Potential structuring pattern.</p>
+          <div class="alert-meta">
+            <div class="alert-meta-item">
+              <svg viewBox="0 0 24 24"><line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line></svg>
+              <span class="mono">txn-e9a2f671</span>
+            </div>
+            <div class="alert-meta-item">
+              <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path></svg>
+              ACC-7291
+            </div>
+            <div class="alert-meta-item">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              11h ago
+            </div>
+          </div>
+        </div>
+        <div class="alert-actions">
+          
+            <button class="btn-investigate" onclick="reviewAlert(&#39;alrt-007a9b&#39;)">
+              <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              Investigate
+            </button>
+            <button class="btn-dismiss" onclick="dismissAlert(&#39;alrt-007a9b&#39;)">
+              <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><polyline points="20 6 9 17 4 12"></polyline><polyline points="20 12 9 23 4 18"></polyline></svg>
+              Dismiss
+            </button>
+          
+          <button class="btn-expand" onclick="toggleExpand(&#39;alrt-007a9b&#39;)">
+            <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+        </div>
+      </div>
+      
+    </div></div>
+  </div>
+</div>
+
+<!-- ────────────────── RULES PAGE ────────────────── -->
+<div class="page" id="page-rules">
+  <div class="topbar">
+    <div class="topbar-left">
+      <h2>Rule Manager</h2>
+      <p>Configure and monitor the Scenario Evaluator rule set</p>
+    </div>
+    <div class="topbar-actions">
+      <span style="font-size:11px;font-family:&#39;JetBrains Mono&#39;,monospace;padding:4px 10px;border-radius:6px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.30)">engine: ScenarioEvaluator</span>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">Active Rules</span>
+          <div class="stat-icon-wrap" style="background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.20)">
+            <svg viewBox="0 0 24 24" style="stroke:#34d399"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          </div>
+        </div>
+        <div class="stat-value" id="r-active">3 / 3</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">Triggers Today</span>
+          <div class="stat-icon-wrap" style="background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.20)">
+            <svg viewBox="0 0 24 24" style="stroke:#fbbf24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+          </div>
+        </div>
+        <div class="stat-value" id="r-triggers">9</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">Avg False Positive</span>
+          <div class="stat-icon-wrap" style="background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.20)">
+            <svg viewBox="0 0 24 24" style="stroke:#60a5fa"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+          </div>
+        </div>
+        <div class="stat-value" id="r-fp">4.7%</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-header">
+          <span class="stat-title">Eval Strategy</span>
+          <div class="stat-icon-wrap" style="background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.20)">
+            <svg viewBox="0 0 24 24" style="stroke:#a78bfa"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+          </div>
+        </div>
+        <div class="stat-value" style="font-size:18px">Sequential</div>
+        <div class="stat-footer">Fan-out in Phase 2</div>
+      </div>
+    </div>
+
+    <div class="arch-note">
+      <svg viewBox="0 0 24 24"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+      <span>Rules implement the <span class="mono">domain.Rule</span> interface from <span class="mono">github.com/sentinel/engine</span>. Add new rules in <span class="mono">internal/rules/</span> — injected at startup with zero config changes.</span>
+    </div>
+
+    <div class="rules-grid" id="rules-list">
+    <div class="rule-card" style="background:#0d1117;border:1px solid rgba(249,115,22,.20);box-shadow:0 0 28px rgba(249,115,22,.08);opacity:1">
+      <div class="rule-header">
+        <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0">
+          <div class="rule-icon-wrap" style="background:rgba(249,115,22,.08);border:1px solid rgba(249,115,22,.20)">
+            <svg viewBox="0 0 24 24" style="stroke:#f97316"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>
+          </div>
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+              <span class="rule-name">Velocity Check</span>
+              <span class="badge badge-sev-HIGH">HIGH</span>
+            </div>
+            <span class="rule-tagline">Burst detection · Rolling window counter</span>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+          <span style="font-size:11px;font-weight:600;color:#10b981">Active</span>
+          <label class="toggle">
+            <input type="checkbox" checked="" onchange="toggleRule(&#39;velocity_check&#39;)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+      <p class="rule-desc">Fires when an account submits more than N transactions within a rolling time window. Detects scripted bursts, credential stuffing, and rapid card-testing patterns.</p>
+      <div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+          <svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:none;stroke:rgba(255,255,255,.25);stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line></svg>
+          <span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.25)">Parameters</span>
+        </div>
+        <div class="yaml-block">
+          <div><span class="yaml-key">name</span><span class="yaml-val">: </span><span class="yaml-str">"VELOCITY_CHECK"</span></div>
+          <div><span class="yaml-key">enabled</span><span class="yaml-val">: </span><span class="yaml-bool-true">true</span></div>
+          <div><span class="yaml-key">severity</span><span class="yaml-val">: </span><span class="yaml-str">"HIGH"</span></div>
+          <div style="margin-top:4px"><span class="yaml-key">parameters</span><span class="yaml-val">:</span></div>
+          
+      <div style="margin-left:16px">
+        <span class="yaml-key">threshold</span><span class="yaml-val">: </span>
+        <span class="yaml-num">5</span>
+        <span style="margin-left:12px;font-size:10px;color:rgba(255,255,255,.18)"># Max transactions before alert triggers</span>
+      </div>
+    
+      <div style="margin-left:16px">
+        <span class="yaml-key">window</span><span class="yaml-val">: </span>
+        <span class="yaml-str">"60s"</span>
+        <span style="margin-left:12px;font-size:10px;color:rgba(255,255,255,.18)"># Rolling time window for count</span>
+      </div>
+    
+      <div style="margin-left:16px">
+        <span class="yaml-key">account_scope</span><span class="yaml-val">: </span>
+        <span class="yaml-str">"source_account"</span>
+        <span style="margin-left:12px;font-size:10px;color:rgba(255,255,255,.18)"># Field used to group transactions</span>
+      </div>
+    
+        </div>
+      </div>
+      <div class="rule-stats">
+        <div class="rule-stat-item">
+          <div class="rule-stat-label">
+            <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+            <span>Triggers Today</span>
+          </div>
+          <div class="rule-stat-value" style="color:#f97316">3</div>
+        </div>
+        <div class="rule-stat-item">
+          <div class="rule-stat-label">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <span>Last Triggered</span>
+          </div>
+          <div class="rule-stat-value-sm">11h ago</div>
+        </div>
+        <div class="rule-stat-item">
+          <div class="rule-stat-label">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            <span>False Positive</span>
+          </div>
+          <div class="rule-stat-value-sm" style="color:#fbbf24">4.2%</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:-4px">
+        <svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:none;stroke:rgba(255,255,255,.20);stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path></svg>
+        <span style="font-size:10px;color:rgba(255,255,255,.22)">velocity · Go interface: domain.Rule</span>
+      </div>
+    </div>
+    <div class="rule-card" style="background:#0d1117;border:1px solid rgba(245,158,11,.20);box-shadow:0 0 28px rgba(245,158,11,.08);opacity:1">
+      <div class="rule-header">
+        <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0">
+          <div class="rule-icon-wrap" style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.20)">
+            <svg viewBox="0 0 24 24" style="stroke:#f59e0b"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+          </div>
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+              <span class="rule-name">High-Value Threshold</span>
+              <span class="badge badge-sev-MEDIUM">MEDIUM</span>
+            </div>
+            <span class="rule-tagline">Pure-domain rule · No external state</span>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+          <span style="font-size:11px;font-weight:600;color:#10b981">Active</span>
+          <label class="toggle">
+            <input type="checkbox" checked="" onchange="toggleRule(&#39;high_value_threshold&#39;)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+      <p class="rule-desc">Flags any single transaction that exceeds the configured USD threshold. Pure-domain rule — no external state required. Pairs with SAR/CTR reporting requirements.</p>
+      <div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+          <svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:none;stroke:rgba(255,255,255,.25);stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line></svg>
+          <span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.25)">Parameters</span>
+        </div>
+        <div class="yaml-block">
+          <div><span class="yaml-key">name</span><span class="yaml-val">: </span><span class="yaml-str">"HIGH_VALUE_THRESHOLD"</span></div>
+          <div><span class="yaml-key">enabled</span><span class="yaml-val">: </span><span class="yaml-bool-true">true</span></div>
+          <div><span class="yaml-key">severity</span><span class="yaml-val">: </span><span class="yaml-str">"MEDIUM"</span></div>
+          <div style="margin-top:4px"><span class="yaml-key">parameters</span><span class="yaml-val">:</span></div>
+          
+      <div style="margin-left:16px">
+        <span class="yaml-key">threshold</span><span class="yaml-val">: </span>
+        <span class="yaml-num">10000</span>
+        <span style="margin-left:12px;font-size:10px;color:rgba(255,255,255,.18)"># USD amount that triggers alert</span>
+      </div>
+    
+      <div style="margin-left:16px">
+        <span class="yaml-key">currency</span><span class="yaml-val">: </span>
+        <span class="yaml-str">"USD"</span>
+        <span style="margin-left:12px;font-size:10px;color:rgba(255,255,255,.18)"># Comparison currency (ISO 4217)</span>
+      </div>
+    
+      <div style="margin-left:16px">
+        <span class="yaml-key">max_amount</span><span class="yaml-val">: </span>
+        <span class="yaml-num">1000000</span>
+        <span style="margin-left:12px;font-size:10px;color:rgba(255,255,255,.18)"># Absolute rejection ceiling</span>
+      </div>
+    
+        </div>
+      </div>
+      <div class="rule-stats">
+        <div class="rule-stat-item">
+          <div class="rule-stat-label">
+            <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+            <span>Triggers Today</span>
+          </div>
+          <div class="rule-stat-value" style="color:#f59e0b">4</div>
+        </div>
+        <div class="rule-stat-item">
+          <div class="rule-stat-label">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <span>Last Triggered</span>
+          </div>
+          <div class="rule-stat-value-sm">11h ago</div>
+        </div>
+        <div class="rule-stat-item">
+          <div class="rule-stat-label">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            <span>False Positive</span>
+          </div>
+          <div class="rule-stat-value-sm" style="color:#f87171">8.7%</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:-4px">
+        <svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:none;stroke:rgba(255,255,255,.20);stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path></svg>
+        <span style="font-size:10px;color:rgba(255,255,255,.22)">threshold · Go interface: domain.Rule</span>
+      </div>
+    </div>
+    <div class="rule-card" style="background:#0d1117;border:1px solid rgba(239,68,68,.22);box-shadow:0 0 28px rgba(239,68,68,.09);opacity:1">
+      <div class="rule-header">
+        <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0">
+          <div class="rule-icon-wrap" style="background:rgba(239,68,68,.09);border:1px solid rgba(239,68,68,.22)">
+            <svg viewBox="0 0 24 24" style="stroke:#ef4444"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+          </div>
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+              <span class="rule-name">Geographic Jump</span>
+              <span class="badge badge-sev-CRITICAL">CRITICAL</span>
+            </div>
+            <span class="rule-tagline">Haversine algorithm · Cache-backed</span>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+          <span style="font-size:11px;font-weight:600;color:#10b981">Active</span>
+          <label class="toggle">
+            <input type="checkbox" checked="" onchange="toggleRule(&#39;geographic_jump&#39;)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+      <p class="rule-desc">Compares consecutive transaction geolocations within a time window. Flags physically impossible travel — indicative of account takeover, VPN abuse, or card cloning.</p>
+      <div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+          <svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:none;stroke:rgba(255,255,255,.25);stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line></svg>
+          <span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.25)">Parameters</span>
+        </div>
+        <div class="yaml-block">
+          <div><span class="yaml-key">name</span><span class="yaml-val">: </span><span class="yaml-str">"GEOGRAPHIC_JUMP"</span></div>
+          <div><span class="yaml-key">enabled</span><span class="yaml-val">: </span><span class="yaml-bool-true">true</span></div>
+          <div><span class="yaml-key">severity</span><span class="yaml-val">: </span><span class="yaml-str">"CRITICAL"</span></div>
+          <div style="margin-top:4px"><span class="yaml-key">parameters</span><span class="yaml-val">:</span></div>
+          
+      <div style="margin-left:16px">
+        <span class="yaml-key">max_miles</span><span class="yaml-val">: </span>
+        <span class="yaml-num">500</span>
+        <span style="margin-left:12px;font-size:10px;color:rgba(255,255,255,.18)"># Maximum plausible travel distance</span>
+      </div>
+    
+      <div style="margin-left:16px">
+        <span class="yaml-key">window</span><span class="yaml-val">: </span>
+        <span class="yaml-str">"1h"</span>
+        <span style="margin-left:12px;font-size:10px;color:rgba(255,255,255,.18)"># Time window for location comparison</span>
+      </div>
+    
+      <div style="margin-left:16px">
+        <span class="yaml-key">algorithm</span><span class="yaml-val">: </span>
+        <span class="yaml-str">"haversine"</span>
+        <span style="margin-left:12px;font-size:10px;color:rgba(255,255,255,.18)"># Distance calculation method</span>
+      </div>
+    
+        </div>
+      </div>
+      <div class="rule-stats">
+        <div class="rule-stat-item">
+          <div class="rule-stat-label">
+            <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+            <span>Triggers Today</span>
+          </div>
+          <div class="rule-stat-value" style="color:#ef4444">2</div>
+        </div>
+        <div class="rule-stat-item">
+          <div class="rule-stat-label">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            <span>Last Triggered</span>
+          </div>
+          <div class="rule-stat-value-sm">12h ago</div>
+        </div>
+        <div class="rule-stat-item">
+          <div class="rule-stat-label">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            <span>False Positive</span>
+          </div>
+          <div class="rule-stat-value-sm" style="color:#34d399">1.1%</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:-4px">
+        <svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:none;stroke:rgba(255,255,255,.20);stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path></svg>
+        <span style="font-size:10px;color:rgba(255,255,255,.22)">behavioral · Go interface: domain.Rule</span>
+      </div>
+    </div></div>
+
+    <div class="add-rule">
+      <svg viewBox="0 0 24 24"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+      <p>Add New Rule</p>
+      <p style="font-size:11px;margin-top:4px;color:rgba(255,255,255,.20)">Implement <span class="mono">domain.Rule</span> in Go and register it in <span class="mono">cmd/server/main.go</span></p>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<script>
+// ══════════════════════════════ DATA ══════════════════════════════
+
+const mockTransactions = [
+  {transaction_id:'txn-4f8a2c1d',source_account:'ACC-7291',destination_account:'ACC-APEX-001',amount:47200,currency:'USD',location:{city:'New York'},timestamp:'2026-03-11T02:14:00Z',channel:'WIRE',status:'FLAGGED',alerts:2},
+  {transaction_id:'txn-9b3e7f12',source_account:'ACC-8834',destination_account:'ACC-PRIME-007',amount:150,currency:'USD',location:{city:'San Francisco'},timestamp:'2026-03-11T09:03:12Z',channel:'WEB',status:'CLEAN',alerts:0},
+  {transaction_id:'txn-2d5c8a31',source_account:'ACC-GEO-01',destination_account:'ACC-SMITH-789',amount:300,currency:'USD',location:{city:'Los Angeles'},timestamp:'2026-03-11T10:30:00Z',channel:'ATM',status:'FLAGGED',alerts:1},
+  {transaction_id:'txn-7a1f4e9b',source_account:'ACC-1199',destination_account:'ACC-RETAIL-44',amount:89.99,currency:'USD',location:{city:'Chicago'},timestamp:'2026-03-11T11:02:44Z',channel:'POS',status:'CLEAN',alerts:0},
+  {transaction_id:'txn-c3d9b7a2',source_account:'ACC-VEL-01',destination_account:'ACC-FAST-001',amount:300,currency:'USD',location:{city:'New York'},timestamp:'2026-03-11T11:15:01Z',channel:'MOBILE',status:'FLAGGED',alerts:1},
+  {transaction_id:'txn-5e8f2c07',source_account:'ACC-4455',destination_account:'ACC-INTL-003',amount:15000,currency:'USD',location:{city:'London'},timestamp:'2026-03-11T11:18:30Z',channel:'WIRE',status:'FLAGGED',alerts:1},
+  {transaction_id:'txn-0a4d6e19',source_account:'ACC-9923',destination_account:'ACC-SAVE-112',amount:5000,currency:'USD',location:{city:'Houston'},timestamp:'2026-03-11T11:21:08Z',channel:'WEB',status:'CLEAN',alerts:0},
+  {transaction_id:'txn-b6f3a812',source_account:'ACC-3317',destination_account:'ACC-APEX-002',amount:11200,currency:'USD',location:{city:'Amsterdam'},timestamp:'2026-03-11T11:23:55Z',channel:'ATM',status:'FLAGGED',alerts:1},
+  {transaction_id:'txn-d1c7e540',source_account:'ACC-5588',destination_account:'ACC-SHOP-001',amount:450,currency:'USD',location:{city:'Phoenix'},timestamp:'2026-03-11T11:26:11Z',channel:'MOBILE',status:'CLEAN',alerts:0},
+  {transaction_id:'txn-e9a2f671',source_account:'ACC-7291',destination_account:'ACC-APEX-001',amount:9800,currency:'USD',location:{city:'New York'},timestamp:'2026-03-11T11:28:40Z',channel:'WEB',status:'FLAGGED',alerts:1},
+];
+
+let alerts = [
+  {alert_id:'alrt-001a4b',transaction_id:'txn-4f8a2c1d',account_id:'ACC-7291',rule_name:'HIGH_VALUE_THRESHOLD',severity:'MEDIUM',description:'Transaction txn-4f8a2c1d amount 47,200.00 USD exceeds high-value threshold of 10,000.00 (overage: +372.0%)',status:'OPEN',created_at:'2026-03-11T02:14:01Z',metadata:{amount:47200,currency:'USD',threshold:10000,overage_pct:'372.0%'}},
+  {alert_id:'alrt-002c9f',transaction_id:'txn-4f8a2c1d',account_id:'ACC-7291',rule_name:'GEOGRAPHIC_JUMP',severity:'CRITICAL',description:'Impossible geographic jump for account ACC-7291: 3459.2 miles in 18.0 minutes (max allowed: 500 miles)',status:'OPEN',created_at:'2026-03-11T02:14:01Z',metadata:{distance_miles:3459.2,elapsed_minutes:18.0,prev_city:'New York',curr_city:'Amsterdam'}},
+  {alert_id:'alrt-003e1d',transaction_id:'txn-c3d9b7a2',account_id:'ACC-VEL-01',rule_name:'VELOCITY_CHECK',severity:'HIGH',description:'Account ACC-VEL-01 made 6 transactions in the last 60s (threshold: >5)',status:'OPEN',created_at:'2026-03-11T11:15:02Z',metadata:{total_txns_in_window:6,window_seconds:60,threshold:5}},
+  {alert_id:'alrt-004f2a',transaction_id:'txn-5e8f2c07',account_id:'ACC-4455',rule_name:'HIGH_VALUE_THRESHOLD',severity:'MEDIUM',description:'Transaction txn-5e8f2c07 amount 15,000.00 USD exceeds high-value threshold of 10,000.00 (overage: +50.0%)',status:'OPEN',created_at:'2026-03-11T11:18:31Z',metadata:{amount:15000,currency:'USD',threshold:10000,overage_pct:'50.0%'}},
+  {alert_id:'alrt-005b3c',transaction_id:'txn-2d5c8a31',account_id:'ACC-GEO-01',rule_name:'GEOGRAPHIC_JUMP',severity:'CRITICAL',description:'Impossible geographic jump for account ACC-GEO-01: 2451.0 miles in 30.0 minutes',status:'OPEN',created_at:'2026-03-11T10:30:01Z',metadata:{distance_miles:2451.0,elapsed_minutes:30.0,prev_city:'New York',curr_city:'Los Angeles'}},
+  {alert_id:'alrt-006d7e',transaction_id:'txn-b6f3a812',account_id:'ACC-3317',rule_name:'HIGH_VALUE_THRESHOLD',severity:'MEDIUM',description:'Transaction txn-b6f3a812 amount 11,200.00 USD exceeds high-value threshold of 10,000.00 (overage: +12.0%)',status:'REVIEWED',created_at:'2026-03-11T11:23:56Z',metadata:{amount:11200,currency:'USD',threshold:10000,overage_pct:'12.0%'}},
+  {alert_id:'alrt-007a9b',transaction_id:'txn-e9a2f671',account_id:'ACC-7291',rule_name:'VELOCITY_CHECK',severity:'HIGH',description:'Account ACC-7291 made 7 transactions in the last 60s (threshold: >5). Potential structuring pattern.',status:'OPEN',created_at:'2026-03-11T11:28:41Z',metadata:{total_txns_in_window:7,window_seconds:60,threshold:5}},
+];
+
+let rules = [
+  {id:'velocity_check',name:'VELOCITY_CHECK',display_name:'Velocity Check',description:'Fires when an account submits more than N transactions within a rolling time window. Detects scripted bursts, credential stuffing, and rapid card-testing patterns.',severity:'HIGH',enabled:true,category:'velocity',parameters:[{key:'threshold',value:5,description:'Max transactions before alert triggers'},{key:'window',value:'60s',description:'Rolling time window for count'},{key:'account_scope',value:'source_account',description:'Field used to group transactions'}],trigger_count_today:3,last_triggered:'2026-03-11T11:28:41Z',false_positive_rate:4.2},
+  {id:'high_value_threshold',name:'HIGH_VALUE_THRESHOLD',display_name:'High-Value Threshold',description:'Flags any single transaction that exceeds the configured USD threshold. Pure-domain rule — no external state required. Pairs with SAR/CTR reporting requirements.',severity:'MEDIUM',enabled:true,category:'threshold',parameters:[{key:'threshold',value:10000,description:'USD amount that triggers alert'},{key:'currency',value:'USD',description:'Comparison currency (ISO 4217)'},{key:'max_amount',value:1000000,description:'Absolute rejection ceiling'}],trigger_count_today:4,last_triggered:'2026-03-11T11:23:56Z',false_positive_rate:8.7},
+  {id:'geographic_jump',name:'GEOGRAPHIC_JUMP',display_name:'Geographic Jump',description:'Compares consecutive transaction geolocations within a time window. Flags physically impossible travel — indicative of account takeover, VPN abuse, or card cloning.',severity:'CRITICAL',enabled:true,category:'behavioral',parameters:[{key:'max_miles',value:500,description:'Maximum plausible travel distance'},{key:'window',value:'1h',description:'Time window for location comparison'},{key:'algorithm',value:'haversine',description:'Distance calculation method'}],trigger_count_today:2,last_triggered:'2026-03-11T10:30:01Z',false_positive_rate:1.1},
+];
+
+// ══════════════════════════════ STATE ══════════════════════════════
+
+let txns = [...mockTransactions];
+let newTxIds = new Set();
+let autoInterval = null;
+let currentFilter = 'ALL';
+let expandedAlerts = new Set();
+let txCounter = 1100;
+
+const accounts = ['ACC-7291','ACC-8834','ACC-GEO-01','ACC-VEL-01','ACC-4455','ACC-1199','ACC-9923','ACC-3317'];
+const dests    = ['ACC-APEX-001','ACC-SMITH-789','ACC-INTL-003','ACC-SAVE-112','ACC-RETAIL-44','ACC-PRIME-007'];
+const channels = ['ATM','WEB','MOBILE','POS','WIRE'];
+const amounts  = [89.99,150,300,450,5000,9800,11200,15000,22000,47200];
+const locs     = ['New York','Los Angeles','London','Amsterdam','San Francisco','Tokyo','Chicago','Houston'];
+
+// ══════════════════════════════ UTILS ══════════════════════════════
+
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function fmt(n,c='USD'){ return new Intl.NumberFormat('en-US',{style:'currency',currency:c,minimumFractionDigits:2}).format(n); }
+function timeAgo(iso){
+  const d=Date.now()-new Date(iso).getTime(),s=Math.floor(d/1000);
+  if(s<60)return s+'s ago';
+  const m=Math.floor(s/60); if(m<60)return m+'m ago';
+  const h=Math.floor(m/60); if(h<24)return h+'h ago';
+  return Math.floor(h/24)+'d ago';
+}
+function esc(s){ const d=document.createElement('div');d.textContent=s;return d.innerHTML; }
+
+// ══════════════════════════════ NAVIGATION ══════════════════════════════
+
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  const btns=document.querySelectorAll('.nav-item');
+  btns.forEach(b=>{ if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes("'"+id+"'"))b.classList.add('active'); });
+  if(id==='alerts') renderAlerts();
+  if(id==='rules')  renderRules();
+}
+
+// ══════════════════════════════ FEED ══════════════════════════════
+
+function renderFeed(){
+  const tbody=document.getElementById('feed-tbody');
+  const flagged=txns.filter(t=>t.status==='FLAGGED').length;
+  const clean=txns.length-flagged;
+  document.getElementById('feed-total').textContent=txns.length;
+  document.getElementById('feed-flagged').textContent=flagged;
+  document.getElementById('feed-clean').textContent=clean;
+  document.getElementById('feed-shown').textContent=txns.length+' shown · max 50';
+
+  tbody.innerHTML=txns.slice(0,50).map(tx=>`
+    <tr class="${newTxIds.has(tx.transaction_id)?'row-new':''}" style="border-bottom:1px solid rgba(255,255,255,.04)">
+      <td><span class="txn-id">${esc(tx.transaction_id.slice(0,14))}</span></td>
+      <td><div class="route">
+        <span class="route-src">${esc(tx.source_account)}</span>
+        <span class="route-arr">→</span>
+        <span class="route-dst">${esc(tx.destination_account)}</span>
+      </div></td>
+      <td style="text-align:right"><span class="${tx.amount>10000?'amount-high':'amount-norm'}">${fmt(tx.amount,tx.currency)}</span></td>
+      <td><span class="badge badge-channel-${esc(tx.channel)}">${esc(tx.channel)}</span></td>
+      <td><div class="loc"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${esc(tx.location.city||'Unknown')}</div></td>
+      <td><span class="time-cell">${timeAgo(tx.timestamp)}</span></td>
+      <td><span class="badge badge-status-${esc(tx.status||'PROCESSING')}">${esc(tx.status||'PROCESSING')}${tx.alerts?' · '+tx.alerts+' alert'+(tx.alerts>1?'s':''):''}</span></td>
+    </tr>
+  `).join('');
+}
+
+function generateTx(){
+  const amount=pick(amounts);
+  const flagged=amount>10000||Math.random()<0.12;
+  return {
+    transaction_id:`txn-${(++txCounter).toString(16).padStart(8,'0')}`,
+    source_account:pick(accounts),
+    destination_account:pick(dests),
+    amount,currency:'USD',
+    location:{city:pick(locs)},
+    timestamp:new Date().toISOString(),
+    channel:pick(channels),
+    status:flagged?'FLAGGED':'CLEAN',
+    alerts:flagged?Math.floor(Math.random()*2)+1:0
+  };
+}
+
+function simulateTx(){
+  const tx=generateTx();
+  newTxIds.add(tx.transaction_id);
+  txns=[tx,...txns].slice(0,50);
+  renderFeed();
+  updateAlertBadge();
+  setTimeout(()=>{ newTxIds.delete(tx.transaction_id); },1800);
+}
+
+function toggleAuto(){
+  const btn=document.getElementById('btn-auto');
+  const status=document.getElementById('feed-stream-status');
+  if(autoInterval){
+    clearInterval(autoInterval);
+    autoInterval=null;
+    btn.className='btn btn-ghost';
+    btn.innerHTML='<svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><polygon points="5 3 19 12 5 21 5 3"/></svg> Auto-Simulate';
+    status.innerHTML='<svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> idle';
+  } else {
+    autoInterval=setInterval(simulateTx,1600);
+    btn.className='btn btn-danger';
+    btn.innerHTML='<svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg> Stop Auto <span class="btn-dot"></span>';
+    status.innerHTML='<svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> streaming...';
+  }
+}
+
+// ══════════════════════════════ ALERTS ══════════════════════════════
+
+const RULE_LABEL={'VELOCITY_CHECK':'Velocity Check','HIGH_VALUE_THRESHOLD':'High-Value Threshold','GEOGRAPHIC_JUMP':'Geographic Jump'};
+const RULE_ICON_SVG={
+  VELOCITY_CHECK:'<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
+  HIGH_VALUE_THRESHOLD:'<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+  GEOGRAPHIC_JUMP:'<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>',
+};
+const SEV_BORDER={CRITICAL:'rgba(239,68,68,.30)',HIGH:'rgba(249,115,22,.25)',MEDIUM:'rgba(245,158,11,.22)',LOW:'rgba(59,130,246,.20)'};
+const SEV_ICON_BG={CRITICAL:'rgba(239,68,68,.15)',HIGH:'rgba(249,115,22,.13)',MEDIUM:'rgba(245,158,11,.13)',LOW:'rgba(59,130,246,.13)'};
+const SEV_ICON_COLOR={CRITICAL:'#f87171',HIGH:'#fb923c',MEDIUM:'#fbbf24',LOW:'#60a5fa'};
+
+function updateAlertBadge(){
+  const open=alerts.filter(a=>a.status==='OPEN').length;
+  const badge=document.getElementById('alert-badge');
+  badge.textContent=open;
+  badge.style.display=open>0?'':'none';
+}
+
+function setFilter(f,el){
+  currentFilter=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderAlerts();
+}
+
+function toggleExpand(id){
+  if(expandedAlerts.has(id)) expandedAlerts.delete(id);
+  else expandedAlerts.add(id);
+  renderAlerts();
+}
+
+function dismissAlert(id){
+  const a=alerts.find(x=>x.alert_id===id);
+  if(a){ a.status='CLOSED'; updateAlertBadge(); renderAlerts(); updateAlertStats(); }
+}
+
+function reviewAlert(id){
+  const a=alerts.find(x=>x.alert_id===id);
+  if(a){ a.status='REVIEWED'; updateAlertBadge(); renderAlerts(); updateAlertStats(); }
+}
+
+function updateAlertStats(){
+  const open=alerts.filter(a=>a.status==='OPEN').length;
+  const crit=alerts.filter(a=>a.severity==='CRITICAL'&&a.status!=='CLOSED').length;
+  const high=alerts.filter(a=>a.severity==='HIGH'&&a.status!=='CLOSED').length;
+  const resolved=alerts.filter(a=>a.status==='CLOSED').length;
+  document.getElementById('a-open').textContent=open;
+  document.getElementById('a-critical').textContent=crit;
+  document.getElementById('a-high').textContent=high;
+  document.getElementById('a-resolved').textContent=resolved;
+  document.getElementById('fc-critical').textContent=crit;
+}
+
+function renderAlerts(){
+  updateAlertStats();
+  const visible=alerts.filter(a=>{
+    if(currentFilter==='ALL')      return a.status!=='CLOSED';
+    if(currentFilter==='REVIEWED') return a.status==='REVIEWED';
+    return a.severity===currentFilter&&a.status!=='CLOSED';
+  });
+  const list=document.getElementById('alerts-list');
+  if(visible.length===0){
+    list.innerHTML=`<div class="empty-state"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/><polyline points="20 12 9 23 4 18"/></svg><p>No alerts in this category</p></div>`;
+    return;
+  }
+  list.innerHTML=visible.map(a=>{
+    const expanded=expandedAlerts.has(a.alert_id);
+    const icon=RULE_ICON_SVG[a.rule_name]||'<circle cx="12" cy="12" r="10"/>';
+    const metaRows=a.metadata?Object.entries(a.metadata).map(([k,v])=>`
+      <div><span class="yaml-key">${esc(k)}</span><span class="yaml-val">: </span><span class="${typeof v==='number'?'yaml-num':'yaml-str'}">${esc(String(v))}</span></div>
+    `).join(''):'';
+    return `
+    <div class="alert-card" style="background:#0d1117;border:1px solid ${SEV_BORDER[a.severity]};box-shadow:0 0 24px rgba(0,0,0,.2)">
+      <div class="alert-main">
+        <div class="alert-icon" style="background:${SEV_ICON_BG[a.severity]}">
+          <svg viewBox="0 0 24 24" style="stroke:${SEV_ICON_COLOR[a.severity]}">${icon}</svg>
+        </div>
+        <div class="alert-content">
+          <div class="alert-title-row">
+            <span class="alert-title">${esc(RULE_LABEL[a.rule_name]||a.rule_name)}</span>
+            <span class="badge badge-sev-${esc(a.severity)}">${esc(a.severity)}</span>
+            <span class="badge badge-alert-${esc(a.status)}">${esc(a.status)}</span>
+          </div>
+          <p class="alert-desc">${esc(a.description)}</p>
+          <div class="alert-meta">
+            <div class="alert-meta-item">
+              <svg viewBox="0 0 24 24"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>
+              <span class="mono">${esc(a.transaction_id)}</span>
+            </div>
+            <div class="alert-meta-item">
+              <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg>
+              ${esc(a.account_id)}
+            </div>
+            <div class="alert-meta-item">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              ${timeAgo(a.created_at)}
+            </div>
+          </div>
+        </div>
+        <div class="alert-actions">
+          ${a.status==='OPEN'?`
+            <button class="btn-investigate" onclick="reviewAlert('${esc(a.alert_id)}')">
+              <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              Investigate
+            </button>
+            <button class="btn-dismiss" onclick="dismissAlert('${esc(a.alert_id)}')">
+              <svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><polyline points="20 6 9 17 4 12"/><polyline points="20 12 9 23 4 18"/></svg>
+              Dismiss
+            </button>
+          `:''}
+          <button class="btn-expand" onclick="toggleExpand('${esc(a.alert_id)}')">
+            <svg viewBox="0 0 24 24">${expanded?'<polyline points="18 15 12 9 6 15"/>':'<polyline points="6 9 12 15 18 9"/>'}</svg>
+          </button>
+        </div>
+      </div>
+      ${expanded&&a.metadata?`<div class="alert-metadata"><div class="yaml-block">${metaRows}</div></div>`:''}
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════ RULES ══════════════════════════════
+
+const RULE_CONF={
+  VELOCITY_CHECK:{accent:'#f97316',glow:'rgba(249,115,22,.08)',border:'rgba(249,115,22,.20)',tagline:'Burst detection · Rolling window counter',
+    icon:'<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>'},
+  HIGH_VALUE_THRESHOLD:{accent:'#f59e0b',glow:'rgba(245,158,11,.08)',border:'rgba(245,158,11,.20)',tagline:'Pure-domain rule · No external state',
+    icon:'<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>'},
+  GEOGRAPHIC_JUMP:{accent:'#ef4444',glow:'rgba(239,68,68,.09)',border:'rgba(239,68,68,.22)',tagline:'Haversine algorithm · Cache-backed',
+    icon:'<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>'},
+};
+
+function updateRuleStats(){
+  const active=rules.filter(r=>r.enabled).length;
+  const total=rules.length;
+  const triggers=rules.reduce((s,r)=>s+r.trigger_count_today,0);
+  const avgFp=(rules.reduce((s,r)=>s+r.false_positive_rate,0)/rules.length).toFixed(1);
+  document.getElementById('r-active').textContent=active+' / '+total;
+  document.getElementById('r-triggers').textContent=triggers;
+  document.getElementById('r-fp').textContent=avgFp+'%';
+}
+
+function toggleRule(id){
+  const r=rules.find(x=>x.id===id);
+  if(r){ r.enabled=!r.enabled; updateRuleStats(); renderRules(); }
+}
+
+function renderRules(){
+  updateRuleStats();
+  const list=document.getElementById('rules-list');
+  list.innerHTML=rules.map(r=>{
+    const conf=RULE_CONF[r.name]||{accent:'#8b5cf6',glow:'rgba(139,92,246,.08)',border:'rgba(139,92,246,.20)',tagline:'',icon:'<line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/>'};
+    const fpColor=r.false_positive_rate<3?'#34d399':r.false_positive_rate<8?'#fbbf24':'#f87171';
+    const params=r.parameters.map(p=>`
+      <div style="margin-left:16px">
+        <span class="yaml-key">${esc(p.key)}</span><span class="yaml-val">: </span>
+        <span class="${typeof p.value==='number'?'yaml-num':'yaml-str'}">${typeof p.value==='number'?p.value:'"'+esc(String(p.value))+'"'}</span>
+        <span style="margin-left:12px;font-size:10px;color:rgba(255,255,255,.18)"># ${esc(p.description)}</span>
+      </div>
+    `).join('');
+    return `
+    <div class="rule-card" style="background:#0d1117;border:1px solid ${r.enabled?conf.border:'rgba(255,255,255,.06)'};box-shadow:${r.enabled?'0 0 28px '+conf.glow:'none'};opacity:${r.enabled?1:.6}">
+      <div class="rule-header">
+        <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0">
+          <div class="rule-icon-wrap" style="background:${r.enabled?conf.glow:'rgba(255,255,255,.04)'};border:1px solid ${r.enabled?conf.border:'rgba(255,255,255,.06)'}">
+            <svg viewBox="0 0 24 24" style="stroke:${r.enabled?conf.accent:'rgba(255,255,255,.25)'}">${conf.icon}</svg>
+          </div>
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+              <span class="rule-name">${esc(r.display_name)}</span>
+              <span class="badge badge-sev-${esc(r.severity)}">${esc(r.severity)}</span>
+            </div>
+            <span class="rule-tagline">${esc(conf.tagline)}</span>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+          <span style="font-size:11px;font-weight:600;color:${r.enabled?'#10b981':'rgba(255,255,255,.25)'}">${r.enabled?'Active':'Disabled'}</span>
+          <label class="toggle">
+            <input type="checkbox" ${r.enabled?'checked':''} onchange="toggleRule('${esc(r.id)}')">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+      <p class="rule-desc">${esc(r.description)}</p>
+      <div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+          <svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:none;stroke:rgba(255,255,255,.25);stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/></svg>
+          <span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:rgba(255,255,255,.25)">Parameters</span>
+        </div>
+        <div class="yaml-block">
+          <div><span class="yaml-key">name</span><span class="yaml-val">: </span><span class="yaml-str">"${esc(r.name)}"</span></div>
+          <div><span class="yaml-key">enabled</span><span class="yaml-val">: </span><span class="${r.enabled?'yaml-bool-true':'yaml-bool-false'}">${r.enabled}</span></div>
+          <div><span class="yaml-key">severity</span><span class="yaml-val">: </span><span class="yaml-str">"${esc(r.severity)}"</span></div>
+          <div style="margin-top:4px"><span class="yaml-key">parameters</span><span class="yaml-val">:</span></div>
+          ${params}
+        </div>
+      </div>
+      <div class="rule-stats">
+        <div class="rule-stat-item">
+          <div class="rule-stat-label">
+            <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            <span>Triggers Today</span>
+          </div>
+          <div class="rule-stat-value" style="color:${conf.accent}">${r.trigger_count_today}</div>
+        </div>
+        <div class="rule-stat-item">
+          <div class="rule-stat-label">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>Last Triggered</span>
+          </div>
+          <div class="rule-stat-value-sm">${r.last_triggered?timeAgo(r.last_triggered):'—'}</div>
+        </div>
+        <div class="rule-stat-item">
+          <div class="rule-stat-label">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>False Positive</span>
+          </div>
+          <div class="rule-stat-value-sm" style="color:${fpColor}">${r.false_positive_rate}%</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;margin-top:-4px">
+        <svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:none;stroke:rgba(255,255,255,.20);stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/></svg>
+        <span style="font-size:10px;color:rgba(255,255,255,.22)">${esc(r.category)} · Go interface: domain.Rule</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════ INIT ══════════════════════════════
+
+updateAlertBadge();
+renderFeed();
+renderAlerts();
+renderRules();
+</script>
+
+
+</body></html>

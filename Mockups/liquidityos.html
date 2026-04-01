@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LiquidityOS — AI Treasury Command Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', system-ui, sans-serif; background: #020617; color: #e2e8f0; }
+
+        /* Liquidity Wave Animation */
+        @keyframes wave-flow {
+            0% { d: path("M0,60 C80,20 160,90 240,50 C320,10 400,80 480,40 C560,0 640,70 720,35 C800,0 880,60 960,30 L960,120 L0,120 Z"); }
+            50% { d: path("M0,45 C80,75 160,15 240,55 C320,85 400,25 480,60 C560,80 640,20 720,50 C800,70 880,25 960,45 L960,120 L0,120 Z"); }
+            100% { d: path("M0,60 C80,20 160,90 240,50 C320,10 400,80 480,40 C560,0 640,70 720,35 C800,0 880,60 960,30 L960,120 L0,120 Z"); }
+        }
+        .wave-animate { animation: wave-flow 6s ease-in-out infinite; }
+
+        @keyframes wave-flow-2 {
+            0% { d: path("M0,70 C80,40 160,80 240,55 C320,30 400,75 480,50 C560,25 640,65 720,45 C800,20 880,55 960,40 L960,120 L0,120 Z"); }
+            50% { d: path("M0,55 C80,80 160,35 240,65 C320,90 400,40 480,70 C560,85 640,30 720,60 C800,75 880,35 960,55 L960,120 L0,120 Z"); }
+            100% { d: path("M0,70 C80,40 160,80 240,55 C320,30 400,75 480,50 C560,25 640,65 720,45 C800,20 880,55 960,40 L960,120 L0,120 Z"); }
+        }
+        .wave-animate-2 { animation: wave-flow-2 8s ease-in-out infinite; }
+
+        /* Pulse */
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 1; box-shadow: 0 0 8px rgba(34, 211, 238, 0.4); }
+            50% { opacity: 0.7; box-shadow: 0 0 20px rgba(34, 211, 238, 0.6); }
+        }
+        .ai-pulse { animation: pulse-glow 2s ease-in-out infinite; }
+
+        @keyframes dot-pulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+        .dot-1 { animation: dot-pulse 1.5s ease-in-out infinite; }
+        .dot-2 { animation: dot-pulse 1.5s ease-in-out infinite 0.3s; }
+        .dot-3 { animation: dot-pulse 1.5s ease-in-out infinite 0.6s; }
+
+        /* Ticker scroll */
+        @keyframes ticker-scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .ticker-scroll { animation: ticker-scroll 30s linear infinite; }
+
+        /* Health ring pulse */
+        @keyframes ring-pulse-green {
+            0%, 100% { stroke-opacity: 0.8; }
+            50% { stroke-opacity: 0.4; }
+        }
+        @keyframes ring-pulse-red {
+            0%, 100% { stroke-opacity: 0.9; filter: drop-shadow(0 0 4px rgba(244,63,94,0.5)); }
+            50% { stroke-opacity: 0.5; filter: drop-shadow(0 0 8px rgba(244,63,94,0.8)); }
+        }
+        .ring-healthy { animation: ring-pulse-green 3s ease-in-out infinite; }
+        .ring-warning { animation: ring-pulse-red 1.5s ease-in-out infinite; }
+
+        /* Glow bar */
+        @keyframes glow-bar {
+            0%, 100% { filter: blur(3px); opacity: 0.5; }
+            50% { filter: blur(6px); opacity: 0.8; }
+        }
+        .fuzzy-glow { animation: glow-bar 3s ease-in-out infinite; }
+
+        /* Scanner line */
+        .scanner-area:hover .scanner-line { opacity: 1; }
+        .scanner-line { opacity: 0; transition: opacity 0.15s ease; pointer-events: none; }
+
+        /* Card border gradient */
+        .card-dark {
+            background: #0f172a;
+            border: 0.5px solid;
+            border-image: linear-gradient(135deg, #1e293b, #334155) 1;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .card-dark-rounded {
+            background: #0f172a;
+            border: 0.5px solid #1e293b;
+            border-radius: 12px;
+        }
+
+        /* Glass panel */
+        .glass-dark {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border: 0.5px solid rgba(51, 65, 85, 0.5);
+        }
+
+        /* Soft shadow dark */
+        .shadow-dark { box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.3); }
+
+        /* Slider styling */
+        input[type="range"] {
+            -webkit-appearance: none; appearance: none;
+            height: 6px; border-radius: 4px; background: #1e293b; outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none;
+            width: 18px; height: 18px; border-radius: 50%;
+            background: #22d3ee; cursor: pointer;
+            box-shadow: 0 0 10px rgba(34,211,238,0.5);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+
+        /* Transition helper */
+        .transition-metric { transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        /* Modal overlay */
+        .modal-overlay {
+            background: rgba(2, 6, 23, 0.7);
+            backdrop-filter: blur(8px);
+        }
+
+        /* Kill-switch guarded glow */
+        @keyframes emergency-pulse {
+            0%, 100% { box-shadow: 0 0 15px rgba(244,63,94,0.3); }
+            50% { box-shadow: 0 0 30px rgba(244,63,94,0.6); }
+        }
+        .emergency-glow { animation: emergency-pulse 2s ease-in-out infinite; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+    <!-- ============================================ -->
+    <!-- SIMULATION MODAL (hidden by default)         -->
+    <!-- ============================================ -->
+    <div id="simModal" class="fixed inset-0 z-50 modal-overlay hidden items-center justify-center p-4" onclick="closeModal()">
+        <div class="w-full max-w-lg glass-dark rounded-2xl shadow-dark overflow-hidden" onclick="event.stopPropagation()">
+            <div class="p-5 border-b border-slate-800">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-semibold text-cyan-400">Simulated Impact Analysis</h3>
+                    <button onclick="closeModal()" class="text-slate-500 hover:text-slate-300 transition-all">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+            </div>
+            <div class="p-5 space-y-4">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-slate-400">Move</span>
+                    <span class="text-sm font-mono font-semibold text-white" id="modalMove">$150M JPY to GBP</span>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-slate-900 rounded-lg p-3">
+                        <p class="text-[10px] text-slate-500 uppercase tracking-wider">Net Yield Gain</p>
+                        <p class="text-lg font-mono font-bold text-cyan-400" id="modalYield">+$45,200</p>
+                    </div>
+                    <div class="bg-slate-900 rounded-lg p-3">
+                        <p class="text-[10px] text-slate-500 uppercase tracking-wider">FX Risk Exposure</p>
+                        <p class="text-lg font-mono font-bold text-amber-400">0.12%</p>
+                    </div>
+                    <div class="bg-slate-900 rounded-lg p-3">
+                        <p class="text-[10px] text-slate-500 uppercase tracking-wider">Liquidity Impact</p>
+                        <p class="text-lg font-mono font-bold text-emerald-400">+2.3%</p>
+                    </div>
+                    <div class="bg-slate-900 rounded-lg p-3">
+                        <p class="text-[10px] text-slate-500 uppercase tracking-wider">Settlement Time</p>
+                        <p class="text-lg font-mono font-bold text-white">T+0 (FedNow)</p>
+                    </div>
+                </div>
+                <div class="bg-cyan-950/30 border border-cyan-900/50 rounded-lg p-3">
+                    <div class="flex items-center gap-2 mb-1">
+                        <div class="w-1.5 h-1.5 bg-cyan-400 rounded-full"></div>
+                        <span class="text-[11px] font-semibold text-cyan-400">AI Assessment</span>
+                    </div>
+                    <p class="text-[11px] text-slate-300 leading-relaxed">Move is consistent with current FX outlook. GBP overnight rates at 5.22% vs JPY at 0.10%. Counterparty (Barclays) CDS spreads stable at 42bps. Recommend execution.</p>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="closeModal()" class="flex-1 px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-medium rounded-xl transition-all">Cancel</button>
+                    <button onclick="closeModal()" class="flex-1 px-4 py-2.5 bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-sm font-semibold rounded-xl transition-all">Execute Move</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- TOP NAV / HEADER                             -->
+    <!-- ============================================ -->
+    <header class="sticky top-0 z-40 glass-dark border-b border-slate-800/60">
+        <div class="max-w-[1920px] mx-auto flex items-center justify-between px-5 py-2.5">
+            <div class="flex items-center gap-5">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 bg-gradient-to-br from-cyan-400 to-cyan-600 rounded-lg flex items-center justify-center">
+                        <svg class="w-4 h-4 text-slate-950" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>
+                    </div>
+                    <span class="text-base font-bold text-white tracking-tight">LiquidityOS</span>
+                </div>
+                <div class="flex items-center gap-2 bg-cyan-950/40 border border-cyan-800/40 rounded-full px-3 py-1.5 ai-pulse">
+                    <span class="relative flex h-2 w-2">
+                        <span class="absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-60 animate-ping"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-400"></span>
+                    </span>
+                    <span class="text-[11px] font-medium text-cyan-300">AI Engine Active</span>
+                    <span class="text-[10px] text-cyan-500/70 hidden sm:inline">| Processing 12 settlement feeds</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="hidden lg:flex items-center gap-1 text-[12px] font-medium text-slate-400">
+                    <a href="#" class="px-3 py-1.5 rounded-lg bg-slate-800 text-cyan-400 transition-all">Treasury</a>
+                    <a href="#" class="px-3 py-1.5 rounded-lg hover:bg-slate-800 hover:text-slate-200 transition-all">Positions</a>
+                    <a href="#" class="px-3 py-1.5 rounded-lg hover:bg-slate-800 hover:text-slate-200 transition-all">Compliance</a>
+                    <a href="#" class="px-3 py-1.5 rounded-lg hover:bg-slate-800 hover:text-slate-200 transition-all">Reports</a>
+                </div>
+                <div class="h-5 w-px bg-slate-700 hidden lg:block"></div>
+                <div class="flex items-center gap-2 text-[11px] font-mono text-slate-400">
+                    <span class="text-cyan-400">UTC</span>
+                    <span id="utcClock" class="font-medium text-slate-300">14:32:08</span>
+                </div>
+                <button class="relative p-2 rounded-lg hover:bg-slate-800 transition-all">
+                    <svg class="w-4.5 h-4.5 text-slate-400" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                    <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full"></span>
+                </button>
+                <div class="w-7 h-7 rounded-full bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center text-[10px] font-bold text-slate-950">DK</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ============================================ -->
+    <!-- REAL-TIME TICKER BAR                         -->
+    <!-- ============================================ -->
+    <div class="border-b border-slate-800/60 bg-slate-950 overflow-hidden">
+        <div class="ticker-scroll flex items-center gap-8 py-2 whitespace-nowrap" style="width: max-content;">
+            <!-- Duplicated for seamless loop -->
+            <span class="flex items-center gap-2 text-[11px]"><span class="w-1.5 h-1.5 bg-cyan-400 rounded-full"></span><span class="text-slate-500">SWIFT</span><span class="font-mono font-medium text-slate-300">$42.3M inbound (Barclays)</span><span class="text-cyan-400 font-medium">Settlement Confirmed</span></span>
+            <span class="text-slate-700">|</span>
+            <span class="flex items-center gap-2 text-[11px]"><span class="w-1.5 h-1.5 bg-amber-400 rounded-full"></span><span class="text-slate-500">FedNow</span><span class="font-mono font-medium text-slate-300">$18.7M outbound (Corp Payroll)</span><span class="text-amber-400 font-medium">Predicted Outflow</span></span>
+            <span class="text-slate-700">|</span>
+            <span class="flex items-center gap-2 text-[11px]"><span class="w-1.5 h-1.5 bg-emerald-400 rounded-full"></span><span class="text-slate-500">Internal</span><span class="font-mono font-medium text-slate-300">$215M swept to overnight repo</span><span class="text-emerald-400 font-medium">Auto-Executed</span></span>
+            <span class="text-slate-700">|</span>
+            <span class="flex items-center gap-2 text-[11px]"><span class="w-1.5 h-1.5 bg-rose-400 rounded-full"></span><span class="text-slate-500">SWIFT</span><span class="font-mono font-medium text-slate-300">$500M Corp Payroll (T+4h)</span><span class="text-rose-400 font-medium">AI Alert: Buffer Risk</span></span>
+            <span class="text-slate-700">|</span>
+            <span class="flex items-center gap-2 text-[11px]"><span class="w-1.5 h-1.5 bg-cyan-400 rounded-full"></span><span class="text-slate-500">FedNow</span><span class="font-mono font-medium text-slate-300">$8.9M inbound (Treasury Coupon)</span><span class="text-cyan-400 font-medium">Settlement Confirmed</span></span>
+            <span class="text-slate-700">|</span>
+            <!-- Repeat -->
+            <span class="flex items-center gap-2 text-[11px]"><span class="w-1.5 h-1.5 bg-cyan-400 rounded-full"></span><span class="text-slate-500">SWIFT</span><span class="font-mono font-medium text-slate-300">$42.3M inbound (Barclays)</span><span class="text-cyan-400 font-medium">Settlement Confirmed</span></span>
+            <span class="text-slate-700">|</span>
+            <span class="flex items-center gap-2 text-[11px]"><span class="w-1.5 h-1.5 bg-amber-400 rounded-full"></span><span class="text-slate-500">FedNow</span><span class="font-mono font-medium text-slate-300">$18.7M outbound (Corp Payroll)</span><span class="text-amber-400 font-medium">Predicted Outflow</span></span>
+            <span class="text-slate-700">|</span>
+            <span class="flex items-center gap-2 text-[11px]"><span class="w-1.5 h-1.5 bg-emerald-400 rounded-full"></span><span class="text-slate-500">Internal</span><span class="font-mono font-medium text-slate-300">$215M swept to overnight repo</span><span class="text-emerald-400 font-medium">Auto-Executed</span></span>
+            <span class="text-slate-700">|</span>
+            <span class="flex items-center gap-2 text-[11px]"><span class="w-1.5 h-1.5 bg-rose-400 rounded-full"></span><span class="text-slate-500">SWIFT</span><span class="font-mono font-medium text-slate-300">$500M Corp Payroll (T+4h)</span><span class="text-rose-400 font-medium">AI Alert: Buffer Risk</span></span>
+            <span class="text-slate-700">|</span>
+            <span class="flex items-center gap-2 text-[11px]"><span class="w-1.5 h-1.5 bg-cyan-400 rounded-full"></span><span class="text-slate-500">FedNow</span><span class="font-mono font-medium text-slate-300">$8.9M inbound (Treasury Coupon)</span><span class="text-cyan-400 font-medium">Settlement Confirmed</span></span>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- 1. HERO: THE LIQUIDITY WAVE                  -->
+    <!-- ============================================ -->
+    <section class="relative px-5 pt-5 pb-2 max-w-[1920px] mx-auto w-full">
+        <div class="card-dark-rounded shadow-dark overflow-hidden relative">
+            <!-- Top metrics row -->
+            <div class="relative z-10 grid grid-cols-5 gap-4 p-5 pb-0">
+                <div>
+                    <p class="text-[10px] text-slate-500 uppercase tracking-wider font-medium">Net Liquidity Position</p>
+                    <p class="text-2xl font-mono font-bold text-white mt-0.5 transition-metric" id="netLiquidity">$2.84B</p>
+                    <p class="text-[11px] text-cyan-400 font-medium mt-0.5">+$142M vs. yesterday</p>
+                </div>
+                <div>
+                    <p class="text-[10px] text-slate-500 uppercase tracking-wider font-medium">Intra-Day Buffer</p>
+                    <p class="text-2xl font-mono font-bold transition-metric" id="bufferValue"><span class="text-cyan-400">$620M</span></p>
+                    <p class="text-[11px] font-medium mt-0.5" id="bufferStatus"><span class="text-emerald-400">Above Basel III (120%)</span></p>
+                </div>
+                <div>
+                    <p class="text-[10px] text-slate-500 uppercase tracking-wider font-medium">24h Projected Inflows</p>
+                    <p class="text-2xl font-mono font-bold text-emerald-400 mt-0.5 transition-metric" id="inflowValue">$1.23B</p>
+                    <p class="text-[11px] text-slate-500 font-medium mt-0.5">47 settlements pending</p>
+                </div>
+                <div>
+                    <p class="text-[10px] text-slate-500 uppercase tracking-wider font-medium">24h Projected Outflows</p>
+                    <p class="text-2xl font-mono font-bold text-rose-400 mt-0.5 transition-metric" id="outflowValue">$1.09B</p>
+                    <p class="text-[11px] text-slate-500 font-medium mt-0.5">32 obligations due</p>
+                </div>
+                <div>
+                    <p class="text-[10px] text-slate-500 uppercase tracking-wider font-medium">LCR Ratio</p>
+                    <p class="text-2xl font-mono font-bold text-white mt-0.5 transition-metric" id="lcrValue">134%</p>
+                    <p class="text-[11px] text-emerald-400 font-medium mt-0.5">Regulatory min: 100%</p>
+                </div>
+            </div>
+            <!-- Wave SVG -->
+            <div class="relative h-28 mt-2" id="waveContainer">
+                <svg viewBox="0 0 960 120" preserveAspectRatio="none" class="w-full h-full">
+                    <defs>
+                        <linearGradient id="waveGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" id="waveStop1" stop-color="#22d3ee" stop-opacity="0.3"/>
+                            <stop offset="100%" id="waveStop2" stop-color="#22d3ee" stop-opacity="0.02"/>
+                        </linearGradient>
+                        <linearGradient id="waveStroke" x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="0%" id="strokeStop1" stop-color="#22d3ee" stop-opacity="0.6"/>
+                            <stop offset="50%" id="strokeStop2" stop-color="#22d3ee" stop-opacity="1"/>
+                            <stop offset="100%" id="strokeStop3" stop-color="#22d3ee" stop-opacity="0.6"/>
+                        </linearGradient>
+                    </defs>
+                    <!-- Back wave -->
+                    <path class="wave-animate-2" fill="url(#waveGrad)" opacity="0.4"
+                        d="M0,70 C80,40 160,80 240,55 C320,30 400,75 480,50 C560,25 640,65 720,45 C800,20 880,55 960,40 L960,120 L0,120 Z"/>
+                    <!-- Front wave -->
+                    <path class="wave-animate" fill="url(#waveGrad)" stroke="url(#waveStroke)" stroke-width="1.5"
+                        d="M0,60 C80,20 160,90 240,50 C320,10 400,80 480,40 C560,0 640,70 720,35 C800,0 880,60 960,30 L960,120 L0,120 Z"/>
+                </svg>
+                <!-- Wave label -->
+                <div class="absolute bottom-3 left-5 flex items-center gap-2">
+                    <span class="text-[10px] text-slate-500 uppercase tracking-wider">Net Liquidity Flow</span>
+                    <span class="flex gap-0.5">
+                        <span class="w-1 h-1 bg-cyan-400 rounded-full dot-1"></span>
+                        <span class="w-1 h-1 bg-cyan-400 rounded-full dot-2"></span>
+                        <span class="w-1 h-1 bg-cyan-400 rounded-full dot-3"></span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================ -->
+    <!-- MAIN CONTENT: 2-COLUMN LAYOUT                -->
+    <!-- ============================================ -->
+    <main class="flex-1 max-w-[1920px] mx-auto w-full grid grid-cols-12 gap-4 px-5 py-4">
+
+        <!-- ====================================== -->
+        <!-- LEFT: Predictive Outflow Engine         -->
+        <!-- ====================================== -->
+        <section class="col-span-7 flex flex-col gap-4">
+            <!-- Shadow Forecast Chart -->
+            <div class="card-dark-rounded shadow-dark p-5">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h2 class="text-sm font-semibold text-white flex items-center gap-2">
+                            <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                            24-Hour Cash Forecast
+                        </h2>
+                        <p class="text-[11px] text-slate-500 mt-0.5">Actual vs. AI-Predicted | Confidence intervals shown</p>
+                    </div>
+                    <div class="flex items-center gap-4 text-[11px]">
+                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-cyan-500"></span> Actual</span>
+                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-cyan-800 border border-cyan-600"></span> AI Predicted</span>
+                        <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm bg-cyan-400/20"></span> Confidence</span>
+                    </div>
+                </div>
+
+                <!-- Bar Chart with Scanner -->
+                <div class="scanner-area relative cursor-crosshair" onmousemove="moveScannerLine(event)" onmouseleave="hideScannerTooltip()">
+                    <!-- Scanner line -->
+                    <div id="scannerLine" class="scanner-line absolute top-0 bottom-0 w-px bg-cyan-400/60 z-10" style="left: 0;">
+                        <div id="scannerTooltip" class="absolute -top-1 left-2 glass-dark rounded-lg px-3 py-2 text-[11px] whitespace-nowrap shadow-dark">
+                            <p class="font-mono font-semibold text-cyan-400" id="tooltipValue">$2.84B</p>
+                            <p class="text-slate-400" id="tooltipTime">T+0h (Now)</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-end gap-2 h-44">
+                        <!-- Each time slot -->
+                        <div class="flex-1 flex flex-col items-center gap-1 group">
+                            <div class="w-full flex items-end justify-center gap-0.5 h-36 relative">
+                                <!-- Fuzzy glow (confidence interval) -->
+                                <div class="absolute bottom-0 w-full bg-cyan-400/10 rounded-t-sm fuzzy-glow" style="height: 92%;"></div>
+                                <div class="w-[45%] bg-cyan-500 rounded-t-sm relative z-[1] transition-all group-hover:bg-cyan-400" style="height: 88%;"></div>
+                                <div class="w-[45%] bg-cyan-900 border border-cyan-700 rounded-t-sm relative z-[1]" style="height: 85%;"></div>
+                            </div>
+                            <span class="text-[9px] font-mono text-slate-500">T+0</span>
+                        </div>
+                        <div class="flex-1 flex flex-col items-center gap-1 group">
+                            <div class="w-full flex items-end justify-center gap-0.5 h-36 relative">
+                                <div class="absolute bottom-0 w-full bg-cyan-400/10 rounded-t-sm fuzzy-glow" style="height: 88%;"></div>
+                                <div class="w-[45%] bg-cyan-500 rounded-t-sm relative z-[1] transition-all group-hover:bg-cyan-400" style="height: 82%;"></div>
+                                <div class="w-[45%] bg-cyan-900 border border-cyan-700 rounded-t-sm relative z-[1]" style="height: 80%;"></div>
+                            </div>
+                            <span class="text-[9px] font-mono text-slate-500">T+2h</span>
+                        </div>
+                        <div class="flex-1 flex flex-col items-center gap-1 group">
+                            <div class="w-full flex items-end justify-center gap-0.5 h-36 relative">
+                                <div class="absolute bottom-0 w-full bg-cyan-400/10 rounded-t-sm fuzzy-glow" style="height: 82%;"></div>
+                                <div class="w-[45%] bg-cyan-500 rounded-t-sm relative z-[1] transition-all group-hover:bg-cyan-400" style="height: 75%;"></div>
+                                <div class="w-[45%] bg-cyan-900 border border-cyan-700 rounded-t-sm relative z-[1]" style="height: 73%;"></div>
+                            </div>
+                            <span class="text-[9px] font-mono text-slate-500">T+4h</span>
+                        </div>
+                        <!-- T+6h: The dip from payroll -->
+                        <div class="flex-1 flex flex-col items-center gap-1 group">
+                            <div class="w-full flex items-end justify-center gap-0.5 h-36 relative">
+                                <div class="absolute bottom-0 w-full bg-rose-400/10 rounded-t-sm fuzzy-glow" style="height: 62%;"></div>
+                                <div class="w-[45%] bg-rose-500 rounded-t-sm relative z-[1] transition-all group-hover:bg-rose-400" style="height: 48%;"></div>
+                                <div class="w-[45%] bg-rose-900 border border-rose-700 rounded-t-sm relative z-[1]" style="height: 52%;"></div>
+                            </div>
+                            <span class="text-[9px] font-mono text-rose-400 font-semibold">T+6h</span>
+                        </div>
+                        <div class="flex-1 flex flex-col items-center gap-1 group">
+                            <div class="w-full flex items-end justify-center gap-0.5 h-36 relative">
+                                <div class="absolute bottom-0 w-full bg-amber-400/10 rounded-t-sm fuzzy-glow" style="height: 60%;"></div>
+                                <div class="w-[45%] bg-amber-500 rounded-t-sm relative z-[1] transition-all group-hover:bg-amber-400" style="height: 42%;"></div>
+                                <div class="w-[45%] bg-amber-900 border border-amber-700 rounded-t-sm relative z-[1]" style="height: 46%;"></div>
+                            </div>
+                            <span class="text-[9px] font-mono text-slate-500">T+8h</span>
+                        </div>
+                        <div class="flex-1 flex flex-col items-center gap-1 group">
+                            <div class="w-full flex items-end justify-center gap-0.5 h-36 relative">
+                                <div class="absolute bottom-0 w-full bg-cyan-400/10 rounded-t-sm fuzzy-glow" style="height: 72%;"></div>
+                                <div class="w-[45%] bg-cyan-500 rounded-t-sm relative z-[1] transition-all group-hover:bg-cyan-400" style="height: 55%;"></div>
+                                <div class="w-[45%] bg-cyan-900 border border-cyan-700 rounded-t-sm relative z-[1]" style="height: 58%;"></div>
+                            </div>
+                            <span class="text-[9px] font-mono text-slate-500">T+10h</span>
+                        </div>
+                        <div class="flex-1 flex flex-col items-center gap-1 group">
+                            <div class="w-full flex items-end justify-center gap-0.5 h-36 relative">
+                                <div class="absolute bottom-0 w-full bg-cyan-400/10 rounded-t-sm fuzzy-glow" style="height: 78%;"></div>
+                                <div class="w-[45%] bg-cyan-500 rounded-t-sm relative z-[1] transition-all group-hover:bg-cyan-400" style="height: 65%;"></div>
+                                <div class="w-[45%] bg-cyan-900 border border-cyan-700 rounded-t-sm relative z-[1]" style="height: 68%;"></div>
+                            </div>
+                            <span class="text-[9px] font-mono text-slate-500">T+14h</span>
+                        </div>
+                        <div class="flex-1 flex flex-col items-center gap-1 group">
+                            <div class="w-full flex items-end justify-center gap-0.5 h-36 relative">
+                                <div class="absolute bottom-0 w-full bg-cyan-400/10 rounded-t-sm fuzzy-glow" style="height: 85%;"></div>
+                                <div class="w-[45%] bg-cyan-500 rounded-t-sm relative z-[1] transition-all group-hover:bg-cyan-400" style="height: 72%;"></div>
+                                <div class="w-[45%] bg-cyan-900 border border-cyan-700 rounded-t-sm relative z-[1]" style="height: 75%;"></div>
+                            </div>
+                            <span class="text-[9px] font-mono text-slate-500">T+18h</span>
+                        </div>
+                        <div class="flex-1 flex flex-col items-center gap-1 group">
+                            <div class="w-full flex items-end justify-center gap-0.5 h-36 relative">
+                                <div class="absolute bottom-0 w-full bg-cyan-400/10 rounded-t-sm fuzzy-glow" style="height: 90%;"></div>
+                                <div class="w-[45%] bg-cyan-500 rounded-t-sm relative z-[1] transition-all group-hover:bg-cyan-400" style="height: 80%;"></div>
+                                <div class="w-[45%] bg-cyan-900 border border-cyan-700 rounded-t-sm relative z-[1]" style="height: 82%;"></div>
+                            </div>
+                            <span class="text-[9px] font-mono text-slate-500">T+24h</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Event-Driven Alerts -->
+            <div class="card-dark-rounded shadow-dark p-5">
+                <h3 class="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    AI Liquidity Event Alerts
+                </h3>
+                <div class="space-y-2.5">
+                    <!-- Alert 1: Critical -->
+                    <div class="bg-rose-950/30 border border-rose-900/50 rounded-xl p-3.5 hover:border-rose-700/50 transition-all cursor-pointer">
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-rose-900/50 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <svg class="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                </div>
+                                <div>
+                                    <p class="text-[12px] font-semibold text-rose-300">$500M Corporate Payroll Run in 4 Hours</p>
+                                    <p class="text-[11px] text-slate-400 mt-1 leading-relaxed">AI detected pattern: Quarterly payroll for Acme Corp. Current buffer insufficient without intervention. Suggesting $200M repo sweep to maintain Basel III compliance.</p>
+                                    <div class="flex items-center gap-3 mt-2">
+                                        <span class="text-[10px] font-mono text-rose-400 bg-rose-950/50 px-2 py-0.5 rounded">Impact: -$500M</span>
+                                        <span class="text-[10px] font-mono text-amber-400 bg-amber-950/50 px-2 py-0.5 rounded">Confidence: 94%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="flex-shrink-0 text-[11px] font-semibold text-slate-950 bg-cyan-400 hover:bg-cyan-300 px-3 py-1.5 rounded-lg transition-all">
+                                Execute Sweep
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Alert 2: Medium -->
+                    <div class="bg-amber-950/20 border border-amber-900/40 rounded-xl p-3.5 hover:border-amber-700/50 transition-all cursor-pointer">
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-amber-900/40 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                    <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                                </div>
+                                <div>
+                                    <p class="text-[12px] font-semibold text-amber-300">FX Settlement Mismatch (EUR/USD)</p>
+                                    <p class="text-[11px] text-slate-400 mt-1 leading-relaxed">Incoming EUR settlement ($89M equiv.) arriving 2h after USD obligation. Temporary gap of $34M. AI suggests drawing on EUR credit line.</p>
+                                    <div class="flex items-center gap-3 mt-2">
+                                        <span class="text-[10px] font-mono text-amber-400 bg-amber-950/50 px-2 py-0.5 rounded">Gap: $34M (2h)</span>
+                                        <span class="text-[10px] font-mono text-slate-400 bg-slate-800 px-2 py-0.5 rounded">Confidence: 87%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="flex-shrink-0 text-[11px] font-medium text-cyan-400 border border-cyan-800 hover:bg-cyan-950/50 px-3 py-1.5 rounded-lg transition-all">
+                                Review
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Alert 3: Info -->
+                    <div class="bg-slate-800/30 border border-slate-700/50 rounded-xl p-3.5 hover:border-slate-600/50 transition-all cursor-pointer">
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-900/40 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </div>
+                            <div>
+                                <p class="text-[12px] font-semibold text-emerald-300">Overnight Repo Yield Optimized</p>
+                                <p class="text-[11px] text-slate-400 mt-1">Auto-swept $215M into tri-party repo at 5.31% (vs. benchmark 5.28%). Incremental yield: +$8,300/day.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ====================================== -->
+        <!-- RIGHT: Yield & Sweep Co-Pilot           -->
+        <!-- ====================================== -->
+        <aside class="col-span-5 flex flex-col gap-4 overflow-y-auto">
+            <!-- Opportunity Radar -->
+            <div class="card-dark-rounded shadow-dark p-5">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-sm font-semibold text-white flex items-center gap-2">
+                        <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>
+                        Capital Move Opportunities
+                    </h3>
+                    <span class="text-[10px] text-cyan-400 font-mono">AI-Generated</span>
+                </div>
+                <div class="space-y-2.5">
+                    <!-- Move 1 -->
+                    <div class="bg-slate-800/50 border border-slate-700/50 rounded-xl p-3.5 hover:border-cyan-800/50 transition-all group">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-1.5">
+                                    <span class="text-[10px] font-mono font-semibold bg-cyan-950/50 text-cyan-400 px-2 py-0.5 rounded">JPY &rarr; GBP</span>
+                                    <span class="text-[10px] text-emerald-400 font-medium">+$45.2k yield</span>
+                                </div>
+                                <p class="text-[12px] font-medium text-slate-200">Excess $150M in Tokyo (JPY)</p>
+                                <p class="text-[11px] text-slate-500 mt-0.5">Move to London for overnight GBP yield. Rate differential: 5.12% spread.</p>
+                            </div>
+                            <button onclick="openModal('$150M JPY &rarr; GBP', '+$45,200')" class="flex-shrink-0 text-[11px] font-semibold text-slate-950 bg-cyan-400 hover:bg-cyan-300 px-3 py-2 rounded-lg transition-all opacity-80 group-hover:opacity-100">
+                                Simulate
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Move 2 -->
+                    <div class="bg-slate-800/50 border border-slate-700/50 rounded-xl p-3.5 hover:border-cyan-800/50 transition-all group">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-1.5">
+                                    <span class="text-[10px] font-mono font-semibold bg-cyan-950/50 text-cyan-400 px-2 py-0.5 rounded">USD &rarr; Repo</span>
+                                    <span class="text-[10px] text-emerald-400 font-medium">+$28.7k yield</span>
+                                </div>
+                                <p class="text-[12px] font-medium text-slate-200">Idle $320M in NY Fed account</p>
+                                <p class="text-[11px] text-slate-500 mt-0.5">Sweep into overnight reverse repo. Current rate: 5.31% RRP.</p>
+                            </div>
+                            <button onclick="openModal('$320M USD &rarr; Repo', '+$28,700')" class="flex-shrink-0 text-[11px] font-semibold text-slate-950 bg-cyan-400 hover:bg-cyan-300 px-3 py-2 rounded-lg transition-all opacity-80 group-hover:opacity-100">
+                                Simulate
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Move 3 -->
+                    <div class="bg-slate-800/50 border border-slate-700/50 rounded-xl p-3.5 hover:border-cyan-800/50 transition-all group">
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-2 mb-1.5">
+                                    <span class="text-[10px] font-mono font-semibold bg-cyan-950/50 text-cyan-400 px-2 py-0.5 rounded">EUR &rarr; CHF</span>
+                                    <span class="text-[10px] text-emerald-400 font-medium">+$12.1k yield</span>
+                                </div>
+                                <p class="text-[12px] font-medium text-slate-200">$80M excess in Frankfurt (EUR)</p>
+                                <p class="text-[11px] text-slate-500 mt-0.5">Swiss overnight rate premium. Low FX vol window detected.</p>
+                            </div>
+                            <button onclick="openModal('$80M EUR &rarr; CHF', '+$12,100')" class="flex-shrink-0 text-[11px] font-semibold text-slate-950 bg-cyan-400 hover:bg-cyan-300 px-3 py-2 rounded-lg transition-all opacity-80 group-hover:opacity-100">
+                                Simulate
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Counterparty Risk Matrix -->
+            <div class="card-dark-rounded shadow-dark p-5">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-sm font-semibold text-white flex items-center gap-2">
+                        <svg class="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg>
+                        Counterparty Risk Monitor
+                    </h3>
+                    <span class="text-[10px] text-slate-500">CDS Spread Tracking</span>
+                </div>
+                <div class="grid grid-cols-4 gap-3">
+                    <!-- Counterparty: Healthy -->
+                    <div class="flex flex-col items-center gap-2 bg-slate-800/40 rounded-xl p-3 hover:bg-slate-800/60 transition-all cursor-pointer">
+                        <div class="relative">
+                            <svg class="w-12 h-12" viewBox="0 0 48 48">
+                                <circle cx="24" cy="24" r="20" fill="none" stroke="#1e293b" stroke-width="3"/>
+                                <circle cx="24" cy="24" r="20" fill="none" stroke="#10b981" stroke-width="3" stroke-dasharray="110 126" stroke-linecap="round" class="ring-healthy" transform="rotate(-90 24 24)"/>
+                            </svg>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <span class="text-[9px] font-bold text-white">JPM</span>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-[10px] font-medium text-slate-300">JP Morgan</p>
+                            <p class="text-[9px] font-mono text-emerald-400">38bps</p>
+                        </div>
+                    </div>
+                    <!-- Counterparty: Healthy -->
+                    <div class="flex flex-col items-center gap-2 bg-slate-800/40 rounded-xl p-3 hover:bg-slate-800/60 transition-all cursor-pointer">
+                        <div class="relative">
+                            <svg class="w-12 h-12" viewBox="0 0 48 48">
+                                <circle cx="24" cy="24" r="20" fill="none" stroke="#1e293b" stroke-width="3"/>
+                                <circle cx="24" cy="24" r="20" fill="none" stroke="#10b981" stroke-width="3" stroke-dasharray="115 126" stroke-linecap="round" class="ring-healthy" transform="rotate(-90 24 24)"/>
+                            </svg>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <span class="text-[9px] font-bold text-white">BARC</span>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-[10px] font-medium text-slate-300">Barclays</p>
+                            <p class="text-[9px] font-mono text-emerald-400">42bps</p>
+                        </div>
+                    </div>
+                    <!-- Counterparty: WARNING -->
+                    <div class="flex flex-col items-center gap-2 bg-rose-950/20 border border-rose-900/30 rounded-xl p-3 hover:bg-rose-950/30 transition-all cursor-pointer">
+                        <div class="relative">
+                            <svg class="w-12 h-12" viewBox="0 0 48 48">
+                                <circle cx="24" cy="24" r="20" fill="none" stroke="#1e293b" stroke-width="3"/>
+                                <circle cx="24" cy="24" r="20" fill="none" stroke="#f43f5e" stroke-width="3" stroke-dasharray="80 126" stroke-linecap="round" class="ring-warning" transform="rotate(-90 24 24)"/>
+                            </svg>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <span class="text-[9px] font-bold text-white">CS</span>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-[10px] font-medium text-rose-300">Credit Suisse</p>
+                            <p class="text-[9px] font-mono text-rose-400">285bps</p>
+                        </div>
+                    </div>
+                    <!-- Counterparty: Healthy -->
+                    <div class="flex flex-col items-center gap-2 bg-slate-800/40 rounded-xl p-3 hover:bg-slate-800/60 transition-all cursor-pointer">
+                        <div class="relative">
+                            <svg class="w-12 h-12" viewBox="0 0 48 48">
+                                <circle cx="24" cy="24" r="20" fill="none" stroke="#1e293b" stroke-width="3"/>
+                                <circle cx="24" cy="24" r="20" fill="none" stroke="#10b981" stroke-width="3" stroke-dasharray="108 126" stroke-linecap="round" class="ring-healthy" transform="rotate(-90 24 24)"/>
+                            </svg>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <span class="text-[9px] font-bold text-white">HSBC</span>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-[10px] font-medium text-slate-300">HSBC</p>
+                            <p class="text-[9px] font-mono text-emerald-400">51bps</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- AI Suggestion for risky counterparty -->
+                <div class="mt-3 bg-rose-950/20 border border-rose-900/40 rounded-lg p-3 flex items-center gap-3">
+                    <div class="w-1.5 h-1.5 bg-rose-400 rounded-full flex-shrink-0"></div>
+                    <p class="text-[11px] text-rose-300"><span class="font-semibold">AI Recommendation:</span> Reduce Credit Suisse exposure by $120M. CDS spread widened 45bps in 48h. Reallocate to JP Morgan (38bps).</p>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- ============================================ -->
+    <!-- STRESS TEST SANDBOX                          -->
+    <!-- ============================================ -->
+    <section class="max-w-[1920px] mx-auto w-full px-5 pb-4">
+        <div class="card-dark-rounded shadow-dark p-5">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h2 class="text-sm font-semibold text-white flex items-center gap-2">
+                        <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5"/></svg>
+                        Stress Test Sandbox
+                    </h2>
+                    <p class="text-[11px] text-slate-500">Drag sliders to simulate scenarios. Dashboard recalculates in real-time.</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button class="text-[11px] font-medium text-slate-400 bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg transition-all">Reset</button>
+                    <button class="text-[11px] font-medium text-cyan-400 border border-cyan-800 hover:bg-cyan-950/50 px-3 py-1.5 rounded-lg transition-all">Save Scenario</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-12 gap-6">
+                <!-- Sliders Column -->
+                <div class="col-span-5 space-y-5">
+                    <!-- Slider: Deposit Flight -->
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="text-[12px] font-medium text-slate-300">Deposit Flight</label>
+                            <span class="text-[12px] font-mono font-semibold text-amber-400" id="depositFlightVal">15%</span>
+                        </div>
+                        <input type="range" id="depositFlight" min="0" max="50" value="15" class="w-full" oninput="updateStress()">
+                        <div class="flex justify-between text-[9px] text-slate-600 mt-1">
+                            <span>0% (Stable)</span>
+                            <span>25% (Moderate)</span>
+                            <span>50% (Severe)</span>
+                        </div>
+                    </div>
+                    <!-- Slider: Rate Hike -->
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="text-[12px] font-medium text-slate-300">Interest Rate Shock</label>
+                            <span class="text-[12px] font-mono font-semibold text-amber-400" id="rateHikeVal">+100bps</span>
+                        </div>
+                        <input type="range" id="rateHike" min="0" max="400" value="100" class="w-full" oninput="updateStress()">
+                        <div class="flex justify-between text-[9px] text-slate-600 mt-1">
+                            <span>0bps</span>
+                            <span>+200bps</span>
+                            <span>+400bps</span>
+                        </div>
+                    </div>
+                    <!-- Slider: Market Volatility -->
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="text-[12px] font-medium text-slate-300">Market Volatility (VIX)</label>
+                            <span class="text-[12px] font-mono font-semibold text-amber-400" id="vixVal">22</span>
+                        </div>
+                        <input type="range" id="vixSlider" min="12" max="80" value="22" class="w-full" oninput="updateStress()">
+                        <div class="flex justify-between text-[9px] text-slate-600 mt-1">
+                            <span>12 (Low)</span>
+                            <span>40 (High)</span>
+                            <span>80 (Crisis)</span>
+                        </div>
+                    </div>
+                    <!-- Slider: Counterparty Default -->
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="text-[12px] font-medium text-slate-300">Counterparty Default Probability</label>
+                            <span class="text-[12px] font-mono font-semibold text-amber-400" id="defaultVal">2%</span>
+                        </div>
+                        <input type="range" id="defaultProb" min="0" max="20" value="2" class="w-full" oninput="updateStress()">
+                        <div class="flex justify-between text-[9px] text-slate-600 mt-1">
+                            <span>0%</span>
+                            <span>10%</span>
+                            <span>20%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Impact Dashboard -->
+                <div class="col-span-4 space-y-3">
+                    <p class="text-[10px] text-slate-500 uppercase tracking-wider font-medium mb-1">Scenario Impact</p>
+                    <div class="bg-slate-800/40 rounded-xl p-3.5">
+                        <p class="text-[10px] text-slate-500">Stressed Net Liquidity</p>
+                        <p class="text-xl font-mono font-bold transition-metric" id="stressedLiquidity"><span class="text-amber-400">$2.12B</span></p>
+                        <p class="text-[10px] font-mono transition-metric" id="stressedDelta"><span class="text-rose-400">-$720M from baseline</span></p>
+                    </div>
+                    <div class="bg-slate-800/40 rounded-xl p-3.5">
+                        <p class="text-[10px] text-slate-500">Stressed LCR</p>
+                        <p class="text-xl font-mono font-bold transition-metric" id="stressedLCR"><span class="text-amber-400">108%</span></p>
+                        <div class="w-full bg-slate-700 rounded-full h-1.5 mt-2">
+                            <div class="h-1.5 rounded-full transition-metric" id="lcrBar" style="width: 80%; background: linear-gradient(to right, #f59e0b, #22d3ee);"></div>
+                        </div>
+                        <div class="flex justify-between text-[9px] text-slate-600 mt-1">
+                            <span class="text-rose-400">Min: 100%</span>
+                            <span>200%</span>
+                        </div>
+                    </div>
+                    <div class="bg-slate-800/40 rounded-xl p-3.5">
+                        <p class="text-[10px] text-slate-500">Buffer Survival Horizon</p>
+                        <p class="text-xl font-mono font-bold transition-metric" id="survivalHorizon"><span class="text-amber-400">18 hours</span></p>
+                        <p class="text-[10px] text-slate-500 mt-0.5">Without intervention</p>
+                    </div>
+                </div>
+
+                <!-- Emergency Liquidity Kill-Switch -->
+                <div class="col-span-3 flex flex-col gap-3">
+                    <p class="text-[10px] text-slate-500 uppercase tracking-wider font-medium mb-1">Emergency Actions</p>
+                    <!-- Kill switch area -->
+                    <div class="bg-rose-950/20 border border-rose-900/40 rounded-xl p-4 flex flex-col gap-3 emergency-glow">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/></svg>
+                            <p class="text-[12px] font-semibold text-rose-300">Emergency Liquidity</p>
+                        </div>
+                        <button id="discountWindowBtn" class="w-full text-[11px] font-semibold text-white bg-rose-600 hover:bg-rose-500 px-3 py-2.5 rounded-lg transition-all flex items-center justify-center gap-2" onclick="activateEmergency(this)">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg>
+                            Central Bank Discount Window
+                        </button>
+                        <button class="w-full text-[11px] font-medium text-rose-300 border border-rose-800 hover:bg-rose-950/50 px-3 py-2 rounded-lg transition-all">
+                            Emergency Credit Line ($500M)
+                        </button>
+                        <div class="bg-slate-900/50 rounded-lg p-2.5">
+                            <div class="flex items-center gap-1.5 mb-1">
+                                <div class="w-1.5 h-1.5 bg-cyan-400 rounded-full"></div>
+                                <span class="text-[10px] font-semibold text-cyan-400">AI Pre-Verification</span>
+                            </div>
+                            <p class="text-[10px] text-slate-400 leading-relaxed">All collateral eligibility checks passed. Estimated advance: $1.2B at Fed Funds + 50bps. Board notification required.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-800/40 rounded-xl p-3 text-center">
+                        <p class="text-[10px] text-slate-500 uppercase tracking-wider">Scenario Severity</p>
+                        <p class="text-lg font-bold transition-metric" id="severityLabel"><span class="text-amber-400">MODERATE</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // UTC Clock
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('utcClock').textContent = now.toISOString().slice(11, 19);
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Modal
+        function openModal(move, yield_) {
+            document.getElementById('modalMove').textContent = move;
+            document.getElementById('modalYield').textContent = yield_;
+            const m = document.getElementById('simModal');
+            m.classList.remove('hidden');
+            m.classList.add('flex');
+        }
+        function closeModal() {
+            const m = document.getElementById('simModal');
+            m.classList.add('hidden');
+            m.classList.remove('flex');
+        }
+
+        // Scanner line
+        function moveScannerLine(e) {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const pct = x / rect.width;
+            const line = document.getElementById('scannerLine');
+            line.style.left = x + 'px';
+            line.style.opacity = '1';
+
+            const hours = [0, 2, 4, 6, 8, 10, 14, 18, 24];
+            const values = [2.84, 2.71, 2.58, 2.12, 2.05, 2.28, 2.45, 2.62, 2.78];
+            const idx = Math.min(Math.floor(pct * hours.length), hours.length - 1);
+
+            document.getElementById('tooltipValue').textContent = '$' + values[idx].toFixed(2) + 'B';
+            document.getElementById('tooltipTime').textContent = 'T+' + hours[idx] + 'h' + (idx === 0 ? ' (Now)' : '');
+        }
+        function hideScannerTooltip() {
+            document.getElementById('scannerLine').style.opacity = '0';
+        }
+
+        // Stress Test Updates
+        function updateStress() {
+            const df = parseInt(document.getElementById('depositFlight').value);
+            const rh = parseInt(document.getElementById('rateHike').value);
+            const vix = parseInt(document.getElementById('vixSlider').value);
+            const dp = parseInt(document.getElementById('defaultProb').value);
+
+            document.getElementById('depositFlightVal').textContent = df + '%';
+            document.getElementById('rateHikeVal').textContent = '+' + rh + 'bps';
+            document.getElementById('vixVal').textContent = vix;
+            document.getElementById('defaultVal').textContent = dp + '%';
+
+            // Calculate stress impacts
+            const baseline = 2.84;
+            const depositImpact = baseline * (df / 100) * 0.8;
+            const rateImpact = (rh / 100) * 0.12;
+            const vixImpact = Math.max(0, (vix - 20) / 100) * 0.3;
+            const defaultImpact = (dp / 100) * 0.5;
+            const totalImpact = depositImpact + rateImpact + vixImpact + defaultImpact;
+            const stressed = Math.max(0.1, baseline - totalImpact);
+
+            document.getElementById('stressedLiquidity').innerHTML = '<span class="' + (stressed < 1.5 ? 'text-rose-400' : stressed < 2 ? 'text-amber-400' : 'text-cyan-400') + '">$' + stressed.toFixed(2) + 'B</span>';
+            document.getElementById('stressedDelta').innerHTML = '<span class="text-rose-400">-$' + (totalImpact * 1000).toFixed(0) + 'M from baseline</span>';
+
+            const lcrBase = 134;
+            const lcrStressed = Math.max(60, lcrBase - (df * 1.2) - (rh * 0.05) - ((vix - 20) * 0.3) - (dp * 2));
+            document.getElementById('stressedLCR').innerHTML = '<span class="' + (lcrStressed < 100 ? 'text-rose-400' : lcrStressed < 115 ? 'text-amber-400' : 'text-cyan-400') + '">' + Math.round(lcrStressed) + '%</span>';
+            const lcrBarWidth = Math.min(100, (lcrStressed / 200) * 100);
+            const lcrBar = document.getElementById('lcrBar');
+            lcrBar.style.width = lcrBarWidth + '%';
+            lcrBar.style.background = lcrStressed < 100 ? 'linear-gradient(to right, #f43f5e, #f59e0b)' : 'linear-gradient(to right, #f59e0b, #22d3ee)';
+
+            const survival = Math.max(1, Math.round(48 - (df * 0.6) - (rh * 0.04) - ((vix - 20) * 0.2) - (dp * 1.5)));
+            document.getElementById('survivalHorizon').innerHTML = '<span class="' + (survival < 8 ? 'text-rose-400' : survival < 16 ? 'text-amber-400' : 'text-cyan-400') + '">' + survival + ' hours</span>';
+
+            // Severity label
+            const severity = df + (rh / 10) + (vix - 12) * 0.5 + dp * 3;
+            let label, cls;
+            if (severity < 25) { label = 'LOW'; cls = 'text-emerald-400'; }
+            else if (severity < 50) { label = 'MODERATE'; cls = 'text-amber-400'; }
+            else if (severity < 80) { label = 'HIGH'; cls = 'text-rose-400'; }
+            else { label = 'CRITICAL'; cls = 'text-rose-500'; }
+            document.getElementById('severityLabel').innerHTML = '<span class="' + cls + '">' + label + '</span>';
+
+            // Update hero wave color on buffer breach
+            const bufferStressed = stressed * 0.22;
+            const waveColor = bufferStressed < 0.45 ? '#f59e0b' : '#22d3ee';
+            document.getElementById('waveStop1').setAttribute('stop-color', waveColor);
+            document.getElementById('waveStop2').setAttribute('stop-color', waveColor);
+            document.getElementById('strokeStop1').setAttribute('stop-color', waveColor);
+            document.getElementById('strokeStop2').setAttribute('stop-color', waveColor);
+            document.getElementById('strokeStop3').setAttribute('stop-color', waveColor);
+
+            // Update buffer display
+            const bufferEl = document.getElementById('bufferValue');
+            const bufferStatusEl = document.getElementById('bufferStatus');
+            const bufferAmt = Math.round(bufferStressed * 1000);
+            if (bufferStressed < 0.45) {
+                bufferEl.innerHTML = '<span class="text-amber-400">$' + bufferAmt + 'M</span>';
+                bufferStatusEl.innerHTML = '<span class="text-amber-400">Below Basel III Threshold</span>';
+            } else {
+                bufferEl.innerHTML = '<span class="text-cyan-400">$' + bufferAmt + 'M</span>';
+                bufferStatusEl.innerHTML = '<span class="text-emerald-400">Above Basel III (120%)</span>';
+            }
+        }
+
+        // Emergency button handler
+        function activateEmergency(btn) {
+            btn.innerHTML = '<svg class="w-3.5 h-3.5 animate-spin" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg> AI Verifying...';
+            btn.disabled = true;
+            setTimeout(() => {
+                btn.innerHTML = '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/></svg> Pre-Verified. Awaiting Board Approval.';
+                btn.classList.remove('bg-rose-600', 'hover:bg-rose-500');
+                btn.classList.add('bg-emerald-600', 'hover:bg-emerald-500');
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

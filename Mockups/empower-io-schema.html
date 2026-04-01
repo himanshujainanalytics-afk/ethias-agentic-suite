@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Empower.io — Database Schema & Cloud Architecture</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:#0b0f1a;color:#e2e8f0;min-height:100vh}
+
+/* ── PAGE HEADER ── */
+.page-header{padding:32px 40px 24px;border-bottom:1px solid rgba(255,255,255,.07)}
+.page-header h1{font-size:22px;font-weight:800;color:#fff;display:flex;align-items:center;gap:10px}
+.page-header h1 span{color:#46ae88}
+.page-header p{font-size:13px;color:#64748b;margin-top:6px}
+.header-pills{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.hpill{font-size:10px;font-weight:600;padding:4px 10px;border-radius:20px;border:1px solid}
+
+/* ── ERD SECTION ── */
+.section-title{font-size:13px;font-weight:700;color:#94a3b8;letter-spacing:.08em;text-transform:uppercase;padding:24px 40px 16px;display:flex;align-items:center;gap:8px}
+.section-title::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.07)}
+
+/* ── CANVAS WRAPPER ── */
+.canvas-wrap{overflow:auto;padding:0 0 40px 0;background:#080c16}
+.erd-canvas{position:relative;width:1580px;height:2520px;margin:0 auto}
+
+/* ── SWIMLANE BANDS ── */
+.sl-band{position:absolute;left:0;right:0;border-radius:0;border-left:3px solid}
+.sl-label{position:absolute;right:12px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;opacity:.5;writing-mode:vertical-rl;text-orientation:mixed}
+
+/* ── TABLE CARDS ── */
+.tbl{position:absolute;width:222px;border-radius:10px;border:1px solid rgba(255,255,255,.09);background:#111827;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.4)}
+.tbl-head{padding:8px 10px;font-size:11px;font-weight:700;letter-spacing:.04em;color:#fff;display:flex;align-items:center;gap:6px}
+.tbl-head .tbl-name{flex:1}
+.tbl-head .tbl-count{font-size:9px;opacity:.5;font-weight:400}
+.tbl-body{padding:2px 0 4px}
+.tbl-row{display:flex;align-items:center;gap:4px;padding:2px 8px;font-size:9.5px;border-left:2px solid transparent;min-height:20px}
+.tbl-row.pk{border-left-color:#f59e0b;background:rgba(245,158,11,.04)}
+.tbl-row.fk{border-left-color:#3b82f6;background:rgba(59,130,246,.04)}
+.tbl-row.uk{border-left-color:#8b5cf6;background:rgba(139,92,246,.04)}
+.tbl-row .icon{font-size:8px;flex-shrink:0;width:12px;text-align:center}
+.tbl-row .fname{color:#e2e8f0;font-weight:500;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tbl-row .ftype{color:#475569;font-size:8.5px;flex-shrink:0;margin-left:2px}
+.tbl-row.pk .fname{color:#fcd34d}
+.tbl-row.fk .fname{color:#93c5fd}
+.tbl-row.uk .fname{color:#c4b5fd}
+.tbl-divider{height:1px;background:rgba(255,255,255,.05);margin:2px 0}
+
+/* ── LEGEND ── */
+.legend{display:flex;gap:20px;align-items:center;padding:12px 40px;background:#080c16;border-bottom:1px solid rgba(255,255,255,.05);flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:10px;color:#64748b}
+.legend-dot{width:10px;height:10px;border-radius:2px}
+.legend-line{width:24px;height:2px;flex-shrink:0}
+
+/* ── SVG LINES ── */
+#rel-svg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+
+/* ── CLOUD SECTION ── */
+.cloud-section{padding:40px}
+.cloud-section h2{font-size:18px;font-weight:800;color:#fff;margin-bottom:6px}
+.cloud-section .sub{font-size:13px;color:#64748b;margin-bottom:32px}
+
+.provider-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:40px}
+.provider-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;overflow:hidden}
+.provider-card.winner{border-color:#46ae88;background:rgba(70,174,136,.06)}
+.provider-head{padding:14px 16px 12px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between}
+.provider-head h3{font-size:14px;font-weight:700;color:#fff}
+.winner-badge{font-size:9px;font-weight:700;background:#46ae88;color:#0b0f1a;padding:2px 8px;border-radius:20px}
+.provider-body{padding:14px 16px}
+.prow{display:flex;justify-content:space-between;align-items:flex-start;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:11px;gap:8px}
+.prow:last-child{border-bottom:none}
+.prow-label{color:#94a3b8;flex:1}
+.prow-val{color:#e2e8f0;font-weight:500;text-align:right;flex-shrink:0;max-width:160px}
+.prow-val.good{color:#10b981}
+.prow-val.great{color:#46ae88;font-weight:700}
+.prow-val.warn{color:#f59e0b}
+
+.services-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:40px}
+.svc-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:14px}
+.svc-layer{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#46ae88;margin-bottom:6px}
+.svc-name{font-size:12px;font-weight:700;color:#fff;margin-bottom:4px}
+.svc-desc{font-size:10px;color:#64748b;line-height:1.5}
+
+.regions-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:40px}
+.region-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;overflow:hidden}
+.region-bar{height:4px}
+.region-body{padding:14px 16px}
+.region-flag{font-size:22px;margin-bottom:8px}
+.region-code{font-size:11px;font-weight:700;color:#fff;margin-bottom:2px}
+.region-name{font-size:10px;color:#64748b;margin-bottom:10px}
+.region-chips{display:flex;flex-wrap:wrap;gap:4px}
+.chip{font-size:9px;font-weight:600;padding:2px 7px;border-radius:10px;border:1px solid}
+
+.scaling-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:40px}
+.scaling-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:16px}
+.scaling-card h4{font-size:12px;font-weight:700;color:#fff;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.scaling-card ul{list-style:none;space-y:4px}
+.scaling-card li{font-size:10px;color:#94a3b8;padding:3px 0;padding-left:12px;position:relative;line-height:1.5}
+.scaling-card li::before{content:'›';position:absolute;left:0;color:#46ae88}
+
+.cost-table{width:100%;border-collapse:collapse;font-size:12px}
+.cost-table th{text-align:left;padding:10px 14px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748b;border-bottom:1px solid rgba(255,255,255,.07)}
+.cost-table td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.05);color:#94a3b8}
+.cost-table td:last-child{text-align:right;font-weight:600;color:#e2e8f0}
+.cost-table tr.total td{color:#fff;font-weight:700;background:rgba(70,174,136,.08);border-top:1px solid rgba(70,174,136,.2)}
+.cost-table tr.total td:last-child{color:#46ae88;font-size:14px}
+.cost-wrap{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;overflow:hidden}
+</style>
+</head>
+<body>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <h1>Empower<span>.io</span> — Database Schema & Cloud Architecture</h1>
+  <p>Entity-relationship diagram · 28 tables · 5 functional domains · Global AWS deployment</p>
+  <div class="header-pills">
+    <span class="hpill" style="color:#8b5cf6;border-color:rgba(139,92,246,.3);background:rgba(139,92,246,.08)">Identity & Config</span>
+    <span class="hpill" style="color:#3b82f6;border-color:rgba(59,130,246,.3);background:rgba(59,130,246,.08)">Client & CRM</span>
+    <span class="hpill" style="color:#10b981;border-color:rgba(16,185,129,.3);background:rgba(16,185,129,.08)">Portfolio & Trading</span>
+    <span class="hpill" style="color:#06b6d4;border-color:rgba(6,182,212,.3);background:rgba(6,182,212,.08)">Communications</span>
+    <span class="hpill" style="color:#f59e0b;border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.08)">AI & Compliance</span>
+  </div>
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div>Primary Key (PK)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>Foreign Key (FK)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6"></div>Unique (UK)</div>
+  <div class="legend-item"><div class="legend-line" style="background:#46ae88;opacity:.7"></div>One-to-Many</div>
+  <div class="legend-item"><div class="legend-line" style="background:#46ae88;opacity:.4;border-top:2px dashed #46ae88;background:none"></div>Cross-domain FK</div>
+</div>
+
+<!-- ERD CANVAS -->
+<div class="section-title">Entity-Relationship Diagram</div>
+<div class="canvas-wrap">
+  <div class="erd-canvas" id="erdCanvas">
+    <svg id="rel-svg"></svg>
+  </div>
+</div>
+
+<!-- CLOUD SECTION -->
+<div class="section-title">Recommended Global Cloud Architecture</div>
+<div class="cloud-section">
+  <h2>Primary Recommendation: Amazon Web Services (AWS)</h2>
+  <p class="sub">Selected for FinServ compliance depth, Aurora Global Database for multi-timezone reads, Bedrock AI integration, and 33 geographic regions covering all 8 advisory markets in the app.</p>
+
+  <!-- Provider comparison -->
+  <div class="provider-grid">
+    <div class="provider-card winner">
+      <div class="provider-head"><h3>☁️ AWS</h3><span class="winner-badge">✓ RECOMMENDED</span></div>
+      <div class="provider-body">
+        <div class="prow"><span class="prow-label">Global regions</span><span class="prow-val great">33 regions</span></div>
+        <div class="prow"><span class="prow-label">FinServ compliance (SEC/FINRA/FCA)</span><span class="prow-val great">Native competency</span></div>
+        <div class="prow"><span class="prow-label">Managed PostgreSQL</span><span class="prow-val great">Aurora Global DB</span></div>
+        <div class="prow"><span class="prow-label">AI / LLM platform</span><span class="prow-val great">Bedrock + SageMaker</span></div>
+        <div class="prow"><span class="prow-label">Real-time messaging</span><span class="prow-val great">SQS / SNS / Kinesis</span></div>
+        <div class="prow"><span class="prow-label">Outlook / Teams calendar sync</span><span class="prow-val good">Via Microsoft Graph API</span></div>
+        <div class="prow"><span class="prow-label">Multi-region latency</span><span class="prow-val great">&lt; 50ms (Global Accelerator)</span></div>
+        <div class="prow"><span class="prow-label">Audit / SIEM tooling</span><span class="prow-val great">CloudTrail + Security Hub</span></div>
+      </div>
+    </div>
+    <div class="provider-card">
+      <div class="provider-head"><h3>🔷 Microsoft Azure</h3></div>
+      <div class="provider-body">
+        <div class="prow"><span class="prow-label">Global regions</span><span class="prow-val good">60+ regions</span></div>
+        <div class="prow"><span class="prow-label">FinServ compliance</span><span class="prow-val good">Strong (Azure FinServ)</span></div>
+        <div class="prow"><span class="prow-label">Managed PostgreSQL</span><span class="prow-val good">Flexible Server</span></div>
+        <div class="prow"><span class="prow-label">AI / LLM platform</span><span class="prow-val good">Azure OpenAI Service</span></div>
+        <div class="prow"><span class="prow-label">Real-time messaging</span><span class="prow-val good">Service Bus + Event Hub</span></div>
+        <div class="prow"><span class="prow-label">Outlook / Teams calendar sync</span><span class="prow-val great">Native SSO (best option)</span></div>
+        <div class="prow"><span class="prow-label">Multi-region latency</span><span class="prow-val good">Traffic Manager</span></div>
+        <div class="prow"><span class="prow-label">Note</span><span class="prow-val warn">Best if MS-first firm</span></div>
+      </div>
+    </div>
+    <div class="provider-card">
+      <div class="provider-head"><h3>🌈 Google Cloud</h3></div>
+      <div class="provider-body">
+        <div class="prow"><span class="prow-label">Global regions</span><span class="prow-val good">40 regions</span></div>
+        <div class="prow"><span class="prow-label">FinServ compliance</span><span class="prow-val warn">Limited tooling</span></div>
+        <div class="prow"><span class="prow-label">Managed PostgreSQL</span><span class="prow-val good">AlloyDB (fast)</span></div>
+        <div class="prow"><span class="prow-label">AI / LLM platform</span><span class="prow-val great">Vertex AI (strongest ML)</span></div>
+        <div class="prow"><span class="prow-label">Real-time messaging</span><span class="prow-val good">Pub/Sub</span></div>
+        <div class="prow"><span class="prow-label">Outlook / Teams calendar sync</span><span class="prow-val warn">Via API only</span></div>
+        <div class="prow"><span class="prow-label">Multi-region latency</span><span class="prow-val good">Cloud CDN</span></div>
+        <div class="prow"><span class="prow-label">Note</span><span class="prow-val warn">Best for AI-only workloads</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AWS Services -->
+  <div class="section-title" style="padding:0 0 16px">AWS Service Stack</div>
+  <div class="services-grid">
+    <div class="svc-card"><div class="svc-layer">Edge & CDN</div><div class="svc-name">CloudFront + Global Accelerator</div><div class="svc-desc">450+ edge PoPs worldwide. Routes each advisor to nearest healthy region. &lt;50ms latency target globally.</div></div>
+    <div class="svc-card"><div class="svc-layer">Auth & SSO</div><div class="svc-name">Cognito + IAM Identity Center</div><div class="svc-desc">SAML/OIDC SSO for enterprise advisors. Built-in TOTP 2FA matching the login screen. Session management.</div></div>
+    <div class="svc-card"><div class="svc-layer">API Layer</div><div class="svc-name">API Gateway + AppSync</div><div class="svc-desc">REST for CRM/portfolio endpoints. WebSocket via AppSync for live compliance scanner and inbox sentiment.</div></div>
+    <div class="svc-card"><div class="svc-layer">Compute</div><div class="svc-name">ECS Fargate</div><div class="svc-desc">Serverless containers. Auto-scales 0→∞ per request volume. No server management. Pay-per-task-second.</div></div>
+    <div class="svc-card"><div class="svc-layer">Primary Database</div><div class="svc-name">Aurora PostgreSQL Global DB</div><div class="svc-desc">Write region: us-east-1. Read replicas: eu-west-1, ap-southeast-1. &lt;1s cross-region replication lag. 128TB auto-scale.</div></div>
+    <div class="svc-card"><div class="svc-layer">Cache & Sessions</div><div class="svc-name">ElastiCache for Redis</div><div class="svc-desc">Market data cache (15-min TTL). AI insight caching. Session tokens. Cluster mode with auto-shard rebalancing.</div></div>
+    <div class="svc-card"><div class="svc-layer">File Storage</div><div class="svc-name">S3 + Intelligent-Tiering</div><div class="svc-desc">AI voice training samples, audit PDF packages, firm logos. Lifecycle rules auto-archive to Glacier after 90 days.</div></div>
+    <div class="svc-card"><div class="svc-layer">AI Platform</div><div class="svc-name">Bedrock + SageMaker</div><div class="svc-desc">Bedrock (Claude) for compliance ghostwriter, AI drafts, daily briefing. SageMaker endpoints for churn and propensity models.</div></div>
+    <div class="svc-card"><div class="svc-layer">Async Events</div><div class="svc-name">EventBridge + SQS</div><div class="svc-desc">Triggers: AI briefing generation at 6 AM per timezone. Compliance scans on message send. TLH alerts on market close.</div></div>
+    <div class="svc-card"><div class="svc-layer">Calendar Sync</div><div class="svc-name">Lambda + Step Functions</div><div class="svc-desc">Lambda polls Microsoft Graph API (Outlook) and Google Calendar API every 5 min. Step Functions orchestrate OAuth refresh flows.</div></div>
+    <div class="svc-card"><div class="svc-layer">Compliance & Audit</div><div class="svc-name">CloudTrail + Macie + Security Hub</div><div class="svc-desc">Immutable audit log of every API call. Macie scans for PII leakage in S3. Security Hub maps to FINRA/SEC control frameworks.</div></div>
+    <div class="svc-card"><div class="svc-layer">Observability</div><div class="svc-name">CloudWatch + X-Ray</div><div class="svc-desc">Distributed tracing across AI model calls, DB queries, and Lambda. Dashboards per advisory region. SLA alerting on p99 latency.</div></div>
+  </div>
+
+  <!-- Regions -->
+  <div class="section-title" style="padding:0 0 16px">Multi-Region Deployment</div>
+  <div class="regions-grid">
+    <div class="region-card">
+      <div class="region-bar" style="background:linear-gradient(90deg,#46ae88,#10b981)"></div>
+      <div class="region-body">
+        <div class="region-flag">🌎</div>
+        <div class="region-code">us-east-1 · N. Virginia</div>
+        <div class="region-name">PRIMARY WRITE REGION</div>
+        <div class="region-chips">
+          <span class="chip" style="color:#46ae88;border-color:rgba(70,174,136,.3);background:rgba(70,174,136,.08)">Aurora Write</span>
+          <span class="chip" style="color:#46ae88;border-color:rgba(70,174,136,.3);background:rgba(70,174,136,.08)">SEC / FINRA</span>
+          <span class="chip" style="color:#46ae88;border-color:rgba(70,174,136,.3);background:rgba(70,174,136,.08)">Primary API</span>
+          <span class="chip" style="color:#46ae88;border-color:rgba(70,174,136,.3);background:rgba(70,174,136,.08)">Bedrock AI</span>
+        </div>
+      </div>
+    </div>
+    <div class="region-card">
+      <div class="region-bar" style="background:linear-gradient(90deg,#3b82f6,#6366f1)"></div>
+      <div class="region-body">
+        <div class="region-flag">🌍</div>
+        <div class="region-code">eu-west-1 · Ireland</div>
+        <div class="region-name">EU / UK READ REPLICA</div>
+        <div class="region-chips">
+          <span class="chip" style="color:#60a5fa;border-color:rgba(96,165,250,.3);background:rgba(96,165,250,.08)">Aurora Read</span>
+          <span class="chip" style="color:#60a5fa;border-color:rgba(96,165,250,.3);background:rgba(96,165,250,.08)">FCA / MiFID II</span>
+          <span class="chip" style="color:#60a5fa;border-color:rgba(96,165,250,.3);background:rgba(96,165,250,.08)">GDPR</span>
+          <span class="chip" style="color:#60a5fa;border-color:rgba(96,165,250,.3);background:rgba(96,165,250,.08)">Edge API</span>
+        </div>
+      </div>
+    </div>
+    <div class="region-card">
+      <div class="region-bar" style="background:linear-gradient(90deg,#f59e0b,#f97316)"></div>
+      <div class="region-body">
+        <div class="region-flag">🌏</div>
+        <div class="region-code">ap-southeast-1 · Singapore</div>
+        <div class="region-name">APAC READ REPLICA</div>
+        <div class="region-chips">
+          <span class="chip" style="color:#fbbf24;border-color:rgba(251,191,36,.3);background:rgba(251,191,36,.08)">Aurora Read</span>
+          <span class="chip" style="color:#fbbf24;border-color:rgba(251,191,36,.3);background:rgba(251,191,36,.08)">MAS</span>
+          <span class="chip" style="color:#fbbf24;border-color:rgba(251,191,36,.3);background:rgba(251,191,36,.08)">SEBI</span>
+          <span class="chip" style="color:#fbbf24;border-color:rgba(251,191,36,.3);background:rgba(251,191,36,.08)">GCC / UAE</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Auto-scaling -->
+  <div class="section-title" style="padding:0 0 16px">Auto-Scaling Strategy</div>
+  <div class="scaling-grid">
+    <div class="scaling-card">
+      <h4>⚡ Compute (ECS Fargate)</h4>
+      <ul>
+        <li>Scale out at 70% average CPU across task cluster</li>
+        <li>Min 2 tasks per region, max 200 during market open</li>
+        <li>Scheduled scale-up at 9:00 AM local per timezone</li>
+        <li>Scale-in cooldown: 5 min to avoid thrash</li>
+        <li>Zero cold-start — always-warm baseline containers</li>
+      </ul>
+    </div>
+    <div class="scaling-card">
+      <h4>🗄️ Database (Aurora Global)</h4>
+      <ul>
+        <li>Storage auto-scales 10 GB → 128 TB, no downtime</li>
+        <li>Read replicas auto-added during peak trading hours</li>
+        <li>Regional failover: RPO &lt; 1s, RTO &lt; 1 min</li>
+        <li>Connection pooling via RDS Proxy (prevents spike exhaustion)</li>
+        <li>Automated snapshots every 5 min, retained 35 days</li>
+      </ul>
+    </div>
+    <div class="scaling-card">
+      <h4>🧠 AI Layer (Bedrock + SageMaker)</h4>
+      <ul>
+        <li>Bedrock: serverless, no provisioning — auto-scales per token</li>
+        <li>SageMaker churn/propensity: async inference endpoints</li>
+        <li>Daily briefing batch jobs run 5:30 AM per timezone via EventBridge</li>
+        <li>ElastiCache caches AI outputs 30 min (reduces Bedrock cost ~60%)</li>
+        <li>Model drift monitoring via SageMaker Model Monitor</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Cost table -->
+  <div class="section-title" style="padding:0 0 16px">Estimated Monthly Cost — 500 Advisors</div>
+  <div class="cost-wrap">
+    <table class="cost-table">
+      <thead><tr><th>Service</th><th>Specification</th><th>Est. Monthly</th></tr></thead>
+      <tbody>
+        <tr><td>Aurora PostgreSQL Global DB</td><td>db.r6g.xlarge × 3 regions + storage</td><td>~$2,400</td></tr>
+        <tr><td>ECS Fargate</td><td>4 vCPU avg across 3 regions</td><td>~$600</td></tr>
+        <tr><td>Amazon Bedrock (Claude)</td><td>~2M tokens/day (briefings, drafts, compliance)</td><td>~$1,800</td></tr>
+        <tr><td>SageMaker Endpoints</td><td>Churn + propensity models, ml.m5.large × 2</td><td>~$400</td></tr>
+        <tr><td>ElastiCache for Redis</td><td>cache.r6g.large cluster-mode, 3 nodes</td><td>~$180</td></tr>
+        <tr><td>S3 + CloudFront</td><td>~500 GB storage, 2 TB egress</td><td>~$120</td></tr>
+        <tr><td>API Gateway + AppSync</td><td>~50M API calls/mo, WebSocket connections</td><td>~$180</td></tr>
+        <tr><td>Lambda + EventBridge + SQS</td><td>Calendar sync, async event processing</td><td>~$60</td></tr>
+        <tr><td>Cognito + IAM Identity Center</td><td>500 MAUs + enterprise SSO</td><td>~$30</td></tr>
+        <tr><td>CloudWatch + X-Ray + Security Hub</td><td>Monitoring, tracing, compliance scanning</td><td>~$130</td></tr>
+        <tr class="total"><td><strong>Total Estimate</strong></td><td><strong>500 advisors · 3 AWS regions · full AI stack</strong></td><td>~$5,900 / mo</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="font-size:10px;color:#475569;margin-top:10px;padding-left:4px">* Estimates based on AWS us-east-1 on-demand pricing (Mar 2026). Reserved Instances for Aurora/ElastiCache reduce DB costs ~35%. Bedrock cost varies with usage; caching assumed at 60% hit rate.</p>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+//  TABLE DATA
+// ════════════════════════════════════════════════════════════
+const G = {
+  identity: { color:'#8b5cf6', bg:'rgba(139,92,246,.05)', border:'rgba(139,92,246,.25)' },
+  crm:      { color:'#3b82f6', bg:'rgba(59,130,246,.05)',  border:'rgba(59,130,246,.25)' },
+  portfolio:{ color:'#10b981', bg:'rgba(16,185,129,.05)', border:'rgba(16,185,129,.25)' },
+  comms:    { color:'#06b6d4', bg:'rgba(6,182,212,.05)',   border:'rgba(6,182,212,.25)'  },
+  ai:       { color:'#f59e0b', bg:'rgba(245,158,11,.05)', border:'rgba(245,158,11,.25)' },
+};
+
+// f(name, type, key) key: 'pk'|'fk'|'uk'|''
+const f = (name, type, key='') => ({ name, type, key });
+
+const tables = [
+  // ── IDENTITY ──────────────────────────────────────────────
+  { id:'firms', label:'firms', g:'identity', x:20, y:60,
+    fields:[f('firm_id','UUID','pk'),f('name','VARCHAR(255)'),f('logo_url','TEXT'),f('accent_color','VARCHAR(7)'),f('primary_regulator_id','UUID','fk'),f('disclosure_standard','TEXT'),f('suitability_disclaimer','TEXT'),f('subscription_tier','VARCHAR(50)'),f('created_at','TIMESTAMPTZ')] },
+
+  { id:'advisors', label:'advisors', g:'identity', x:262, y:60,
+    fields:[f('advisor_id','UUID','pk'),f('firm_id','UUID','fk'),f('email','VARCHAR(255)','uk'),f('display_name','VARCHAR(255)'),f('crd_number','VARCHAR(50)'),f('role','VARCHAR(50)'),f('sso_provider','VARCHAR(50)'),f('last_login_at','TIMESTAMPTZ'),f('is_active','BOOLEAN'),f('created_at','TIMESTAMPTZ')] },
+
+  { id:'advisor_settings', label:'advisor_settings', g:'identity', x:504, y:60,
+    fields:[f('setting_id','UUID','pk'),f('advisor_id','UUID','fk'),f('ai_agency_level','SMALLINT'),f('communication_tone','VARCHAR(20)'),f('vocabulary_formality','VARCHAR(20)'),f('active_regions','JSONB'),f('currency','VARCHAR(10)'),f('timezone','VARCHAR(50)'),f('notification_prefs','JSONB'),f('focus_mode','BOOLEAN'),f('compact_sidebar','BOOLEAN'),f('show_confidence_scores','BOOLEAN'),f('session_timeout_min','SMALLINT'),f('share_anonymized_data','BOOLEAN')] },
+
+  { id:'calendar_connections', label:'calendar_connections', g:'identity', x:746, y:60,
+    fields:[f('connection_id','UUID','pk'),f('advisor_id','UUID','fk'),f('provider','VARCHAR(20)'),f('account_email','VARCHAR(255)'),f('access_token_enc','TEXT'),f('refresh_token_enc','TEXT'),f('is_connected','BOOLEAN'),f('last_synced_at','TIMESTAMPTZ')] },
+
+  { id:'ai_voice_samples', label:'ai_voice_samples', g:'identity', x:988, y:60,
+    fields:[f('sample_id','UUID','pk'),f('advisor_id','UUID','fk'),f('filename','VARCHAR(255)'),f('file_type','VARCHAR(10)'),f('storage_url','TEXT'),f('is_processed','BOOLEAN'),f('training_weight','FLOAT'),f('uploaded_at','TIMESTAMPTZ')] },
+
+  { id:'regulator_rulesets', label:'regulator_rulesets', g:'identity', x:1230, y:60,
+    fields:[f('ruleset_id','UUID','pk'),f('code','VARCHAR(20)','uk'),f('name','VARCHAR(100)'),f('promissory_keywords','JSONB'),f('risk_flag_rules','JSONB'),f('trade_supervision_window_h','SMALLINT'),f('disclosure_template','TEXT'),f('effective_from','DATE')] },
+
+  // ── CRM ───────────────────────────────────────────────────
+  { id:'clients', label:'clients', g:'crm', x:20, y:560,
+    fields:[f('client_id','UUID','pk'),f('advisor_id','UUID','fk'),f('firm_id','UUID','fk'),f('first_name','VARCHAR(100)'),f('last_name','VARCHAR(100)'),f('email','VARCHAR(255)'),f('phone','VARCHAR(50)'),f('record_type','VARCHAR(20)'),f('health_status','VARCHAR(20)'),f('aum','DECIMAL(18,2)'),f('potential_aum','DECIMAL(18,2)'),f('life_stage','VARCHAR(50)'),f('personality_type','VARCHAR(100)'),f('preferred_channel','VARCHAR(20)'),f('last_contact_at','TIMESTAMPTZ'),f('created_at','TIMESTAMPTZ')] },
+
+  { id:'contacts_coi', label:'contacts_coi', g:'crm', x:262, y:560,
+    fields:[f('contact_id','UUID','pk'),f('client_id','UUID','fk'),f('name','VARCHAR(200)'),f('relationship_type','VARCHAR(50)'),f('email','VARCHAR(255)'),f('phone','VARCHAR(50)'),f('firm_name','VARCHAR(200)'),f('notes','TEXT')] },
+
+  { id:'life_events', label:'life_events', g:'crm', x:504, y:560,
+    fields:[f('event_id','UUID','pk'),f('client_id','UUID','fk'),f('event_type','VARCHAR(100)'),f('event_date','DATE'),f('description','TEXT'),f('status','VARCHAR(20)'),f('impact_level','VARCHAR(20)')] },
+
+  { id:'pipeline_stages', label:'pipeline_stages', g:'crm', x:746, y:560,
+    fields:[f('stage_id','UUID','pk'),f('client_id','UUID','fk'),f('current_stage','VARCHAR(50)'),f('entered_at','TIMESTAMPTZ'),f('expected_close_date','DATE'),f('deal_value','DECIMAL(18,2)'),f('next_action','TEXT'),f('notes','TEXT')] },
+
+  { id:'kyc_records', label:'kyc_records', g:'crm', x:988, y:560,
+    fields:[f('kyc_id','UUID','pk'),f('client_id','UUID','fk'),f('gov_id_verified','BOOLEAN'),f('gov_id_type','VARCHAR(50)'),f('accredited_investor','BOOLEAN'),f('aml_screen_passed','BOOLEAN'),f('finra_crd_verified','BOOLEAN'),f('verified_at','TIMESTAMPTZ'),f('expiry_at','TIMESTAMPTZ'),f('verified_by','UUID','fk')] },
+
+  { id:'risk_profiles', label:'risk_profiles', g:'crm', x:1230, y:560,
+    fields:[f('profile_id','UUID','pk'),f('client_id','UUID','fk'),f('loss_tolerance','SMALLINT'),f('liquidity_flexibility','SMALLINT'),f('time_horizon','SMALLINT'),f('market_sophistication','SMALLINT'),f('esg_priority','SMALLINT'),f('composite_score','SMALLINT'),f('profile_label','VARCHAR(100)'),f('assessed_at','TIMESTAMPTZ')] },
+
+  // ── PORTFOLIO ─────────────────────────────────────────────
+  { id:'portfolios', label:'portfolios', g:'portfolio', x:20, y:1100,
+    fields:[f('portfolio_id','UUID','pk'),f('client_id','UUID','fk'),f('advisor_id','UUID','fk'),f('name','VARCHAR(200)'),f('total_value','DECIMAL(18,2)'),f('ytd_return','DECIMAL(6,4)'),f('alpha','DECIMAL(6,4)'),f('sharpe_ratio','DECIMAL(6,4)'),f('max_drawdown','DECIMAL(6,4)'),f('beta','DECIMAL(6,4)'),f('volatility','DECIMAL(6,4)'),f('last_rebalanced_at','TIMESTAMPTZ')] },
+
+  { id:'holdings', label:'holdings', g:'portfolio', x:262, y:1100,
+    fields:[f('holding_id','UUID','pk'),f('portfolio_id','UUID','fk'),f('ticker','VARCHAR(20)'),f('name','VARCHAR(200)'),f('asset_class','VARCHAR(50)'),f('quantity','DECIMAL(18,6)'),f('current_price','DECIMAL(18,4)'),f('market_value','DECIMAL(18,2)'),f('weight_pct','DECIMAL(6,4)'),f('daily_return','DECIMAL(6,4)'),f('cost_basis','DECIMAL(18,2)'),f('unrealized_gain','DECIMAL(18,2)'),f('updated_at','TIMESTAMPTZ')] },
+
+  { id:'transactions', label:'transactions', g:'portfolio', x:504, y:1100,
+    fields:[f('transaction_id','UUID','pk'),f('portfolio_id','UUID','fk'),f('client_id','UUID','fk'),f('advisor_id','UUID','fk'),f('ticker','VARCHAR(20)'),f('transaction_type','VARCHAR(20)'),f('quantity','DECIMAL(18,6)'),f('price','DECIMAL(18,4)'),f('total_value','DECIMAL(18,2)'),f('status','VARCHAR(20)'),f('executed_at','TIMESTAMPTZ'),f('requires_supervisor_review','BOOLEAN')] },
+
+  { id:'tlh_opportunities', label:'tlh_opportunities', g:'portfolio', x:746, y:1100,
+    fields:[f('opportunity_id','UUID','pk'),f('portfolio_id','UUID','fk'),f('client_id','UUID','fk'),f('ticker','VARCHAR(20)'),f('unrealized_loss','DECIMAL(18,2)'),f('loss_pct','DECIMAL(6,4)'),f('wash_sale_safe','BOOLEAN'),f('wash_sale_window_ends','DATE'),f('severity','VARCHAR(20)'),f('identified_at','TIMESTAMPTZ'),f('actioned','BOOLEAN')] },
+
+  { id:'market_data_cache', label:'market_data_cache', g:'portfolio', x:988, y:1100,
+    fields:[f('market_id','UUID','pk'),f('ticker','VARCHAR(20)'),f('date','DATE'),f('open_price','DECIMAL(18,4)'),f('close_price','DECIMAL(18,4)'),f('daily_return','DECIMAL(6,4)'),f('volume','BIGINT'),f('asset_class','VARCHAR(50)'),f('data_source','VARCHAR(50)'),f('fetched_at','TIMESTAMPTZ')] },
+
+  { id:'audit_trails', label:'audit_trails', g:'portfolio', x:1230, y:1100,
+    fields:[f('audit_id','UUID','pk'),f('transaction_id','UUID','fk'),f('advisor_id','UUID','fk'),f('client_id','UUID','fk'),f('memo_text','TEXT'),f('generated_by','VARCHAR(20)'),f('filed_at','TIMESTAMPTZ'),f('regulator_code','VARCHAR(20)')] },
+
+  // ── COMMUNICATIONS ────────────────────────────────────────
+  { id:'conversations', label:'conversations', g:'comms', x:20, y:1660,
+    fields:[f('conversation_id','UUID','pk'),f('client_id','UUID','fk'),f('advisor_id','UUID','fk'),f('channels','JSONB'),f('last_message_at','TIMESTAMPTZ'),f('unread_count','SMALLINT'),f('is_archived','BOOLEAN'),f('sentiment_latest','VARCHAR(20)')] },
+
+  { id:'messages', label:'messages', g:'comms', x:262, y:1660,
+    fields:[f('message_id','UUID','pk'),f('conversation_id','UUID','fk'),f('direction','VARCHAR(5)'),f('channel','VARCHAR(20)'),f('from_address','VARCHAR(255)'),f('body','TEXT'),f('sentiment','VARCHAR(20)'),f('is_ai_drafted','BOOLEAN'),f('compliance_checked','BOOLEAN'),f('sent_at','TIMESTAMPTZ')] },
+
+  { id:'meetings', label:'meetings', g:'comms', x:504, y:1660,
+    fields:[f('meeting_id','UUID','pk'),f('advisor_id','UUID','fk'),f('client_id','UUID','fk'),f('scheduled_at','TIMESTAMPTZ'),f('duration_min','SMALLINT'),f('platform','VARCHAR(20)'),f('meeting_type','VARCHAR(100)'),f('agenda_template','VARCHAR(100)'),f('status','VARCHAR(20)'),f('show_status','BOOLEAN'),f('transcript','TEXT'),f('notes','TEXT')] },
+
+  { id:'tasks', label:'tasks', g:'comms', x:746, y:1660,
+    fields:[f('task_id','UUID','pk'),f('advisor_id','UUID','fk'),f('client_id','UUID','fk'),f('title','TEXT'),f('due_at','TIMESTAMPTZ'),f('urgency','VARCHAR(10)'),f('status','VARCHAR(20)'),f('created_at','TIMESTAMPTZ')] },
+
+  { id:'notifications', label:'notifications', g:'comms', x:988, y:1660,
+    fields:[f('notification_id','UUID','pk'),f('advisor_id','UUID','fk'),f('type','VARCHAR(50)'),f('title','VARCHAR(255)'),f('body','TEXT'),f('is_read','BOOLEAN'),f('deep_link','VARCHAR(255)'),f('created_at','TIMESTAMPTZ')] },
+
+  { id:'daily_briefings', label:'daily_briefings', g:'comms', x:1230, y:1660,
+    fields:[f('briefing_id','UUID','pk'),f('advisor_id','UUID','fk'),f('generated_at','TIMESTAMPTZ'),f('items','JSONB'),f('model_version','VARCHAR(20)'),f('delivery_status','VARCHAR(20)')] },
+
+  // ── AI & COMPLIANCE ───────────────────────────────────────
+  { id:'churn_predictions', label:'churn_predictions', g:'ai', x:20, y:2180,
+    fields:[f('prediction_id','UUID','pk'),f('client_id','UUID','fk'),f('advisor_id','UUID','fk'),f('attrition_probability','DECIMAL(5,4)'),f('signal','TEXT'),f('model_version','VARCHAR(20)'),f('engagement_score','SMALLINT'),f('volatility_score','SMALLINT'),f('predicted_at','TIMESTAMPTZ')] },
+
+  { id:'propensity_scores', label:'propensity_scores', g:'ai', x:262, y:2180,
+    fields:[f('score_id','UUID','pk'),f('client_id','UUID','fk'),f('advisor_id','UUID','fk'),f('product','VARCHAR(200)'),f('fit_score','SMALLINT'),f('reason','TEXT'),f('life_stage','VARCHAR(50)'),f('model_version','VARCHAR(20)'),f('scored_at','TIMESTAMPTZ')] },
+
+  { id:'compliance_alerts', label:'compliance_alerts', g:'ai', x:504, y:2180,
+    fields:[f('alert_id','UUID','pk'),f('advisor_id','UUID','fk'),f('client_id','UUID','fk'),f('message_id','UUID','fk'),f('flagged_text','TEXT'),f('compliant_alternative','TEXT'),f('severity','VARCHAR(20)'),f('status','VARCHAR(20)'),f('ruleset_id','UUID','fk'),f('created_at','TIMESTAMPTZ'),f('remediated_at','TIMESTAMPTZ')] },
+
+  { id:'ai_insights', label:'ai_insights', g:'ai', x:746, y:2180,
+    fields:[f('insight_id','UUID','pk'),f('advisor_id','UUID','fk'),f('client_id','UUID','fk'),f('insight_type','VARCHAR(50)'),f('title','TEXT'),f('body','TEXT'),f('recommended_action','TEXT'),f('priority','SMALLINT'),f('is_actioned','BOOLEAN'),f('generated_at','TIMESTAMPTZ'),f('model_version','VARCHAR(20)')] },
+];
+
+// ════════════════════════════════════════════════════════════
+//  RENDER SWIMLANE BANDS
+// ════════════════════════════════════════════════════════════
+const canvas = document.getElementById('erdCanvas');
+const bands = [
+  { g:'identity', label:'IDENTITY & CONFIGURATION', y:30,  h:480 },
+  { g:'crm',      label:'CLIENT & CRM',             y:530, h:510 },
+  { g:'portfolio',label:'PORTFOLIO & TRADING',      y:1060,h:540 },
+  { g:'comms',    label:'COMMUNICATIONS & SCHEDULING',y:1630,h:480 },
+  { g:'ai',       label:'AI INTELLIGENCE & COMPLIANCE',y:2150,h:420 },
+];
+bands.forEach(b => {
+  const div = document.createElement('div');
+  div.style.cssText = `position:absolute;left:0;right:0;top:${b.y}px;height:${b.h}px;background:${G[b.g].bg};border-left:3px solid ${G[b.g].color};border-radius:0 8px 8px 0;`;
+  canvas.insertBefore(div, canvas.firstChild);
+  const lbl = document.createElement('div');
+  lbl.textContent = b.label;
+  lbl.style.cssText = `position:absolute;right:8px;top:${b.y+20}px;font-size:9px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:${G[b.g].color};opacity:.45;writing-mode:vertical-rl;`;
+  canvas.insertBefore(lbl, canvas.firstChild);
+});
+
+// ════════════════════════════════════════════════════════════
+//  RENDER TABLE CARDS
+// ════════════════════════════════════════════════════════════
+const positions = {}; // id → {x,y,w,h}
+
+tables.forEach(t => {
+  const g = G[t.g];
+  const card = document.createElement('div');
+  card.className = 'tbl';
+  card.id = 'tbl-' + t.id;
+  card.style.left = t.x + 'px';
+  card.style.top  = t.y + 'px';
+
+  const head = `<div class="tbl-head" style="background:${g.color}20;border-bottom:1px solid ${g.color}30">
+    <span style="color:${g.color};margin-right:2px;font-size:9px">▣</span>
+    <span class="tbl-name" style="color:${g.color}">${t.label}</span>
+    <span class="tbl-count">${t.fields.length} cols</span>
+  </div>`;
+
+  const rows = t.fields.map(fld => {
+    const icons = { pk:'🔑', fk:'🔗', uk:'⚡', '':'' };
+    return `<div class="tbl-row ${fld.key}">
+      <span class="icon">${icons[fld.key]||''}</span>
+      <span class="fname">${fld.name}</span>
+      <span class="ftype">${fld.type}</span>
+    </div>`;
+  }).join('');
+
+  card.innerHTML = head + `<div class="tbl-body">${rows}</div>`;
+  canvas.appendChild(card);
+});
+
+// ════════════════════════════════════════════════════════════
+//  DRAW RELATIONSHIP LINES (after layout)
+// ════════════════════════════════════════════════════════════
+requestAnimationFrame(() => {
+  const svg = document.getElementById('rel-svg');
+  const svgNS = 'http://www.w3.org/2000/svg';
+
+  // arrowhead marker
+  const defs = document.createElementNS(svgNS,'defs');
+  ['arr','arr-dash'].forEach((id,i) => {
+    const m = document.createElementNS(svgNS,'marker');
+    m.setAttribute('id',id); m.setAttribute('markerWidth','8'); m.setAttribute('markerHeight','8');
+    m.setAttribute('refX','6'); m.setAttribute('refY','3'); m.setAttribute('orient','auto');
+    const p = document.createElementNS(svgNS,'polygon');
+    p.setAttribute('points','0 0, 8 3, 0 6');
+    p.setAttribute('fill', i===0 ? '#46ae88' : '#3b82f6');
+    p.setAttribute('opacity', i===0 ? '0.6' : '0.4');
+    m.appendChild(p); defs.appendChild(m);
+  });
+  svg.appendChild(defs);
+
+  // helper: get center-bottom and center-top of a table card
+  const getEl = id => document.getElementById('tbl-' + id);
+  const bot = id => { const e=getEl(id); if(!e) return null; const r=e.getBoundingClientRect(); const cr=canvas.getBoundingClientRect(); return { x: e.offsetLeft + e.offsetWidth/2, y: e.offsetTop + e.offsetHeight }; };
+  const top = id => { const e=getEl(id); if(!e) return null; return { x: e.offsetLeft + e.offsetWidth/2, y: e.offsetTop }; };
+  const right = id => { const e=getEl(id); if(!e) return null; return { x: e.offsetLeft + e.offsetWidth, y: e.offsetTop + e.offsetHeight/2 }; };
+  const left  = id => { const e=getEl(id); if(!e) return null; return { x: e.offsetLeft, y: e.offsetTop + e.offsetHeight/2 }; };
+
+  function line(p1, p2, dashed=false, color='#46ae88') {
+    if(!p1||!p2) return;
+    const path = document.createElementNS(svgNS,'path');
+    const mx = (p1.x+p2.x)/2, my = (p1.y+p2.y)/2;
+    const dx = Math.abs(p2.x-p1.x), dy = Math.abs(p2.y-p1.y);
+    let d;
+    if(dy > dx) {
+      // vertical dominant — cubic bezier
+      d = `M${p1.x},${p1.y} C${p1.x},${p1.y+dy*0.45} ${p2.x},${p2.y-dy*0.45} ${p2.x},${p2.y}`;
+    } else {
+      // horizontal — step via midpoint
+      d = `M${p1.x},${p1.y} C${p1.x+dx*0.4},${p1.y} ${p2.x-dx*0.4},${p2.y} ${p2.x},${p2.y}`;
+    }
+    path.setAttribute('d',d);
+    path.setAttribute('stroke', color);
+    path.setAttribute('stroke-width','1.4');
+    path.setAttribute('fill','none');
+    path.setAttribute('opacity', dashed ? '0.35' : '0.55');
+    if(dashed) path.setAttribute('stroke-dasharray','5,4');
+    path.setAttribute('marker-end', dashed ? 'url(#arr-dash)' : 'url(#arr)');
+    svg.appendChild(path);
+  }
+
+  // ── same-group horizontal lines ──
+  line(right('firms'), left('advisors'));
+  line(right('advisors'), left('advisor_settings'));
+  line(right('advisors'), left('calendar_connections'));
+  line(right('advisors'), left('ai_voice_samples'));
+  line(right('contacts_coi'), left('life_events'));
+  line(right('life_events'), left('pipeline_stages'));
+  line(right('pipeline_stages'), left('kyc_records'));
+  line(right('kyc_records'), left('risk_profiles'));
+  line(right('portfolios'), left('holdings'));
+  line(right('holdings'), left('transactions'));
+  line(right('transactions'), left('tlh_opportunities'));
+  line(right('conversations'), left('messages'));
+  line(right('tasks'), left('notifications'));
+
+  // ── cross-group vertical lines (main FK relationships) ──
+  line(bot('advisors'), top('clients'));
+  line(bot('clients'), top('contacts_coi'));
+  line(bot('clients'), top('life_events'));
+  line(bot('clients'), top('pipeline_stages'));
+  line(bot('clients'), top('portfolios'));
+  line(bot('portfolios'), top('holdings'));
+  line(bot('portfolios'), top('tlh_opportunities'));
+  line(bot('transactions'), top('audit_trails'));
+  line(bot('clients'), top('conversations'));
+  line(bot('conversations'), top('messages'));
+  line(bot('advisors'), top('meetings'));
+  line(bot('advisors'), top('tasks'));
+  line(bot('advisors'), top('notifications'));
+  line(bot('advisors'), top('daily_briefings'));
+
+  // ── long-range dashed lines (cross-domain FKs) ──
+  line(bot('clients'), top('churn_predictions'), true, '#3b82f6');
+  line(bot('clients'), top('propensity_scores'), true, '#3b82f6');
+  line(bot('messages'), top('compliance_alerts'), true, '#3b82f6');
+  line(bot('regulator_rulesets'), top('compliance_alerts'), true, '#3b82f6');
+  line(bot('clients'), top('ai_insights'), true, '#3b82f6');
+  line(bot('transactions'), top('audit_trails'), true, '#3b82f6');
+});
+</script>
+</body>
+</html>

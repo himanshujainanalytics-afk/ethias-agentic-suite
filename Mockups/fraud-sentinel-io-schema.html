@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sentinel — Database Schema</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:#0b0f1a;color:#e2e8f0;min-height:100vh}
+
+/* ── PAGE HEADER ── */
+.page-header{padding:32px 40px 24px;border-bottom:1px solid rgba(255,255,255,.07)}
+.page-header h1{font-size:22px;font-weight:800;color:#fff;display:flex;align-items:center;gap:10px}
+.page-header h1 span{color:#46ae88}
+.page-header p{font-size:13px;color:#64748b;margin-top:6px}
+.header-pills{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.hpill{font-size:10px;font-weight:600;padding:4px 10px;border-radius:20px;border:1px solid}
+
+/* ── SECTION TITLE ── */
+.section-title{font-size:13px;font-weight:700;color:#94a3b8;letter-spacing:.08em;text-transform:uppercase;padding:24px 40px 16px;display:flex;align-items:center;gap:8px}
+.section-title::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.07)}
+
+/* ── LEGEND ── */
+.legend{display:flex;gap:20px;align-items:center;padding:12px 40px;background:#080c16;border-bottom:1px solid rgba(255,255,255,.05);flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:10px;color:#64748b}
+.legend-dot{width:10px;height:10px;border-radius:2px}
+
+/* ── CONTENT WRAPPER ── */
+.content{padding:0 40px 40px}
+
+/* ── STAT CARDS ── */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.stat-card{background:#111827;border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:18px;display:flex;flex-direction:column;gap:12px;box-shadow:0 4px 24px rgba(0,0,0,.4)}
+.stat-header{display:flex;align-items:center;justify-content:space-between}
+.stat-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#475569}
+.stat-icon-wrap{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.stat-icon-wrap svg{width:14px;height:14px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.stat-value{font-size:26px;font-weight:800;color:#fff;line-height:1}
+.stat-footer{font-size:10px;color:#475569}
+
+/* ── ARCH NOTE ── */
+.arch-note{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border-radius:10px;font-size:12px;background:rgba(70,174,136,.06);border:1px solid rgba(70,174,136,.18);margin-bottom:24px}
+.arch-note svg{width:15px;height:15px;flex-shrink:0;fill:none;stroke:#46ae88;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;margin-top:1px}
+.arch-note p{color:#94a3b8;line-height:1.6}
+.arch-note .mono{font-size:11px;font-weight:600;color:#46ae88;background:rgba(70,174,136,.1);padding:1px 5px;border-radius:3px}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:20px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.badge-pk{background:rgba(245,158,11,.12);color:#fcd34d;border:1px solid rgba(245,158,11,.22)}
+.badge-fk{background:rgba(59,130,246,.12);color:#93c5fd;border:1px solid rgba(59,130,246,.22)}
+.badge-idx{background:rgba(139,92,246,.12);color:#c4b5fd;border:1px solid rgba(139,92,246,.22)}
+.badge-unique{background:rgba(16,185,129,.10);color:#6ee7b7;border:1px solid rgba(16,185,129,.18)}
+.badge-nn{background:rgba(255,255,255,.06);color:rgba(255,255,255,.40);border:1px solid rgba(255,255,255,.10)}
+.badge-enum{background:rgba(239,68,68,.10);color:#fca5a5;border:1px solid rgba(239,68,68,.18)}
+.badge-ts{background:rgba(6,182,212,.10);color:#67e8f9;border:1px solid rgba(6,182,212,.18)}
+
+/* ── SCHEMA SECTIONS ── */
+.schema-section{background:#111827;border:1px solid rgba(255,255,255,.09);border-radius:10px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.4);margin-bottom:12px}
+.schema-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.06);cursor:pointer;user-select:none}
+.schema-header:hover{background:rgba(255,255,255,.02)}
+.schema-header-left{display:flex;align-items:center;gap:10px}
+.table-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.table-icon svg{width:13px;height:13px;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.schema-name{font-size:12px;font-weight:700;color:#e2e8f0}
+.schema-desc{font-size:10px;color:#475569;margin-top:2px}
+.schema-header-right{display:flex;align-items:center;gap:8px}
+.row-count{font-size:10px;color:#475569;padding:2px 8px;border-radius:6px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06)}
+.chevron{width:14px;height:14px;fill:none;stroke:rgba(255,255,255,.25);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .2s}
+.schema-section.open .chevron{transform:rotate(180deg)}
+.schema-body{display:none}
+.schema-section.open .schema-body{display:block}
+
+/* ── TABLE ── */
+table{width:100%;border-collapse:collapse}
+thead tr{background:rgba(255,255,255,.02);border-bottom:1px solid rgba(255,255,255,.05)}
+th{padding:8px 14px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#475569;text-align:left}
+tbody tr{border-bottom:1px solid rgba(255,255,255,.04);transition:background .15s}
+tbody tr:hover{background:rgba(255,255,255,.02)}
+tbody tr:last-child{border-bottom:none}
+td{padding:9px 14px;font-size:11px;vertical-align:middle}
+.col-name{font-size:11px;font-weight:600;color:#e2e8f0}
+.col-name.pk{color:#fcd34d}
+.col-type{font-size:10px;color:#8b5cf6;font-weight:500}
+.col-ref{font-size:10px;color:#60a5fa;display:inline-flex;align-items:center;gap:3px}
+.col-ref svg{width:9px;height:9px;fill:none;stroke:rgba(59,130,246,.5);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.col-desc{font-size:10px;color:#475569;line-height:1.5}
+.badges-cell{display:flex;gap:4px;flex-wrap:wrap}
+.schema-footer{padding:8px 14px;font-size:9px;color:#334155;border-top:1px solid rgba(255,255,255,.04);display:flex;flex-wrap:wrap;gap:16px}
+.schema-footer span{display:flex;align-items:center;gap:4px}
+.schema-footer svg{width:10px;height:10px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ── ERD OVERVIEW ── */
+.erd-card{background:#111827;border:1px solid rgba(255,255,255,.09);border-radius:10px;padding:20px;margin-bottom:12px;box-shadow:0 4px 24px rgba(0,0,0,.4)}
+.erd-title{font-size:11px;font-weight:700;color:#64748b;letter-spacing:.08em;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.erd-title svg{width:14px;height:14px;fill:none;stroke:rgba(255,255,255,.3);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.erd-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.erd-node{border-radius:10px;padding:12px 14px;border:1px solid}
+.erd-node-name{font-size:12px;font-weight:700;margin-bottom:6px}
+.erd-node-cols{display:flex;flex-direction:column;gap:3px}
+.erd-node-col{font-size:10px;color:#475569;display:flex;align-items:center;gap:6px}
+.erd-node-col.pk-col{color:#fcd34d}
+.erd-node-col.fk-col{color:#93c5fd}
+.erd-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+
+/* ── ENUM GRID ── */
+.enum-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.enum-box{border-radius:8px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);padding:14px}
+.enum-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#475569;margin-bottom:10px}
+.enum-values{display:flex;flex-wrap:wrap;gap:6px}
+</style>
+</head>
+<body>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <h1>Project <span>Sentinel</span> — Database Schema</h1>
+  <p>PostgreSQL 16 + TimescaleDB · 7 tables · 9 FK relationships · 14 indexes · 4 enum types</p>
+  <div class="header-pills">
+    <span class="hpill" style="color:#67e8f9;border-color:rgba(6,182,212,.3);background:rgba(6,182,212,.08)">Transactions (Hypertable)</span>
+    <span class="hpill" style="color:#f87171;border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.08)">Alerts</span>
+    <span class="hpill" style="color:#a78bfa;border-color:rgba(139,92,246,.3);background:rgba(139,92,246,.08)">Rules</span>
+    <span class="hpill" style="color:#34d399;border-color:rgba(16,185,129,.3);background:rgba(16,185,129,.08)">Accounts</span>
+    <span class="hpill" style="color:#60a5fa;border-color:rgba(59,130,246,.3);background:rgba(59,130,246,.08)">Users</span>
+    <span class="hpill" style="color:#fbbf24;border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.08)">Audit Log</span>
+    <span class="hpill" style="color:#fb923c;border-color:rgba(249,115,22,.3);background:rgba(249,115,22,.08)">Velocity Cache</span>
+  </div>
+</div>
+
+<!-- LEGEND -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#fcd34d"></div>Primary Key (PK)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#93c5fd"></div>Foreign Key (FK)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#6ee7b7"></div>Unique (UQ)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#c4b5fd"></div>Index (IDX)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:rgba(255,255,255,.3)"></div>Not Null (NN)</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#fca5a5"></div>Enum Type</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#67e8f9"></div>TimescaleDB Hypertable</div>
+</div>
+
+<!-- OVERVIEW STATS -->
+<div class="section-title">Overview</div>
+<div class="content">
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-header">
+        <span class="stat-title">Tables</span>
+        <div class="stat-icon-wrap" style="background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.20)">
+          <svg viewBox="0 0 24 24" style="stroke:#a78bfa"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+        </div>
+      </div>
+      <div class="stat-value">7</div>
+      <div class="stat-footer">1 hypertable · 6 regular</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-header">
+        <span class="stat-title">Relationships</span>
+        <div class="stat-icon-wrap" style="background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.20)">
+          <svg viewBox="0 0 24 24" style="stroke:#60a5fa"><line x1="6" y1="3" x2="6" y2="15"></line><circle cx="18" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><path d="M18 9a9 9 0 0 1-9 9"></path></svg>
+        </div>
+      </div>
+      <div class="stat-value">9</div>
+      <div class="stat-footer">Foreign key constraints</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-header">
+        <span class="stat-title">Indexes</span>
+        <div class="stat-icon-wrap" style="background:rgba(70,174,136,.12);border:1px solid rgba(70,174,136,.20)">
+          <svg viewBox="0 0 24 24" style="stroke:#46ae88"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+        </div>
+      </div>
+      <div class="stat-value">14</div>
+      <div class="stat-footer">BRIN on hypertable chunks</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-header">
+        <span class="stat-title">Enums</span>
+        <div class="stat-icon-wrap" style="background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.20)">
+          <svg viewBox="0 0 24 24" style="stroke:#f87171"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+        </div>
+      </div>
+      <div class="stat-value">4</div>
+      <div class="stat-footer">channel · status · severity · alert_status</div>
+    </div>
+  </div>
+
+  <!-- ARCH NOTE -->
+  <div class="arch-note">
+    <svg viewBox="0 0 24 24"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path></svg>
+    <p><span class="mono">transactions</span> is a TimescaleDB hypertable partitioned by <span class="mono">created_at</span> (1-week chunks). All other tables are standard PostgreSQL relations. Chunk compression enabled after <span class="mono">7d</span>.</p>
+  </div>
+</div>
+
+<!-- TABLE SCHEMAS -->
+<div class="section-title">Table Definitions</div>
+<div class="content">
+
+  <!-- transactions -->
+  <div class="schema-section open" onclick="toggleSection(this)">
+    <div class="schema-header">
+      <div class="schema-header-left">
+        <div class="table-icon" style="background:rgba(6,182,212,.10);border:1px solid rgba(6,182,212,.20)">
+          <svg viewBox="0 0 24 24" style="stroke:#67e8f9"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+        </div>
+        <div>
+          <div class="schema-name">transactions</div>
+          <div class="schema-desc">Core ingestion stream — every payment event processed by the engine</div>
+        </div>
+      </div>
+      <div class="schema-header-right">
+        <span class="badge badge-ts">TS Hypertable</span>
+        <span class="row-count">∞ rows · chunk: 1w</span>
+        <svg class="chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </div>
+    </div>
+    <div class="schema-body">
+      <table>
+        <thead><tr><th>Column</th><th>Type</th><th>Constraints</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><span class="col-name pk">txn_id</span></td><td><span class="col-type">TEXT</span></td><td><div class="badges-cell"><span class="badge badge-pk">PK</span><span class="badge badge-nn">NN</span><span class="badge badge-unique">UQ</span></div></td><td><span class="col-desc">Human-readable transaction ID (e.g. txn-4f8a2c1d). Prefixed nanoid.</span></td></tr>
+          <tr><td><span class="col-name">source_account_id</span></td><td><span class="col-type">TEXT</span></td><td><div class="badges-cell"><span class="badge badge-fk">FK</span><span class="badge badge-nn">NN</span><span class="badge badge-idx">IDX</span></div></td><td><span class="col-desc">Originating account → <span class="col-ref"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>accounts.account_id</span></span></td></tr>
+          <tr><td><span class="col-name">destination_account_id</span></td><td><span class="col-type">TEXT</span></td><td><div class="badges-cell"><span class="badge badge-fk">FK</span><span class="badge badge-nn">NN</span><span class="badge badge-idx">IDX</span></div></td><td><span class="col-desc">Receiving account → <span class="col-ref"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>accounts.account_id</span></span></td></tr>
+          <tr><td><span class="col-name">amount</span></td><td><span class="col-type">NUMERIC(18,2)</span></td><td><div class="badges-cell"><span class="badge badge-nn">NN</span></div></td><td><span class="col-desc">Transaction value. CHECK (amount &gt; 0). Stored in base currency units.</span></td></tr>
+          <tr><td><span class="col-name">currency</span></td><td><span class="col-type">CHAR(3)</span></td><td><div class="badges-cell"><span class="badge badge-nn">NN</span></div></td><td><span class="col-desc">ISO 4217 currency code (e.g. USD, GBP, EUR). DEFAULT 'USD'.</span></td></tr>
+          <tr><td><span class="col-name">channel</span></td><td><span class="col-type">channel_type</span></td><td><div class="badges-cell"><span class="badge badge-nn">NN</span><span class="badge badge-enum">ENUM</span><span class="badge badge-idx">IDX</span></div></td><td><span class="col-desc">Payment channel: ATM · WEB · MOBILE · POS · WIRE</span></td></tr>
+          <tr><td><span class="col-name">status</span></td><td><span class="col-type">txn_status</span></td><td><div class="badges-cell"><span class="badge badge-nn">NN</span><span class="badge badge-enum">ENUM</span><span class="badge badge-idx">IDX</span></div></td><td><span class="col-desc">Engine outcome: PROCESSING · CLEAN · FLAGGED. DEFAULT 'PROCESSING'.</span></td></tr>
+          <tr><td><span class="col-name">alert_count</span></td><td><span class="col-type">SMALLINT</span></td><td><div class="badges-cell"><span class="badge badge-nn">NN</span></div></td><td><span class="col-desc">Denormalised count of alerts fired. DEFAULT 0. Updated via trigger.</span></td></tr>
+          <tr><td><span class="col-name">location_city</span></td><td><span class="col-type">TEXT</span></td><td></td><td><span class="col-desc">City resolved from IP / device GPS at time of transaction.</span></td></tr>
+          <tr><td><span class="col-name">location_lat</span></td><td><span class="col-type">DOUBLE PRECISION</span></td><td></td><td><span class="col-desc">Latitude coordinate used by Geographic Jump rule.</span></td></tr>
+          <tr><td><span class="col-name">location_lon</span></td><td><span class="col-type">DOUBLE PRECISION</span></td><td></td><td><span class="col-desc">Longitude coordinate used by Geographic Jump rule.</span></td></tr>
+          <tr><td><span class="col-name">processing_ms</span></td><td><span class="col-type">REAL</span></td><td></td><td><span class="col-desc">Engine evaluation latency in milliseconds. Used for p99 stat card.</span></td></tr>
+          <tr><td><span class="col-name">raw_payload</span></td><td><span class="col-type">JSONB</span></td><td></td><td><span class="col-desc">Full inbound JSON payload retained for audit and replay.</span></td></tr>
+          <tr><td><span class="col-name">created_at</span></td><td><span class="col-type">TIMESTAMPTZ</span></td><td><div class="badges-cell"><span class="badge badge-nn">NN</span><span class="badge badge-idx">IDX</span><span class="badge badge-ts">TS</span></div></td><td><span class="col-desc">Event timestamp. TimescaleDB partition key. DEFAULT NOW().</span></td></tr>
+        </tbody>
+      </table>
+      <div class="schema-footer">
+        <span><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>INDEXES: (source_account_id, created_at), (status), (channel, created_at), (created_at DESC)</span>
+        <span>SELECT_hypertable('transactions', 'created_at', chunk_time_interval =&gt; INTERVAL '1 week')</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- accounts -->
+  <div class="schema-section open" onclick="toggleSection(this)">
+    <div class="schema-header">
+      <div class="schema-header-left">
+        <div class="table-icon" style="background:rgba(16,185,129,.10);border:1px solid rgba(16,185,129,.20)">
+          <svg viewBox="0 0 24 24" style="stroke:#34d399"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        </div>
+        <div>
+          <div class="schema-name">accounts</div>
+          <div class="schema-desc">Customer and merchant accounts — source and destination of transactions</div>
+        </div>
+      </div>
+      <div class="schema-header-right">
+        <span class="row-count">∼ 50k rows</span>
+        <svg class="chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </div>
+    </div>
+    <div class="schema-body">
+      <table>
+        <thead><tr><th>Column</th><th>Type</th><th>Constraints</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><span class="col-name pk">account_id</span></td><td><span class="col-type">TEXT</span></td><td><div class="badges-cell"><span class="badge badge-pk">PK</span><span class="badge badge-nn">NN</span><span class="badge badge-unique">UQ</span></div></td><td><span class="col-desc">Unique account identifier (e.g. ACC-7291, ACC-APEX-001).</span></td></tr>
+          <tr><td><span class="col-name">display_name</span></td><td><span class="col-type">TEXT</span></td><td><div class="badges-cell"><span class="badge badge-nn">NN</span></div></td><td><span class="col-desc">Human-readable account or business name.</span></td></tr>
+          <tr><td><span class="col-name">account_type</span></td><td><span class="col-type">TEXT</span></td><td><div class="badges-cell"><span class="badge badge-nn">NN</span></div></td><td><span class="col-desc">CHECKING · SAVINGS · MERCHANT · WIRE. Informs rule context.</span></td></tr>
+          <tr><td><span class="col-name">risk_score</span></td><td><span class="col-type">REAL</span></td><td><div class="badges-cell"><span class="badge badge-nn">NN</span></div></td><td><span class="col-desc">Rolling fraud risk score 0.0–1.0. Updated by engine post-evaluation.</span></td></tr>
+          <tr><td><span class="col-name">is_blocked</span></td><td><span class="col-type">BOOLEAN</span></td><td><div class="badges-cell"><span class="badge badge-nn">NN</span></div></td><td><span class="col-desc">Hard block flag. Engine rejects all transactions when TRUE. DEFAULT FALSE.</span></td></tr>
+          <tr><td><span class="col-name">last_txn_at</span></td><td><span class="col-type">TIMESTAMPTZ</span></td><td></td><td><span class="col-desc">Timestamp of most recent transaction. Maintained by trigger for fast lookups.</span></td></tr>
+          <tr><td><span class="col-name">last_location_lat</span></td><td><span class="col-type">DOUBLE PRECISION</span></td><td></td><td><span class="col-desc">Cached lat from last transaction. Read by Geographic Jump rule.</span></td></tr>
+          <tr><td><span class="col-name">last_location_lon</span></td><td><span class="col-type">DOUBLE PRECISION</span></td><td></td><td><span class="col-desc">Cached lon from last transaction. Read by Geographic Jump rule.</span></td></tr>
+          <tr><td><span class="col-name">created_at</span></td><td><span class="col-type">TIMESTAMPTZ</span></td><td><div class="badges-cell"><span class="badge badge-nn">NN</span></div></td><td><span class="col-desc">Account creation timestamp. DEFAULT NOW().</span></td></tr>
+        </tbody>
+      </table>
+      <div class="schema-footer">
+        <span><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>INDEXES: (risk_score DESC), (is_blocked WHERE is_blocked = TRUE)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- alerts -->
+  <div class="schema-section open" onclick="toggleSection(this)">
+    <div class="schema-header">
+      <div class="schema-header-left">
+        <div class="table-icon" style="background:rgba(239,68,68,.10);border:1px solid rgba(239,68,68,.20)">
+          <svg viewBox="0 0 24 24" style="stroke:#f87171"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+        </div>
+        <div>
+          <div class="schema-name">alerts</div>
+          <div class="schema-desc">Fraud signals emitted by rule evaluations — drives the Alerts Center</div>
+        </div>
+      </div>
+      <div class="schema-header-right">
+        <span class="row-count">∼ 10k rows</span>
+        <svg class="chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </div>
+    </div>
+    <div class="schema-body">
+      <table>
+        <thead><tr><th>Column</th><th>Type</th><th>Constraints</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><span class="col-name pk">alert_id</span></td><td><span class="col-type">TEXT</span></td><td><div class="badges-cell"><span class="badge badge-pk">PK</span><span class="badge badge-nn">NN</span><span class="badge badge-unique">UQ</span></div></td><td><span class="col-desc">Alert identifier (e.g. alrt-001a4b). Prefixed nanoid.</span></td></tr>
+          <tr><td><span class="col-name">txn_id</span></td><td><span class="col-type">TEXT</span></td><td><div class="badges-cell"><span class="badge badge-fk">FK</span><span class="badge badge-nn">NN</span><span class="badge badge-idx">IDX</span></div></td><td><span class="col-desc">Triggering transaction → <span class="col-ref"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>transactions.txn_id</span></span></td></tr>
+          <tr><td><span class="col-name">rule_id</span></td><td><span class="col-type">TEXT</span></td><td><div class="badges-cell"><span class="badge badge-fk">FK</span><span class="badge badge-nn">NN</span><span class="badge badge-idx">IDX</span></div></td><td><span class="col-desc">Rule that fired → <span class="col-ref"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>rules.rule_id</span></span></td></tr>
+          <tr><td><span class="col-name">account_id</span></td><td><span class="col-type">TEXT</span></td><td><div class="badges-cell"><span class="badge badge-fk">FK</span><span class="badge badge-nn">NN</span><span class="badge badge-idx">IDX</span></div></td><td><span class="col-desc">Account under scrutiny → <span class="col-ref"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>accounts.account_id</span></span></td></tr>
+          <tr><td><span class="col-name">title</span></td><td><span class="col-type">TEXT</span></td><td><div class="badges-cell"><span class="badge badge-nn">NN</span></div></td><td><span class="col-desc">Short alert title shown in the card header (e.g. "Geographic Jump").</span></td></tr>
+          <tr><td><span class="col-name">description</span></td><td><span class="col-type">TEXT</span></td><td><div class="badges-cell"><span class="badge badge-nn">NN</span></div></td><td><span class="col-desc">Human-readable explanation generated by the rule at fire time.</span></td></tr>
+          <tr><td><span class="col-name">severity</span></td><td><span class="col-type">severity_level</span></td><td><div class="badges-cell"><span class="badge badge-nn">NN</span><span class="badge badge-enum">ENUM</span><span class="badge badge-idx">IDX</span></div></td><td><span class="col-desc">CRITICAL · HIGH · MEDIUM · LOW. Inherited from rule at fire time.</span></td></tr>
+          <tr><td><span class="col-name">status</span></td><td><span class="col-type">alert_status</span></td><td><div class="badges-cell"><span class="badge badge-nn">NN</span><span class="badge badge-enum">ENUM</span><span class="badge badge-idx">IDX</span></div></td><td><span class="col-desc">OPEN · REVIEWED · CLOSED. DEFAULT 'OPEN'.</span></td></tr>
+          <tr><td><span class="col-name">metadata</span></td><td><span class="col-type">JSONB</span></td><td></td><td><span class="col-desc">Rule-specific evidence payload (miles, velocity count, overage %). Rendered as YAML block in UI.</span></td></tr>
+          <tr><td><span class="col-name">reviewed_by</span></td><td><span class="col-type">UUID</span></td><td><div class="badges-cell"><span class="badge badge-fk">FK</span></div></td><td><span class="col-desc">Analyst who actioned the alert → <span class="col-ref"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>users.user_id</span> NULL if unreviewed.</span></td></tr>
+          <tr><td><span class="col-name">reviewed_at</span></td><td><span class="col-type">TIMESTAMPTZ</span></td><td></td><td><span class="col-desc">Timestamp of analyst action. NULL until status changes from OPEN.</span></td></tr>
+          <tr><td><span class="col-name">created_at</span></td><td><span class="col-type">TIMESTAMPTZ</span></td><td><div class="badges-cell"><span class="badge badge-nn">NN</span><span class="badge badge-idx">IDX</span></div></td><td><span class="col-desc">Alert creation time. DEFAULT NOW().</span></td></tr>
+        </tbody>
+      </table>
+      <div class="schema-footer">
+        <span><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>INDEXES: (status, severity), (account_id, created_at DESC), (txn_id)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- rules -->
+  <div class="schema-section open" onclick="toggleSection(this)">
+    <div class="schema-header">
+      <div class="schema-header-left">
+        <div class="table-icon" style="background:rgba(139,92,246,.10);border:1px solid rgba(139,92,246,.20)">
+          <svg viewBox="0 0 24 24" style="stroke:#a78bfa"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+        </div>
+        <div>
+          <div class="schema-name">rules</div>
+          <div class="schema-desc">Fraud detection rule registry — maps to domain.Rule Go interface</div>
+        </div>
+      </div>
+      <div class="schema-header-right">
+        <span class="row-count">∼ 3–50 rows</span>
+        <svg class="chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </div>
+    </div>
+    <div class="schema-body">
+      <table>
+        <thead><tr><th>Column</th><th>Type</th><th>Constraints</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><span class="col-name pk">rule_id</span></td><td><span class="col-type">TEXT</span></td><td><div class="badges-cell"><span class="badge badge-pk">PK</span><span class="badge badge-nn">NN</span><span class="badge badge-unique">UQ</span></div></td><td><span class="col-desc">Snake-case rule identifier (e.g. velocity_check, geographic_jump).</span></td></tr>
+          <tr><td><span class="col-name">display_name</span></td><td><span class="col-type">TEXT</span></td><td><div class="badges-cell"><span class="badge badge-nn">NN</span></div></td><td><span class="col-desc">Human-readable name shown in Rule Manager (e.g. "Velocity Check").</span></td></tr>
+          <tr><td><span class="col-name">tagline</span></td><td><span class="col-type">TEXT</span></td><td></td><td><span class="col-desc">Short technical descriptor shown below title (e.g. "Burst detection · Rolling window counter").</span></td></tr>
+          <tr><td><span class="col-name">description</span></td><td><span class="col-type">TEXT</span></td><td></td><td><span class="col-desc">Full rule description for analyst display in Rule Manager.</span></td></tr>
+          <tr><td><span class="col-name">severity</span></td><td><span class="col-type">severity_level</span></td><td><div class="badges-cell"><span class="badge badge-nn">NN</span><span class="badge badge-enum">ENUM</span></div></td><td><span class="col-desc">Default severity assigned to alerts fired by this rule.</span></td></tr>
+          <tr><td><span class="col-name">category</span></td><td><span class="col-type">TEXT</span></td><td><div class="badges-cell"><span class="badge badge-nn">NN</span></div></td><td><span class="col-desc">Rule category tag (e.g. velocity · threshold · geo). Shown in rule footer.</span></td></tr>
+          <tr><td><span class="col-name">parameters</span></td><td><span class="col-type">JSONB</span></td><td><div class="badges-cell"><span class="badge badge-nn">NN</span></div></td><td><span class="col-desc">Live parameter set rendered as YAML block in UI. Merged with code defaults at engine startup.</span></td></tr>
+          <tr><td><span class="col-name">is_enabled</span></td><td><span class="col-type">BOOLEAN</span></td><td><div class="badges-cell"><span class="badge badge-nn">NN</span></div></td><td><span class="col-desc">Toggle state. DEFAULT TRUE. Engine reads this at startup and on hot-reload.</span></td></tr>
+          <tr><td><span class="col-name">triggers_today</span></td><td><span class="col-type">INTEGER</span></td><td><div class="badges-cell"><span class="badge badge-nn">NN</span></div></td><td><span class="col-desc">Denormalised daily trigger count. Reset by cron at midnight UTC. DEFAULT 0.</span></td></tr>
+          <tr><td><span class="col-name">false_positive_rate</span></td><td><span class="col-type">REAL</span></td><td></td><td><span class="col-desc">Rolling false positive rate 0.0–1.0. Updated by analyst feedback on alert review.</span></td></tr>
+          <tr><td><span class="col-name">last_triggered_at</span></td><td><span class="col-type">TIMESTAMPTZ</span></td><td></td><td><span class="col-desc">Timestamp of most recent alert emit. NULL if never fired.</span></td></tr>
+          <tr><td><span class="col-name">go_interface</span></td><td><span class="col-type">TEXT</span></td><td><div class="badges-cell"><span class="badge badge-nn">NN</span></div></td><td><span class="col-desc">Fully-qualified Go type name implementing domain.Rule (e.g. rules.VelocityCheck).</span></td></tr>
+          <tr><td><span class="col-name">created_at</span></td><td><span class="col-type">TIMESTAMPTZ</span></td><td><div class="badges-cell"><span class="badge badge-nn">NN</span></div></td><td><span class="col-desc">Rule registration timestamp. DEFAULT NOW().</span></td></tr>
+          <tr><td><span class="col-name">updated_at</span></td><td><span class="col-type">TIMESTAMPTZ</span></td><td><div class="badges-cell"><span class="badge badge-nn">NN</span></div></td><td><span class="col-desc">Last parameter or state change. Updated via trigger. DEFAULT NOW().</span></td></tr>
+        </tbody>
+      </table>
+      <div class="schema-footer">
+        <span><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>INDEXES: (is_enabled), (severity)</span>
+        <span>GIN index on parameters for fast JSONB key queries</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- users -->
+  <div class="schema-section open" onclick="toggleSection(this)">
+    <div class="schema-header">
+      <div class="schema-header-left">
+        <div class="table-icon" style="background:rgba(59,130,246,.10);border:1px solid rgba(59,130,246,.20)">
+          <svg viewBox="0 0 24 24" style="stroke:#60a5fa"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+        </div>
+        <div>
+          <div class="schema-name">users</div>
+          <div class="schema-desc">Analyst and admin accounts with access to the Sentinel dashboard</div>
+        </div>
+      </div>
+      <div class="schema-header-right">
+        <span class="row-count">∼ 10–100 rows</span>
+        <svg class="chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </div>
+    </div>
+    <div class="schema-body">
+      <table>
+        <thead><tr><th>Column</th><th>Type</th><th>Constraints</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><span class="col-name pk">user_id</span></td><td><span class="col-type">UUID</span></td><td><div class="badges-cell"><span class="badge badge-pk">PK</span><span class="badge badge-nn">NN</span></div></td><td><span class="col-desc">UUID primary key. DEFAULT gen_random_uuid().</span></td></tr>
+          <tr><td><span class="col-name">email</span></td><td><span class="col-type">TEXT</span></td><td><div class="badges-cell"><span class="badge badge-nn">NN</span><span class="badge badge-unique">UQ</span></div></td><td><span class="col-desc">Analyst email address. Used for authentication and audit attribution.</span></td></tr>
+          <tr><td><span class="col-name">display_name</span></td><td><span class="col-type">TEXT</span></td><td><div class="badges-cell"><span class="badge badge-nn">NN</span></div></td><td><span class="col-desc">Full name shown in audit log and alert review attribution.</span></td></tr>
+          <tr><td><span class="col-name">role</span></td><td><span class="col-type">TEXT</span></td><td><div class="badges-cell"><span class="badge badge-nn">NN</span></div></td><td><span class="col-desc">ANALYST · SENIOR_ANALYST · ADMIN. Controls rule toggle and dismiss permissions.</span></td></tr>
+          <tr><td><span class="col-name">is_active</span></td><td><span class="col-type">BOOLEAN</span></td><td><div class="badges-cell"><span class="badge badge-nn">NN</span></div></td><td><span class="col-desc">Soft-delete / account suspension flag. DEFAULT TRUE.</span></td></tr>
+          <tr><td><span class="col-name">last_sign_in_at</span></td><td><span class="col-type">TIMESTAMPTZ</span></td><td></td><td><span class="col-desc">Most recent session start. Updated on every successful auth.</span></td></tr>
+          <tr><td><span class="col-name">created_at</span></td><td><span class="col-type">TIMESTAMPTZ</span></td><td><div class="badges-cell"><span class="badge badge-nn">NN</span></div></td><td><span class="col-desc">Account creation timestamp. DEFAULT NOW().</span></td></tr>
+        </tbody>
+      </table>
+      <div class="schema-footer">
+        <span><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>INDEXES: (email), (role WHERE is_active = TRUE)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- audit_log -->
+  <div class="schema-section open" onclick="toggleSection(this)">
+    <div class="schema-header">
+      <div class="schema-header-left">
+        <div class="table-icon" style="background:rgba(245,158,11,.10);border:1px solid rgba(245,158,11,.20)">
+          <svg viewBox="0 0 24 24" style="stroke:#fbbf24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+        </div>
+        <div>
+          <div class="schema-name">audit_log</div>
+          <div class="schema-desc">Immutable record of all analyst actions and engine state changes</div>
+        </div>
+      </div>
+      <div class="schema-header-right">
+        <span class="row-count">∼ 100k rows</span>
+        <svg class="chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </div>
+    </div>
+    <div class="schema-body">
+      <table>
+        <thead><tr><th>Column</th><th>Type</th><th>Constraints</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><span class="col-name pk">log_id</span></td><td><span class="col-type">BIGSERIAL</span></td><td><div class="badges-cell"><span class="badge badge-pk">PK</span><span class="badge badge-nn">NN</span></div></td><td><span class="col-desc">Auto-incrementing log sequence number.</span></td></tr>
+          <tr><td><span class="col-name">actor_id</span></td><td><span class="col-type">UUID</span></td><td><div class="badges-cell"><span class="badge badge-fk">FK</span><span class="badge badge-idx">IDX</span></div></td><td><span class="col-desc">User who performed the action → <span class="col-ref"><svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>users.user_id</span> NULL for engine-generated entries.</span></td></tr>
+          <tr><td><span class="col-name">action</span></td><td><span class="col-type">TEXT</span></td><td><div class="badges-cell"><span class="badge badge-nn">NN</span></div></td><td><span class="col-desc">Action type: ALERT_REVIEWED · ALERT_DISMISSED · RULE_TOGGLED · RULE_PARAM_UPDATED · TXN_FLAGGED</span></td></tr>
+          <tr><td><span class="col-name">entity_type</span></td><td><span class="col-type">TEXT</span></td><td><div class="badges-cell"><span class="badge badge-nn">NN</span></div></td><td><span class="col-desc">Target entity class: alert · rule · transaction · account</span></td></tr>
+          <tr><td><span class="col-name">entity_id</span></td><td><span class="col-type">TEXT</span></td><td><div class="badges-cell"><span class="badge badge-nn">NN</span><span class="badge badge-idx">IDX</span></div></td><td><span class="col-desc">ID of the affected entity. Polymorphic — use entity_type to resolve table.</span></td></tr>
+          <tr><td><span class="col-name">diff</span></td><td><span class="col-type">JSONB</span></td><td></td><td><span class="col-desc">Before/after state snapshot for change actions (e.g. rule parameter edits).</span></td></tr>
+          <tr><td><span class="col-name">created_at</span></td><td><span class="col-type">TIMESTAMPTZ</span></td><td><div class="badges-cell"><span class="badge badge-nn">NN</span><span class="badge badge-idx">IDX</span></div></td><td><span class="col-desc">Event timestamp. DEFAULT NOW(). Table is append-only; no UPDATEs permitted.</span></td></tr>
+        </tbody>
+      </table>
+      <div class="schema-footer">
+        <span><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>INDEXES: (entity_id, entity_type), (actor_id, created_at DESC), (created_at DESC)</span>
+        <span>Row-level security: INSERT only. No UPDATE or DELETE.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- velocity_cache -->
+  <div class="schema-section open" onclick="toggleSection(this)">
+    <div class="schema-header">
+      <div class="schema-header-left">
+        <div class="table-icon" style="background:rgba(249,115,22,.10);border:1px solid rgba(249,115,22,.20)">
+          <svg viewBox="0 0 24 24" style="stroke:#fb923c"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path></svg>
+        </div>
+        <div>
+          <div class="schema-name">velocity_cache</div>
+          <div class="schema-desc">Rolling window transaction counters for the Velocity Check rule (Redis-fallback)</div>
+        </div>
+      </div>
+      <div class="schema-header-right">
+        <span class="row-count">∼ 50k rows · TTL 60s</span>
+        <svg class="chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg>
+      </div>
+    </div>
+    <div class="schema-body">
+      <table>
+        <thead><tr><th>Column</th><th>Type</th><th>Constraints</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><span class="col-name pk">account_id</span></td><td><span class="col-type">TEXT</span></td><td><div class="badges-cell"><span class="badge badge-pk">PK</span><span class="badge badge-nn">NN</span></div></td><td><span class="col-desc">Composite PK part 1 — the account being counted.</span></td></tr>
+          <tr><td><span class="col-name pk">window_start</span></td><td><span class="col-type">TIMESTAMPTZ</span></td><td><div class="badges-cell"><span class="badge badge-pk">PK</span><span class="badge badge-nn">NN</span></div></td><td><span class="col-desc">Composite PK part 2 — start of the rolling window bucket (60s granularity).</span></td></tr>
+          <tr><td><span class="col-name">txn_count</span></td><td><span class="col-type">SMALLINT</span></td><td><div class="badges-cell"><span class="badge badge-nn">NN</span></div></td><td><span class="col-desc">Transaction count in this window. Incremented atomically via INSERT … ON CONFLICT DO UPDATE.</span></td></tr>
+          <tr><td><span class="col-name">expires_at</span></td><td><span class="col-type">TIMESTAMPTZ</span></td><td><div class="badges-cell"><span class="badge badge-nn">NN</span><span class="badge badge-idx">IDX</span></div></td><td><span class="col-desc">Eviction timestamp. Background job deletes rows WHERE expires_at &lt; NOW().</span></td></tr>
+        </tbody>
+      </table>
+      <div class="schema-footer">
+        <span><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>INDEXES: (expires_at) for eviction job · Primary key covers lookup path</span>
+        <span>Replaces Redis for deployments without a cache tier</span>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /table definitions content -->
+
+<!-- ERD OVERVIEW -->
+<div class="section-title">Entity Relationship Overview</div>
+<div class="content">
+  <div class="erd-card">
+    <div class="erd-title">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+      Table relationships &amp; key columns
+    </div>
+    <div class="erd-grid">
+
+      <div class="erd-node" style="background:rgba(6,182,212,.05);border-color:rgba(6,182,212,.20)">
+        <div class="erd-node-name" style="color:#67e8f9">transactions</div>
+        <div class="erd-node-cols">
+          <div class="erd-node-col pk-col"><span class="erd-dot" style="background:#fcd34d"></span>txn_id PK</div>
+          <div class="erd-node-col fk-col"><span class="erd-dot" style="background:#93c5fd"></span>source_account_id FK</div>
+          <div class="erd-node-col fk-col"><span class="erd-dot" style="background:#93c5fd"></span>destination_account_id FK</div>
+          <div class="erd-node-col"><span class="erd-dot" style="background:rgba(255,255,255,.2)"></span>amount, currency</div>
+          <div class="erd-node-col"><span class="erd-dot" style="background:rgba(255,255,255,.2)"></span>channel, status</div>
+          <div class="erd-node-col"><span class="erd-dot" style="background:rgba(255,255,255,.2)"></span>location_lat / lon</div>
+          <div class="erd-node-col" style="color:rgba(6,182,212,.6);margin-top:4px"><span class="erd-dot" style="background:rgba(6,182,212,.4)"></span>⚡ hypertable · created_at</div>
+        </div>
+      </div>
+
+      <div class="erd-node" style="background:rgba(239,68,68,.05);border-color:rgba(239,68,68,.20)">
+        <div class="erd-node-name" style="color:#f87171">alerts</div>
+        <div class="erd-node-cols">
+          <div class="erd-node-col pk-col"><span class="erd-dot" style="background:#fcd34d"></span>alert_id PK</div>
+          <div class="erd-node-col fk-col"><span class="erd-dot" style="background:#93c5fd"></span>txn_id FK</div>
+          <div class="erd-node-col fk-col"><span class="erd-dot" style="background:#93c5fd"></span>rule_id FK</div>
+          <div class="erd-node-col fk-col"><span class="erd-dot" style="background:#93c5fd"></span>account_id FK</div>
+          <div class="erd-node-col fk-col"><span class="erd-dot" style="background:#93c5fd"></span>reviewed_by FK → users</div>
+          <div class="erd-node-col"><span class="erd-dot" style="background:rgba(255,255,255,.2)"></span>severity, status</div>
+          <div class="erd-node-col"><span class="erd-dot" style="background:rgba(255,255,255,.2)"></span>metadata JSONB</div>
+        </div>
+      </div>
+
+      <div class="erd-node" style="background:rgba(139,92,246,.05);border-color:rgba(139,92,246,.20)">
+        <div class="erd-node-name" style="color:#c4b5fd">rules</div>
+        <div class="erd-node-cols">
+          <div class="erd-node-col pk-col"><span class="erd-dot" style="background:#fcd34d"></span>rule_id PK</div>
+          <div class="erd-node-col"><span class="erd-dot" style="background:rgba(255,255,255,.2)"></span>display_name, severity</div>
+          <div class="erd-node-col"><span class="erd-dot" style="background:rgba(255,255,255,.2)"></span>parameters JSONB</div>
+          <div class="erd-node-col"><span class="erd-dot" style="background:rgba(255,255,255,.2)"></span>is_enabled (toggle)</div>
+          <div class="erd-node-col"><span class="erd-dot" style="background:rgba(255,255,255,.2)"></span>triggers_today</div>
+          <div class="erd-node-col"><span class="erd-dot" style="background:rgba(255,255,255,.2)"></span>false_positive_rate</div>
+          <div class="erd-node-col"><span class="erd-dot" style="background:rgba(255,255,255,.2)"></span>go_interface</div>
+        </div>
+      </div>
+
+      <div class="erd-node" style="background:rgba(16,185,129,.05);border-color:rgba(16,185,129,.20)">
+        <div class="erd-node-name" style="color:#34d399">accounts</div>
+        <div class="erd-node-cols">
+          <div class="erd-node-col pk-col"><span class="erd-dot" style="background:#fcd34d"></span>account_id PK</div>
+          <div class="erd-node-col"><span class="erd-dot" style="background:rgba(255,255,255,.2)"></span>display_name, type</div>
+          <div class="erd-node-col"><span class="erd-dot" style="background:rgba(255,255,255,.2)"></span>risk_score, is_blocked</div>
+          <div class="erd-node-col"><span class="erd-dot" style="background:rgba(255,255,255,.2)"></span>last_txn_at</div>
+          <div class="erd-node-col"><span class="erd-dot" style="background:rgba(255,255,255,.2)"></span>last_location_lat / lon</div>
+        </div>
+      </div>
+
+      <div class="erd-node" style="background:rgba(59,130,246,.05);border-color:rgba(59,130,246,.20)">
+        <div class="erd-node-name" style="color:#60a5fa">users</div>
+        <div class="erd-node-cols">
+          <div class="erd-node-col pk-col"><span class="erd-dot" style="background:#fcd34d"></span>user_id PK (UUID)</div>
+          <div class="erd-node-col"><span class="erd-dot" style="background:rgba(255,255,255,.2)"></span>email UQ</div>
+          <div class="erd-node-col"><span class="erd-dot" style="background:rgba(255,255,255,.2)"></span>role, is_active</div>
+          <div class="erd-node-col"><span class="erd-dot" style="background:rgba(255,255,255,.2)"></span>last_sign_in_at</div>
+        </div>
+      </div>
+
+      <div class="erd-node" style="background:rgba(245,158,11,.05);border-color:rgba(245,158,11,.20)">
+        <div class="erd-node-name" style="color:#fbbf24">audit_log</div>
+        <div class="erd-node-cols">
+          <div class="erd-node-col pk-col"><span class="erd-dot" style="background:#fcd34d"></span>log_id PK (BIGSERIAL)</div>
+          <div class="erd-node-col fk-col"><span class="erd-dot" style="background:#93c5fd"></span>actor_id FK → users</div>
+          <div class="erd-node-col"><span class="erd-dot" style="background:rgba(255,255,255,.2)"></span>action, entity_type</div>
+          <div class="erd-node-col"><span class="erd-dot" style="background:rgba(255,255,255,.2)"></span>entity_id (polymorphic)</div>
+          <div class="erd-node-col"><span class="erd-dot" style="background:rgba(255,255,255,.2)"></span>diff JSONB</div>
+          <div class="erd-node-col" style="color:rgba(245,158,11,.6);margin-top:4px"><span class="erd-dot" style="background:rgba(245,158,11,.4)"></span>append-only · no UPDATE</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ENUM DEFINITIONS -->
+  <div class="erd-card">
+    <div class="erd-title">
+      <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+      Enum Type Definitions
+    </div>
+    <div class="enum-grid">
+      <div class="enum-box">
+        <div class="enum-label">channel_type</div>
+        <div class="enum-values">
+          <span class="badge" style="background:rgba(59,130,246,.15);color:#93c5fd;border:1px solid rgba(59,130,246,.25)">ATM</span>
+          <span class="badge" style="background:rgba(139,92,246,.15);color:#c4b5fd;border:1px solid rgba(139,92,246,.25)">WEB</span>
+          <span class="badge" style="background:rgba(70,174,136,.15);color:#6ee7b7;border:1px solid rgba(70,174,136,.25)">MOBILE</span>
+          <span class="badge" style="background:rgba(245,158,11,.15);color:#fcd34d;border:1px solid rgba(245,158,11,.25)">POS</span>
+          <span class="badge" style="background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.25)">WIRE</span>
+        </div>
+      </div>
+      <div class="enum-box">
+        <div class="enum-label">txn_status</div>
+        <div class="enum-values">
+          <span class="badge" style="background:rgba(245,158,11,.10);color:#fbbf24;border:1px solid rgba(245,158,11,.18)">PROCESSING</span>
+          <span class="badge" style="background:rgba(70,174,136,.10);color:#46ae88;border:1px solid rgba(70,174,136,.18)">CLEAN</span>
+          <span class="badge" style="background:rgba(239,68,68,.12);color:#f87171;border:1px solid rgba(239,68,68,.22)">FLAGGED</span>
+        </div>
+      </div>
+      <div class="enum-box">
+        <div class="enum-label">severity_level</div>
+        <div class="enum-values">
+          <span class="badge" style="background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.28)">CRITICAL</span>
+          <span class="badge" style="background:rgba(249,115,22,.15);color:#fb923c;border:1px solid rgba(249,115,22,.25)">HIGH</span>
+          <span class="badge" style="background:rgba(245,158,11,.15);color:#fbbf24;border:1px solid rgba(245,158,11,.25)">MEDIUM</span>
+          <span class="badge" style="background:rgba(59,130,246,.15);color:#60a5fa;border:1px solid rgba(59,130,246,.22)">LOW</span>
+        </div>
+      </div>
+      <div class="enum-box">
+        <div class="enum-label">alert_status</div>
+        <div class="enum-values">
+          <span class="badge" style="background:rgba(239,68,68,.10);color:#f87171;border:1px solid rgba(239,68,68,.18)">OPEN</span>
+          <span class="badge" style="background:rgba(59,130,246,.10);color:#60a5fa;border:1px solid rgba(59,130,246,.18)">REVIEWED</span>
+          <span class="badge" style="background:rgba(255,255,255,.06);color:rgba(255,255,255,.35);border:1px solid rgba(255,255,255,.10)">CLOSED</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /erd content -->
+
+<script>
+function toggleSection(el) {
+  if (window.getSelection && window.getSelection().toString()) return;
+  el.classList.toggle('open');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LendFlow — AI Mortgage Fulfillment Engine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+                    colors: {
+                        slate: { 50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0', 300: '#cbd5e1', 400: '#94a3b8', 500: '#64748b', 600: '#475569', 700: '#334155', 800: '#1e293b', 900: '#0f172a' },
+                        indigo: { 50: '#eef2ff', 100: '#e0e7ff', 200: '#c7d2fe', 300: '#a5b4fc', 400: '#818cf8', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca', 800: '#3730a3', 900: '#312e81' },
+                        emerald: { 50: '#ecfdf5', 100: '#d1fae5', 200: '#a7f3d0', 300: '#6ee7b7', 400: '#34d399', 500: '#10b981', 600: '#059669' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', system-ui, sans-serif; background: #f8fafc; }
+
+        /* AI Heartbeat Pulse */
+        @keyframes pulse-ai {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.15); }
+        }
+        .ai-pulse { animation: pulse-ai 2s ease-in-out infinite; }
+
+        /* Shimmer / Skeleton Loader */
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .shimmer {
+            background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.8s ease-in-out infinite;
+            border-radius: 4px;
+        }
+
+        /* Confidence gauge fill */
+        @keyframes gauge-fill {
+            0% { height: 0%; }
+            100% { height: var(--gauge-height); }
+        }
+        .gauge-bar {
+            animation: gauge-fill 1.5s ease-out forwards;
+        }
+
+        /* Discrepancy glow */
+        @keyframes glow-red {
+            0%, 100% { box-shadow: 0 0 8px rgba(239, 68, 68, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.5); }
+        }
+        .discrepancy-glow { animation: glow-red 2s ease-in-out infinite; }
+
+        /* Floating card style */
+        .glass-card {
+            background: rgba(255,255,255,0.70);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.20);
+        }
+
+        /* Soft layered shadow */
+        .soft-shadow { box-shadow: 0 8px 30px rgb(0 0 0 / 0.04); }
+
+        /* Sparkline path animation */
+        @keyframes draw-line {
+            0% { stroke-dashoffset: 300; }
+            100% { stroke-dashoffset: 0; }
+        }
+        .sparkline-draw {
+            stroke-dasharray: 300;
+            animation: draw-line 2s ease-out forwards;
+        }
+
+        /* Command-K overlay */
+        .cmdk-overlay {
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(8px);
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+        /* Step expand animation */
+        @keyframes step-expand {
+            0% { max-width: 0; opacity: 0; }
+            100% { max-width: 200px; opacity: 1; }
+        }
+        .step-new { animation: step-expand 0.6s ease-out forwards; }
+
+        /* Tooltip */
+        .tooltip-container:hover .tooltip-content { opacity: 1; visibility: visible; transform: translateY(0); }
+        .tooltip-content { opacity: 0; visibility: hidden; transform: translateY(4px); transition: all 0.2s ease; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased">
+
+    <!-- ============================================ -->
+    <!-- COMMAND-K SEARCH OVERLAY (hidden by default) -->
+    <!-- ============================================ -->
+    <div id="cmdk" class="fixed inset-0 z-50 cmdk-overlay hidden items-center justify-center p-4" onclick="toggleCmdk()">
+        <div class="w-full max-w-2xl glass-card rounded-2xl soft-shadow overflow-hidden" onclick="event.stopPropagation()">
+            <div class="flex items-center gap-3 px-5 py-4 border-b border-slate-100">
+                <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                <input id="cmdk-input" type="text" placeholder="Search loans, borrowers, or ask AI..." class="flex-1 bg-transparent outline-none text-base text-slate-800 placeholder:text-slate-400" />
+                <kbd class="text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded-md font-medium">ESC</kbd>
+            </div>
+            <div class="p-3">
+                <p class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider px-2 mb-2">Suggested Queries</p>
+                <div class="space-y-1">
+                    <div class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-indigo-50 cursor-pointer transition-all group">
+                        <div class="w-7 h-7 rounded-md bg-indigo-100 flex items-center justify-center">
+                            <svg class="w-3.5 h-3.5 text-indigo-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-slate-700 group-hover:text-indigo-700">Find all loans with high DTI in Texas</p>
+                            <p class="text-[11px] text-slate-400">Natural language query</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-indigo-50 cursor-pointer transition-all group">
+                        <div class="w-7 h-7 rounded-md bg-emerald-100 flex items-center justify-center">
+                            <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-slate-700 group-hover:text-indigo-700">Show loans pending appraisal review</p>
+                            <p class="text-[11px] text-slate-400">Status filter</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-indigo-50 cursor-pointer transition-all group">
+                        <div class="w-7 h-7 rounded-md bg-amber-100 flex items-center justify-center">
+                            <svg class="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-slate-700 group-hover:text-indigo-700">Loans with income discrepancies > 10%</p>
+                            <p class="text-[11px] text-slate-400">Risk analysis</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- 1. AGENTIC NERVE CENTER — TOP NAV            -->
+    <!-- ============================================ -->
+    <header class="sticky top-0 z-40 glass-card border-b border-slate-200/60 soft-shadow">
+        <div class="max-w-[1920px] mx-auto flex items-center justify-between px-5 py-3">
+            <!-- Logo & AI Heartbeat -->
+            <div class="flex items-center gap-5">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-lg flex items-center justify-center">
+                        <svg class="w-4.5 h-4.5 text-white" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    </div>
+                    <span class="text-lg font-bold text-slate-900 tracking-tight">LendFlow</span>
+                </div>
+                <!-- AI Heartbeat Indicator -->
+                <div class="flex items-center gap-2 bg-emerald-50 border border-emerald-200/60 rounded-full px-3 py-1.5">
+                    <span class="relative flex h-2.5 w-2.5">
+                        <span class="ai-pulse absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                    </span>
+                    <span class="text-[12px] font-medium text-emerald-700">AI Active</span>
+                    <span class="text-[11px] text-emerald-600/70 font-normal hidden sm:inline">| Analyzing 4 Pending Files...</span>
+                </div>
+            </div>
+
+            <!-- Center: Search Bar -->
+            <div class="hidden md:flex flex-1 max-w-lg mx-8">
+                <button onclick="toggleCmdk()" class="w-full flex items-center gap-3 bg-slate-100/80 hover:bg-slate-100 border border-slate-200/60 rounded-xl px-4 py-2.5 text-left transition-all group">
+                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    <span class="text-sm text-slate-400 flex-1">Search loans, borrowers, or ask AI...</span>
+                    <kbd class="text-[11px] text-slate-400 bg-white px-2 py-0.5 rounded-md border border-slate-200 font-medium shadow-sm">Cmd+K</kbd>
+                </button>
+            </div>
+
+            <!-- Right: Nav Items -->
+            <div class="flex items-center gap-3">
+                <div class="hidden lg:flex items-center gap-1 text-[13px] font-medium text-slate-500">
+                    <a href="#" class="px-3 py-1.5 rounded-lg hover:bg-slate-100 hover:text-slate-800 transition-all">Pipeline</a>
+                    <a href="#" class="px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 transition-all">Fulfillment</a>
+                    <a href="#" class="px-3 py-1.5 rounded-lg hover:bg-slate-100 hover:text-slate-800 transition-all">Analytics</a>
+                </div>
+                <div class="h-6 w-px bg-slate-200 hidden lg:block"></div>
+                <!-- Notifications -->
+                <button class="relative p-2 rounded-lg hover:bg-slate-100 transition-all">
+                    <svg class="w-5 h-5 text-slate-500" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                    <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                </button>
+                <!-- Avatar -->
+                <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-400 to-indigo-600 flex items-center justify-center text-white text-xs font-semibold">JM</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ============================================ -->
+    <!-- LOAN CONTEXT BAR                             -->
+    <!-- ============================================ -->
+    <div class="bg-white border-b border-slate-200/60">
+        <div class="max-w-[1920px] mx-auto px-5 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-base font-semibold text-slate-900">Loan #LF-2026-04892</h1>
+                        <span class="px-2 py-0.5 text-[11px] font-semibold bg-amber-100 text-amber-700 rounded-full">In Review</span>
+                    </div>
+                    <p class="text-[12px] text-slate-400 mt-0.5">Marcus & Elena Rodriguez | Purchase | Conventional 30-yr Fixed</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-6 text-[12px]">
+                <div class="text-right"><p class="text-slate-400">Loan Amount</p><p class="font-semibold text-slate-800">$485,000</p></div>
+                <div class="h-8 w-px bg-slate-100"></div>
+                <div class="text-right"><p class="text-slate-400">Rate</p><p class="font-semibold text-slate-800">6.125%</p></div>
+                <div class="h-8 w-px bg-slate-100"></div>
+                <div class="text-right"><p class="text-slate-400">LTV</p><p class="font-semibold text-slate-800">80.3%</p></div>
+                <div class="h-8 w-px bg-slate-100"></div>
+                <div class="text-right"><p class="text-slate-400">DTI</p><p class="font-semibold text-indigo-600">43.2%</p></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- MAIN CONTENT: 3-COLUMN LAYOUT                -->
+    <!-- ============================================ -->
+    <main class="flex-1 max-w-[1920px] mx-auto w-full grid grid-cols-12 gap-4 p-4 overflow-hidden" style="height: calc(100vh - 180px);">
+
+        <!-- ====================================== -->
+        <!-- LEFT PANEL: Intelligent Document Ledger -->
+        <!-- ====================================== -->
+        <aside class="col-span-3 flex flex-col gap-3 overflow-y-auto pr-1">
+            <!-- Panel Header -->
+            <div class="flex items-center justify-between">
+                <h2 class="text-[13px] font-semibold text-slate-700 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    Document Ledger
+                </h2>
+                <div class="flex items-center gap-1.5">
+                    <button id="auditToggle" onclick="toggleAudit()" class="text-[11px] font-medium text-slate-500 bg-slate-100 hover:bg-red-50 hover:text-red-600 px-2.5 py-1 rounded-lg transition-all">Visual Audit</button>
+                    <button class="p-1.5 rounded-lg hover:bg-slate-100 transition-all">
+                        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Doc 1: W-2 — Extracted -->
+            <div class="bg-white rounded-xl soft-shadow border border-slate-100 hover:scale-[1.01] transition-all cursor-pointer">
+                <div class="p-3.5">
+                    <div class="flex items-center justify-between mb-2.5">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
+                                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </div>
+                            <div>
+                                <p class="text-[13px] font-semibold text-slate-800">W-2 (2025)</p>
+                                <p class="text-[11px] text-slate-400">Marcus Rodriguez</p>
+                            </div>
+                        </div>
+                        <span class="text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">Verified</span>
+                    </div>
+                    <div class="space-y-1.5 bg-slate-50 rounded-lg p-2.5">
+                        <div class="flex justify-between text-[12px]">
+                            <span class="text-slate-500">Employer</span>
+                            <span class="font-medium text-slate-700">Meridian Tech Inc.</span>
+                        </div>
+                        <div class="flex justify-between text-[12px]">
+                            <span class="text-slate-500">Gross Wages</span>
+                            <span class="font-semibold text-slate-800">$142,000</span>
+                        </div>
+                        <div class="flex justify-between text-[12px]">
+                            <span class="text-slate-500">Federal Tax Withheld</span>
+                            <span class="font-medium text-slate-700">$28,400</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Doc 2: Paystub — Extracting (Shimmer) -->
+            <div class="bg-white rounded-xl soft-shadow border border-slate-100 hover:scale-[1.01] transition-all cursor-pointer">
+                <div class="p-3.5">
+                    <div class="flex items-center justify-between mb-2.5">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center">
+                                <svg class="w-4 h-4 text-indigo-500 ai-pulse" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                            </div>
+                            <div>
+                                <p class="text-[13px] font-semibold text-slate-800">Paystub (Jan 2026)</p>
+                                <p class="text-[11px] text-slate-400">Elena Rodriguez</p>
+                            </div>
+                        </div>
+                        <span class="text-[10px] font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 bg-indigo-400 rounded-full ai-pulse"></span>
+                            Extracting
+                        </span>
+                    </div>
+                    <div class="space-y-2 p-2.5">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[12px] text-slate-400">Employer</span>
+                            <div class="shimmer w-28 h-3.5"></div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-[12px] text-slate-400">YTD Gross</span>
+                            <div class="shimmer w-20 h-3.5"></div>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-[12px] text-slate-400">Pay Period</span>
+                            <div class="shimmer w-24 h-3.5"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Doc 3: 1003 — Discrepancy Flag -->
+            <div id="discrepancy-card" class="bg-white rounded-xl soft-shadow border border-slate-100 hover:scale-[1.01] transition-all cursor-pointer relative">
+                <div class="p-3.5">
+                    <div class="flex items-center justify-between mb-2.5">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center">
+                                <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                            </div>
+                            <div>
+                                <p class="text-[13px] font-semibold text-slate-800">Uniform Residential (1003)</p>
+                                <p class="text-[11px] text-slate-400">Joint Application</p>
+                            </div>
+                        </div>
+                        <span class="text-[10px] font-semibold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">1 Issue</span>
+                    </div>
+                    <!-- Discrepancy highlight -->
+                    <div class="tooltip-container relative">
+                        <div class="discrepancy-glow rounded-lg border border-red-200 bg-red-50/50 p-2.5">
+                            <div class="flex justify-between text-[12px]">
+                                <span class="text-red-600 font-medium">Stated Monthly Income</span>
+                                <span class="font-semibold text-red-700">$12,000</span>
+                            </div>
+                            <div class="flex justify-between text-[12px] mt-1">
+                                <span class="text-slate-500">Extracted YTD Average</span>
+                                <span class="font-semibold text-slate-800">$10,500</span>
+                            </div>
+                            <div class="mt-1.5 flex items-center gap-1.5">
+                                <svg class="w-3 h-3 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+                                <span class="text-[11px] text-red-600 font-medium">14.3% variance detected</span>
+                            </div>
+                        </div>
+                        <!-- Tooltip -->
+                        <div class="tooltip-content absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-64 bg-slate-900 text-white text-[11px] rounded-lg p-3 shadow-xl z-10">
+                            <p class="font-semibold mb-1">Income Discrepancy</p>
+                            <p class="text-slate-300 leading-relaxed">Stated income on 1003 ($12,000/mo) doesn't match extracted YTD average from paystubs ($10,500/mo). Difference exceeds 10% threshold.</p>
+                            <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 rotate-45 w-2 h-2 bg-slate-900"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Doc 4: 1099 — Extracted -->
+            <div class="bg-white rounded-xl soft-shadow border border-slate-100 hover:scale-[1.01] transition-all cursor-pointer">
+                <div class="p-3.5">
+                    <div class="flex items-center justify-between mb-2.5">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
+                                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </div>
+                            <div>
+                                <p class="text-[13px] font-semibold text-slate-800">1099-INT (2025)</p>
+                                <p class="text-[11px] text-slate-400">Chase Bank</p>
+                            </div>
+                        </div>
+                        <span class="text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">Verified</span>
+                    </div>
+                    <div class="space-y-1.5 bg-slate-50 rounded-lg p-2.5">
+                        <div class="flex justify-between text-[12px]">
+                            <span class="text-slate-500">Interest Income</span>
+                            <span class="font-semibold text-slate-800">$3,240</span>
+                        </div>
+                        <div class="flex justify-between text-[12px]">
+                            <span class="text-slate-500">Account Type</span>
+                            <span class="font-medium text-slate-700">High-Yield Savings</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Doc 5: Bank Statement -->
+            <div class="bg-white rounded-xl soft-shadow border border-slate-100 hover:scale-[1.01] transition-all cursor-pointer">
+                <div class="p-3.5">
+                    <div class="flex items-center justify-between mb-2.5">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center">
+                                <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            </div>
+                            <div>
+                                <p class="text-[13px] font-semibold text-slate-800">Bank Statement (Dec)</p>
+                                <p class="text-[11px] text-slate-400">Wells Fargo Checking</p>
+                            </div>
+                        </div>
+                        <span class="text-[10px] font-semibold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">Flagged</span>
+                    </div>
+                    <div class="space-y-1.5 bg-slate-50 rounded-lg p-2.5">
+                        <div class="flex justify-between text-[12px]">
+                            <span class="text-slate-500">Ending Balance</span>
+                            <span class="font-semibold text-slate-800">$34,820</span>
+                        </div>
+                        <div class="flex justify-between text-[12px]">
+                            <span class="text-amber-600 font-medium">Large Deposit</span>
+                            <span class="font-semibold text-amber-700">$20,000</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ====================================== -->
+        <!-- CENTER: Property Digital Twin           -->
+        <!-- ====================================== -->
+        <section class="col-span-5 flex flex-col gap-4 overflow-y-auto px-1">
+            <!-- Property Card -->
+            <div class="bg-white rounded-xl soft-shadow border border-slate-100 overflow-hidden hover:scale-[1.01] transition-all">
+                <!-- Property Image/Map Placeholder -->
+                <div class="relative h-48 bg-gradient-to-br from-slate-200 to-slate-300 overflow-hidden">
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="text-center">
+                            <svg class="w-12 h-12 text-slate-400 mx-auto mb-2" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 0h.008v.008h-.008V7.5z"/></svg>
+                            <p class="text-sm text-slate-500 font-medium">4821 Magnolia Ln, Austin, TX 78745</p>
+                        </div>
+                    </div>
+                    <!-- Liquidity Score Badge -->
+                    <div class="absolute top-3 right-3 glass-card rounded-lg px-3 py-2 soft-shadow">
+                        <p class="text-[10px] text-slate-500 font-medium uppercase tracking-wider">AI Liquidity Score</p>
+                        <div class="flex items-center gap-1.5 mt-0.5">
+                            <span class="text-lg font-bold text-emerald-600">82</span>
+                            <span class="text-[11px] text-slate-400">/100</span>
+                        </div>
+                    </div>
+                    <!-- Property Type Badge -->
+                    <div class="absolute top-3 left-3 bg-slate-900/70 backdrop-blur-sm rounded-lg px-3 py-1.5">
+                        <p class="text-[11px] text-white font-medium">SFR | 4 bed / 3 bath | 2,840 sqft</p>
+                    </div>
+                </div>
+
+                <!-- Market Context -->
+                <div class="p-4">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="text-base font-semibold text-slate-900">Market Context Analysis</h3>
+                            <p class="text-[12px] text-slate-400 mt-0.5">AI-generated property intelligence</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[11px] text-slate-400">Appraised Value</p>
+                            <p class="text-lg font-bold text-slate-900">$604,000</p>
+                        </div>
+                    </div>
+
+                    <!-- AVM Pulse: Sparkline -->
+                    <div class="bg-slate-50 rounded-xl p-4 mb-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-2">
+                                <h4 class="text-[12px] font-semibold text-slate-700">AVM Price Trajectory</h4>
+                                <span class="text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded font-medium">LIVE</span>
+                            </div>
+                            <div class="flex items-center gap-4 text-[11px]">
+                                <span class="flex items-center gap-1"><span class="w-2 h-0.5 bg-indigo-500 rounded"></span> Appraisal</span>
+                                <span class="flex items-center gap-1"><span class="w-2 h-0.5 bg-emerald-500 rounded"></span> AI Predicted</span>
+                            </div>
+                        </div>
+                        <svg viewBox="0 0 400 120" class="w-full h-28" preserveAspectRatio="none">
+                            <!-- Grid lines -->
+                            <line x1="0" y1="30" x2="400" y2="30" stroke="#e2e8f0" stroke-width="0.5" stroke-dasharray="4"/>
+                            <line x1="0" y1="60" x2="400" y2="60" stroke="#e2e8f0" stroke-width="0.5" stroke-dasharray="4"/>
+                            <line x1="0" y1="90" x2="400" y2="90" stroke="#e2e8f0" stroke-width="0.5" stroke-dasharray="4"/>
+                            <!-- Appraisal line -->
+                            <polyline fill="none" stroke="#6366f1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                points="0,95 30,90 60,85 90,80 120,72 150,68 180,60 210,55 230,52 260,48 290,45 320,42 350,40 380,38 400,35"
+                                class="sparkline-draw"/>
+                            <!-- AI prediction (dashed, diverges) -->
+                            <polyline fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6 3"
+                                points="260,48 290,42 320,36 350,30 380,25 400,20"
+                                class="sparkline-draw"/>
+                            <!-- Current marker -->
+                            <circle cx="260" cy="48" r="4" fill="#6366f1" stroke="white" stroke-width="2"/>
+                            <!-- Labels -->
+                            <text x="0" y="115" fill="#94a3b8" font-size="9" font-family="Inter">2024</text>
+                            <text x="120" y="115" fill="#94a3b8" font-size="9" font-family="Inter">Q2 2025</text>
+                            <text x="250" y="115" fill="#6366f1" font-size="9" font-weight="600" font-family="Inter">Today</text>
+                            <text x="370" y="115" fill="#10b981" font-size="9" font-family="Inter">2028</text>
+                        </svg>
+                        <div class="flex justify-between mt-2 text-[11px]">
+                            <span class="text-slate-400">AI projects <span class="font-semibold text-emerald-600">+8.2%</span> appreciation over 24 months</span>
+                            <span class="text-slate-400">Stress-test liquidation: <span class="font-semibold text-slate-700">14-21 days</span></span>
+                        </div>
+                    </div>
+
+                    <!-- Comps Grid -->
+                    <div>
+                        <h4 class="text-[12px] font-semibold text-slate-700 mb-2.5">Comparable Sales (AI-selected)</h4>
+                        <div class="grid grid-cols-3 gap-2.5">
+                            <div class="bg-slate-50 rounded-lg p-2.5 hover:scale-[1.01] transition-all">
+                                <p class="text-[11px] text-slate-500 truncate">4910 Magnolia Ln</p>
+                                <p class="text-[13px] font-semibold text-slate-800">$612,000</p>
+                                <p class="text-[10px] text-emerald-600 font-medium">0.2 mi | 97% match</p>
+                            </div>
+                            <div class="bg-slate-50 rounded-lg p-2.5 hover:scale-[1.01] transition-all">
+                                <p class="text-[11px] text-slate-500 truncate">312 Pecan Grove</p>
+                                <p class="text-[13px] font-semibold text-slate-800">$589,000</p>
+                                <p class="text-[10px] text-emerald-600 font-medium">0.4 mi | 93% match</p>
+                            </div>
+                            <div class="bg-slate-50 rounded-lg p-2.5 hover:scale-[1.01] transition-all">
+                                <p class="text-[11px] text-slate-500 truncate">1022 Cedar Elm Dr</p>
+                                <p class="text-[13px] font-semibold text-slate-800">$625,000</p>
+                                <p class="text-[10px] text-emerald-600 font-medium">0.6 mi | 91% match</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Risk Heatmap Card -->
+            <div class="bg-white rounded-xl soft-shadow border border-slate-100 p-4 hover:scale-[1.01] transition-all">
+                <h3 class="text-[13px] font-semibold text-slate-700 mb-3">Underwriting Risk Matrix</h3>
+                <div class="grid grid-cols-4 gap-2">
+                    <div class="text-center p-2.5 rounded-lg bg-emerald-50 border border-emerald-100">
+                        <p class="text-[10px] text-slate-500 font-medium uppercase">Credit</p>
+                        <p class="text-lg font-bold text-emerald-600">Low</p>
+                        <p class="text-[11px] text-slate-500">FICO 762</p>
+                    </div>
+                    <div class="text-center p-2.5 rounded-lg bg-amber-50 border border-amber-100">
+                        <p class="text-[10px] text-slate-500 font-medium uppercase">Income</p>
+                        <p class="text-lg font-bold text-amber-600">Med</p>
+                        <p class="text-[11px] text-slate-500">Variance</p>
+                    </div>
+                    <div class="text-center p-2.5 rounded-lg bg-emerald-50 border border-emerald-100">
+                        <p class="text-[10px] text-slate-500 font-medium uppercase">Collateral</p>
+                        <p class="text-lg font-bold text-emerald-600">Low</p>
+                        <p class="text-[11px] text-slate-500">AVM +1.3%</p>
+                    </div>
+                    <div class="text-center p-2.5 rounded-lg bg-amber-50 border border-amber-100">
+                        <p class="text-[10px] text-slate-500 font-medium uppercase">Assets</p>
+                        <p class="text-lg font-bold text-amber-600">Med</p>
+                        <p class="text-[11px] text-slate-500">Lg. Deposit</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ====================================== -->
+        <!-- RIGHT PANEL: Co-Pilot Reasoning         -->
+        <!-- ====================================== -->
+        <aside class="col-span-4 flex flex-col gap-3 overflow-y-auto pl-1">
+            <!-- Confidence Gauge + Reasoning -->
+            <div class="bg-white rounded-xl soft-shadow border border-slate-100 p-4 hover:scale-[1.01] transition-all">
+                <div class="flex gap-4">
+                    <!-- Vertical Gauge -->
+                    <div class="flex flex-col items-center gap-2">
+                        <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Confidence</p>
+                        <div class="relative w-10 h-44 bg-slate-100 rounded-full overflow-hidden">
+                            <div class="gauge-bar absolute bottom-0 w-full rounded-full" style="--gauge-height: 68%; background: linear-gradient(to top, #10b981, #6366f1);"></div>
+                            <!-- Marker line -->
+                            <div class="absolute w-full h-px bg-white/60" style="bottom: 68%"></div>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-xl font-bold text-indigo-600">68%</p>
+                            <p class="text-[10px] text-slate-400">Decision</p>
+                        </div>
+                    </div>
+
+                    <!-- Reasoning Chain -->
+                    <div class="flex-1">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-[13px] font-semibold text-slate-700">AI Thought Process</h3>
+                            <span class="text-[10px] text-slate-400">Live feed</span>
+                        </div>
+                        <div class="space-y-2.5">
+                            <!-- Step 1: Verified -->
+                            <div class="flex gap-2.5">
+                                <div class="flex flex-col items-center">
+                                    <div class="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                                        <svg class="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                    </div>
+                                    <div class="w-px h-full bg-slate-200 my-1"></div>
+                                </div>
+                                <div class="pb-2.5">
+                                    <p class="text-[12px] font-medium text-slate-800">Employment verified via Work Number API</p>
+                                    <p class="text-[11px] text-slate-400 mt-0.5">Meridian Tech Inc. | Active since Mar 2021</p>
+                                    <p class="text-[10px] text-emerald-600 mt-1 font-medium">+15% confidence</p>
+                                </div>
+                            </div>
+                            <!-- Step 2: Verified -->
+                            <div class="flex gap-2.5">
+                                <div class="flex flex-col items-center">
+                                    <div class="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
+                                        <svg class="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                    </div>
+                                    <div class="w-px h-full bg-slate-200 my-1"></div>
+                                </div>
+                                <div class="pb-2.5">
+                                    <p class="text-[12px] font-medium text-slate-800">Credit report pulled & scored</p>
+                                    <p class="text-[11px] text-slate-400 mt-0.5">FICO 762 (Experian) | Clean tradelines</p>
+                                    <p class="text-[10px] text-emerald-600 mt-1 font-medium">+20% confidence</p>
+                                </div>
+                            </div>
+                            <!-- Step 3: Warning -->
+                            <div class="flex gap-2.5">
+                                <div class="flex flex-col items-center">
+                                    <div class="w-5 h-5 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+                                        <svg class="w-3 h-3 text-amber-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01"/></svg>
+                                    </div>
+                                    <div class="w-px h-full bg-slate-200 my-1"></div>
+                                </div>
+                                <div class="pb-2.5">
+                                    <p class="text-[12px] font-medium text-amber-700">Income discrepancy detected on 1003</p>
+                                    <p class="text-[11px] text-slate-400 mt-0.5">Stated $12k/mo vs. extracted YTD avg $10.5k/mo</p>
+                                    <p class="text-[10px] text-red-500 mt-1 font-medium">-12% confidence</p>
+                                </div>
+                            </div>
+                            <!-- Step 4: Risk -->
+                            <div class="flex gap-2.5">
+                                <div class="flex flex-col items-center">
+                                    <div class="w-5 h-5 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+                                        <svg class="w-3 h-3 text-red-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01"/></svg>
+                                    </div>
+                                    <div class="w-px h-full bg-slate-200 my-1"></div>
+                                </div>
+                                <div class="pb-2.5">
+                                    <p class="text-[12px] font-medium text-red-700">Large deposit flagged ($20,000)</p>
+                                    <p class="text-[11px] text-slate-400 mt-0.5">Source unknown. Dec 14, 2025. Wells Fargo checking.</p>
+                                    <p class="text-[10px] text-red-500 mt-1 font-medium">-10% confidence</p>
+                                </div>
+                            </div>
+                            <!-- Step 5: In Progress -->
+                            <div class="flex gap-2.5">
+                                <div class="flex flex-col items-center">
+                                    <div class="w-5 h-5 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0">
+                                        <div class="w-2 h-2 bg-indigo-400 rounded-full ai-pulse"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="text-[12px] font-medium text-indigo-600">Analyzing remaining documents...</p>
+                                    <p class="text-[11px] text-slate-400 mt-0.5">Paystub extraction in progress</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- One-Click Stipulations -->
+            <div class="bg-white rounded-xl soft-shadow border border-slate-100 p-4 hover:scale-[1.01] transition-all">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-[13px] font-semibold text-slate-700 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                        AI-Generated Stipulations
+                    </h3>
+                    <span class="text-[11px] text-slate-400">4 items</span>
+                </div>
+                <div class="space-y-2">
+                    <!-- Stip 1 -->
+                    <div class="flex items-start gap-3 p-3 bg-red-50/60 border border-red-100 rounded-lg group">
+                        <div class="w-5 h-5 rounded border-2 border-red-300 flex-shrink-0 mt-0.5 flex items-center justify-center cursor-pointer hover:bg-red-100 transition-all">
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-[12px] font-medium text-slate-800">Letter of Explanation for $20,000 deposit</p>
+                            <p class="text-[11px] text-slate-400 mt-0.5">Source documentation required per Fannie Mae B3-4.3</p>
+                        </div>
+                        <button class="flex-shrink-0 text-[11px] font-medium text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded-lg transition-all opacity-80 group-hover:opacity-100">
+                            Send to Borrower
+                        </button>
+                    </div>
+                    <!-- Stip 2 -->
+                    <div class="flex items-start gap-3 p-3 bg-amber-50/60 border border-amber-100 rounded-lg group">
+                        <div class="w-5 h-5 rounded border-2 border-amber-300 flex-shrink-0 mt-0.5 flex items-center justify-center cursor-pointer hover:bg-amber-100 transition-all">
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-[12px] font-medium text-slate-800">Updated paystub (within 30 days of closing)</p>
+                            <p class="text-[11px] text-slate-400 mt-0.5">Most recent paystub is 45 days old</p>
+                        </div>
+                        <button class="flex-shrink-0 text-[11px] font-medium text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded-lg transition-all opacity-80 group-hover:opacity-100">
+                            Send to Borrower
+                        </button>
+                    </div>
+                    <!-- Stip 3 -->
+                    <div class="flex items-start gap-3 p-3 bg-amber-50/60 border border-amber-100 rounded-lg group">
+                        <div class="w-5 h-5 rounded border-2 border-amber-300 flex-shrink-0 mt-0.5 flex items-center justify-center cursor-pointer hover:bg-amber-100 transition-all">
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-[12px] font-medium text-slate-800">VOE for Elena Rodriguez (co-borrower)</p>
+                            <p class="text-[11px] text-slate-400 mt-0.5">Verbal verification of employment pending</p>
+                        </div>
+                        <button class="flex-shrink-0 text-[11px] font-medium text-white bg-indigo-600 hover:bg-indigo-700 px-3 py-1.5 rounded-lg transition-all opacity-80 group-hover:opacity-100">
+                            Send to Borrower
+                        </button>
+                    </div>
+                    <!-- Stip 4 (Resolved) -->
+                    <div class="flex items-start gap-3 p-3 bg-emerald-50/40 border border-emerald-100 rounded-lg">
+                        <div class="w-5 h-5 rounded border-2 border-emerald-400 bg-emerald-500 flex-shrink-0 mt-0.5 flex items-center justify-center">
+                            <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-[12px] font-medium text-slate-500 line-through">Homeowner's insurance declaration page</p>
+                            <p class="text-[11px] text-emerald-600 mt-0.5">Received & verified Mar 8, 2026</p>
+                        </div>
+                        <span class="flex-shrink-0 text-[10px] font-semibold text-emerald-600 bg-emerald-100 px-2 py-1 rounded-lg">Cleared</span>
+                    </div>
+                </div>
+                <!-- Bulk Action -->
+                <div class="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between">
+                    <p class="text-[11px] text-slate-400">3 outstanding stipulations</p>
+                    <button class="text-[11px] font-medium text-indigo-600 hover:text-indigo-800 transition-all">Send All to Borrower Portal</button>
+                </div>
+            </div>
+
+            <!-- AI Audit Log -->
+            <div class="bg-white rounded-xl soft-shadow border border-slate-100 p-4 hover:scale-[1.01] transition-all">
+                <h3 class="text-[13px] font-semibold text-slate-700 mb-2.5">Compliance Audit Trail</h3>
+                <div class="space-y-2 text-[11px]">
+                    <div class="flex items-center gap-2 text-slate-500">
+                        <span class="text-[10px] text-slate-300 font-mono w-14 flex-shrink-0">11:42am</span>
+                        <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full flex-shrink-0"></span>
+                        <span>TRID disclosure timeline verified (within 3-day window)</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-slate-500">
+                        <span class="text-[10px] text-slate-300 font-mono w-14 flex-shrink-0">11:38am</span>
+                        <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full flex-shrink-0"></span>
+                        <span>Flood zone determination: Zone X (no flood insurance required)</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-slate-500">
+                        <span class="text-[10px] text-slate-300 font-mono w-14 flex-shrink-0">11:35am</span>
+                        <span class="w-1.5 h-1.5 bg-amber-400 rounded-full flex-shrink-0"></span>
+                        <span>QM/ATR check: DTI at 43.2% (threshold: 43%). Marginal pass.</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-slate-500">
+                        <span class="text-[10px] text-slate-300 font-mono w-14 flex-shrink-0">11:30am</span>
+                        <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full flex-shrink-0"></span>
+                        <span>Title search: Clear. No liens or encumbrances found.</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <!-- ============================================ -->
+    <!-- 5. CLOSING PATH STEPPER — BOTTOM BAR         -->
+    <!-- ============================================ -->
+    <footer class="sticky bottom-0 z-40 glass-card border-t border-slate-200/60 soft-shadow">
+        <div class="max-w-[1920px] mx-auto px-5 py-3">
+            <div class="flex items-center justify-between">
+                <!-- Steps -->
+                <div class="flex items-center gap-0 flex-1 overflow-x-auto">
+                    <!-- Step 1: Complete -->
+                    <div class="flex items-center gap-2 flex-shrink-0">
+                        <div class="w-7 h-7 rounded-full bg-emerald-500 flex items-center justify-center">
+                            <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                        </div>
+                        <span class="text-[11px] font-medium text-emerald-700 whitespace-nowrap">Application</span>
+                    </div>
+                    <div class="w-8 h-px bg-emerald-300 mx-1 flex-shrink-0"></div>
+
+                    <!-- Step 2: Complete -->
+                    <div class="flex items-center gap-2 flex-shrink-0">
+                        <div class="w-7 h-7 rounded-full bg-emerald-500 flex items-center justify-center">
+                            <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                        </div>
+                        <span class="text-[11px] font-medium text-emerald-700 whitespace-nowrap">Disclosures</span>
+                    </div>
+                    <div class="w-8 h-px bg-emerald-300 mx-1 flex-shrink-0"></div>
+
+                    <!-- Step 3: Complete -->
+                    <div class="flex items-center gap-2 flex-shrink-0">
+                        <div class="w-7 h-7 rounded-full bg-emerald-500 flex items-center justify-center">
+                            <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                        </div>
+                        <span class="text-[11px] font-medium text-emerald-700 whitespace-nowrap">Appraisal</span>
+                    </div>
+                    <div class="w-8 h-px bg-emerald-300 mx-1 flex-shrink-0"></div>
+
+                    <!-- Step 4: Active -->
+                    <div class="flex items-center gap-2 flex-shrink-0">
+                        <div class="w-7 h-7 rounded-full bg-indigo-600 flex items-center justify-center ring-4 ring-indigo-100">
+                            <span class="text-[10px] font-bold text-white">4</span>
+                        </div>
+                        <span class="text-[11px] font-semibold text-indigo-700 whitespace-nowrap">Underwriting</span>
+                    </div>
+                    <div class="w-8 h-px bg-slate-200 mx-1 flex-shrink-0"></div>
+
+                    <!-- Step 5: Pending -->
+                    <div class="flex items-center gap-2 flex-shrink-0">
+                        <div class="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center">
+                            <span class="text-[10px] font-bold text-slate-400">5</span>
+                        </div>
+                        <span class="text-[11px] font-medium text-slate-400 whitespace-nowrap">Conditions</span>
+                    </div>
+                    <div class="w-8 h-px bg-slate-200 mx-1 flex-shrink-0"></div>
+
+                    <!-- Step 5.5: Dynamically Expanded (NEW) -->
+                    <div class="flex items-center gap-2 flex-shrink-0 step-new">
+                        <div class="w-7 h-7 rounded-full bg-amber-100 border-2 border-amber-300 border-dashed flex items-center justify-center">
+                            <svg class="w-3 h-3 text-amber-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                        </div>
+                        <div class="whitespace-nowrap">
+                            <span class="text-[11px] font-medium text-amber-600">LOE Review</span>
+                            <span class="text-[9px] text-amber-400 block">AI-added</span>
+                        </div>
+                    </div>
+                    <div class="w-8 h-px bg-slate-200 mx-1 flex-shrink-0"></div>
+
+                    <!-- Step 6: Pending -->
+                    <div class="flex items-center gap-2 flex-shrink-0">
+                        <div class="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center">
+                            <span class="text-[10px] font-bold text-slate-400">6</span>
+                        </div>
+                        <span class="text-[11px] font-medium text-slate-400 whitespace-nowrap">Clear to Close</span>
+                    </div>
+                    <div class="w-8 h-px bg-slate-200 mx-1 flex-shrink-0"></div>
+
+                    <!-- Step 7: Pending -->
+                    <div class="flex items-center gap-2 flex-shrink-0">
+                        <div class="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center">
+                            <span class="text-[10px] font-bold text-slate-400">7</span>
+                        </div>
+                        <span class="text-[11px] font-medium text-slate-400 whitespace-nowrap">Funding</span>
+                    </div>
+                </div>
+
+                <!-- Ready to Fund Kill-Switch -->
+                <div class="flex-shrink-0 ml-6 flex items-center gap-3">
+                    <div class="text-right">
+                        <p class="text-[10px] text-slate-400 font-medium uppercase tracking-wider">Exceptions</p>
+                        <p class="text-[13px] font-bold text-red-500">4 Remaining</p>
+                    </div>
+                    <button disabled class="relative bg-indigo-600/40 text-white/60 px-6 py-2.5 rounded-xl text-[13px] font-semibold cursor-not-allowed select-none">
+                        <span class="flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                            Ready to Fund
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Command-K Toggle
+        function toggleCmdk() {
+            const el = document.getElementById('cmdk');
+            el.classList.toggle('hidden');
+            el.classList.toggle('flex');
+            if (!el.classList.contains('hidden')) {
+                document.getElementById('cmdk-input').focus();
+            }
+        }
+
+        // Keyboard shortcut
+        document.addEventListener('keydown', (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                toggleCmdk();
+            }
+            if (e.key === 'Escape') {
+                const el = document.getElementById('cmdk');
+                el.classList.add('hidden');
+                el.classList.remove('flex');
+            }
+        });
+
+        // Visual Audit Toggle
+        let auditMode = false;
+        function toggleAudit() {
+            auditMode = !auditMode;
+            const btn = document.getElementById('auditToggle');
+            const card = document.getElementById('discrepancy-card');
+            if (auditMode) {
+                btn.classList.add('bg-red-100', 'text-red-600');
+                btn.classList.remove('bg-slate-100', 'text-slate-500');
+                card.classList.add('ring-2', 'ring-red-300');
+            } else {
+                btn.classList.remove('bg-red-100', 'text-red-600');
+                btn.classList.add('bg-slate-100', 'text-slate-500');
+                card.classList.remove('ring-2', 'ring-red-300');
+            }
+        }
+
+        // Simulate paystub extraction completing after 4 seconds
+        setTimeout(() => {
+            const shimmers = document.querySelectorAll('.shimmer');
+            const values = ['Apex Healthcare Group', '$126,000', 'Bi-weekly'];
+            shimmers.forEach((el, i) => {
+                el.classList.remove('shimmer');
+                el.classList.add('bg-transparent');
+                el.innerHTML = `<span class="text-[12px] font-medium text-slate-700">${values[i]}</span>`;
+            });
+            // Update the extracting badge
+            const badge = document.querySelector('[class*="Extracting"]');
+            if (badge) {
+                badge.closest('span').innerHTML = '<span class="text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">Verified</span>';
+            }
+        }, 4000);
+    </script>
+</body>
+</html>
