@@ -818,6 +818,187 @@
     .pairing-row { flex-direction: column; }
     .hero-metric { min-width: auto; width: 100%; }
   }
+
+  /* ═══════════════════ FLUID TYPOGRAPHY ═══════════════════ */
+  .hero h1   { font-size: clamp(32px, 5.5vw, 64px); }
+  .s-title   { font-size: clamp(28px, 4vw, 48px); }
+  .s-sub     { font-size: clamp(16px, 1.6vw, 19px); }
+  .hero-sub  { font-size: clamp(16px, 1.8vw, 21px); }
+  .cta-inner h2 { font-size: clamp(28px, 4vw, 48px); }
+
+  /* ═══════════════════ MOBILE HAMBURGER MENU ═══════════════════ */
+  .nav-toggle {
+    display: none; background: none; border: none;
+    cursor: pointer; padding: 8px; margin-left: auto;
+    -webkit-tap-highlight-color: transparent;
+    position: relative; width: 36px; height: 36px;
+    border-radius: 8px; transition: background 0.3s ease;
+  }
+  .nav-toggle:hover { background: rgba(255,255,255,0.08); }
+  .nav-toggle span {
+    display: block; width: 18px; height: 1.5px;
+    background: #f5f5f7; border-radius: 2px;
+    position: absolute; left: 50%; transform: translateX(-50%);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+  .nav-toggle span:nth-child(1) { top: 11px; }
+  .nav-toggle span:nth-child(2) { top: 17px; }
+  .nav-toggle span:nth-child(3) { top: 23px; }
+  .nav-toggle.active span:nth-child(1) { top: 17px; transform: translateX(-50%) rotate(45deg); }
+  .nav-toggle.active span:nth-child(2) { opacity: 0; }
+  .nav-toggle.active span:nth-child(3) { top: 17px; transform: translateX(-50%) rotate(-45deg); }
+
+  @media (max-width: 900px) {
+    .nav-toggle { display: block; }
+    .nav-links {
+      position: fixed; top: 48px; left: 0; right: 0;
+      background: rgba(0,0,0,0.92);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      backdrop-filter: saturate(180%) blur(20px);
+      padding: 8px 0 16px; display: flex; flex-direction: column;
+      align-items: center; gap: 0;
+      transform: translateY(-100%); opacity: 0; pointer-events: none;
+      transition: transform 0.35s ease, opacity 0.35s ease;
+      border-bottom: 0.5px solid rgba(255,255,255,0.08);
+    }
+    .nav-links.open { transform: translateY(0); opacity: 1; pointer-events: auto; }
+    .nav-links a {
+      margin-left: 0; padding: 12px 24px; width: 100%; text-align: center;
+      font-size: 15px; display: block;
+      border-bottom: 0.5px solid rgba(255,255,255,0.04);
+    }
+    .nav-links a:last-child { border-bottom: none; }
+    .nav-links a:active { background: rgba(255,255,255,0.06); }
+  }
+
+  /* ═══════════════════ SCROLL REVEAL ANIMATIONS ═══════════════════ */
+  .reveal {
+    opacity: 0; transform: translateY(24px);
+    transition: opacity 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .reveal.visible {
+    opacity: 1; transform: translateY(0);
+  }
+  .reveal-left {
+    opacity: 0; transform: translateX(-32px);
+    transition: opacity 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .reveal-left.visible { opacity: 1; transform: translateX(0); }
+  .reveal-right {
+    opacity: 0; transform: translateX(32px);
+    transition: opacity 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .reveal-right.visible { opacity: 1; transform: translateX(0); }
+  .reveal-scale {
+    opacity: 0; transform: scale(0.92);
+    transition: opacity 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .reveal-scale.visible { opacity: 1; transform: scale(1); }
+
+  /* Staggered children */
+  .stagger > * { opacity: 0; transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease; }
+  .stagger.visible > *:nth-child(1) { transition-delay: 0s; }
+  .stagger.visible > *:nth-child(2) { transition-delay: 0.08s; }
+  .stagger.visible > *:nth-child(3) { transition-delay: 0.16s; }
+  .stagger.visible > *:nth-child(4) { transition-delay: 0.24s; }
+  .stagger.visible > *:nth-child(5) { transition-delay: 0.32s; }
+  .stagger.visible > *:nth-child(6) { transition-delay: 0.40s; }
+  .stagger.visible > *:nth-child(7) { transition-delay: 0.48s; }
+  .stagger.visible > *:nth-child(8) { transition-delay: 0.56s; }
+  .stagger.visible > * { opacity: 1; transform: translateY(0); }
+
+  /* ═══════════════════ NAV ACTIVE STATE ═══════════════════ */
+  .nav-links a.active { color: var(--accent); }
+
+  /* ═══════════════════ SCROLL TO TOP ═══════════════════ */
+  .scroll-top {
+    position: fixed; bottom: 32px; right: 32px; z-index: 90;
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    backdrop-filter: saturate(180%) blur(20px);
+    border: 0.5px solid var(--glass-border);
+    box-shadow: var(--shadow-md);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; opacity: 0; transform: translateY(16px);
+    transition: opacity 0.3s ease, transform 0.3s ease, background 0.3s ease;
+    pointer-events: none;
+  }
+  .scroll-top.visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+  .scroll-top:hover { background: var(--accent); }
+  .scroll-top:hover svg { stroke: #fff; }
+  .scroll-top svg { width: 20px; height: 20px; stroke: var(--text); stroke-width: 2; fill: none; }
+
+  @media (max-width: 480px) {
+    .scroll-top { bottom: 20px; right: 20px; width: 40px; height: 40px; }
+  }
+
+  /* ═══════════════════ PROGRESS BAR ═══════════════════ */
+  .reading-progress {
+    position: fixed; top: 48px; left: 0; height: 2px; z-index: 99;
+    background: var(--gradient-accent);
+    width: 0%; transition: width 0.1s linear;
+    border-radius: 0 2px 2px 0;
+  }
+
+  /* ═══════════════════ ENHANCED TOUCH TARGETS ═══════════════════ */
+  @media (pointer: coarse) {
+    .agent-tab { min-height: 44px; display: flex; align-items: center; justify-content: center; }
+    .nav-links a { min-height: 44px; display: flex; align-items: center; justify-content: center; }
+    .cta-btn { min-height: 50px; display: inline-flex; align-items: center; justify-content: center; }
+    .demo-card-btn { min-height: 44px; }
+    .pilot-card-row { min-height: 44px; align-items: center; }
+  }
+
+  /* ═══════════════════ REDUCED MOTION ═══════════════════ */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+    .reveal, .reveal-left, .reveal-right, .reveal-scale { opacity: 1; transform: none; }
+    .stagger > * { opacity: 1; transform: none; }
+    .hero-orb { animation: none; }
+  }
+
+  /* ═══════════════════ HERO ORB PARALLAX ═══════════════════ */
+  @keyframes orbFloat1 {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(20px, -30px); }
+  }
+  @keyframes orbFloat2 {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(-25px, 20px); }
+  }
+  @keyframes orbFloat3 {
+    0%, 100% { transform: translate(-50%, -50%); }
+    50% { transform: translate(calc(-50% + 15px), calc(-50% - 20px)); }
+  }
+  .hero-orb-1 { animation: orbFloat1 12s ease-in-out infinite; }
+  .hero-orb-2 { animation: orbFloat2 15s ease-in-out infinite; }
+  .hero-orb-3 { animation: orbFloat3 18s ease-in-out infinite; }
+
+  /* ═══════════════════ HERO ENTRANCE ═══════════════════ */
+  .hero-content .hero-kicker,
+  .hero-content h1,
+  .hero-content .hero-sub,
+  .hero-content .hero-metrics {
+    opacity: 0; transform: translateY(20px);
+    animation: heroEntrance 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  }
+  .hero-content .hero-kicker { animation-delay: 0.1s; }
+  .hero-content h1           { animation-delay: 0.25s; }
+  .hero-content .hero-sub    { animation-delay: 0.4s; }
+  .hero-content .hero-metrics { animation-delay: 0.55s; }
+  @keyframes heroEntrance {
+    to { opacity: 1; transform: translateY(0); }
+  }
 </style>
 </head>
 <body>
@@ -829,6 +1010,9 @@
     <div class="nav-divider"></div>
     <div class="nav-badge">Agentic Enterprise Suite</div>
   </div>
+  <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
   <div class="nav-links">
     <a href="#crisis">The Crisis</a>
     <a href="#market">Market</a>
@@ -841,6 +1025,9 @@
     <a href="#demos">Live Demos</a>
   </div>
 </nav>
+
+<!-- Reading Progress Bar -->
+<div class="reading-progress" id="reading-progress"></div>
 
 <!-- ═══════════════════ HERO ═══════════════════ -->
 <section class="hero">
@@ -890,13 +1077,13 @@
 <!-- ═══════════════════ THE BURNING PLATFORM ═══════════════════ -->
 <section id="crisis" class="s-full s-accent">
   <div style="max-width:1200px; margin:0 auto;">
-    <div class="s-header">
+    <div class="s-header reveal">
       <div class="s-eye red">The Burning Platform</div>
       <h2 class="s-title">Banking Is at an Inflection Point</h2>
       <p class="s-sub">Three forces are converging. Institutions that move now will define the next era. Those that wait will spend the next decade trying to catch up.</p>
     </div>
 
-    <div class="cards-3">
+    <div class="cards-3 stagger">
       <div class="card" style="border-top: 4px solid var(--red);">
         <div class="card-icon">&#128200;</div>
         <h4>The Margin Crisis</h4>
@@ -923,7 +1110,7 @@
       </div>
     </div>
 
-    <div class="quote-block">
+    <div class="quote-block reveal">
       <p>&ldquo;Silicon Valley Bank didn&rsquo;t fail because of bad assets. It failed because humans couldn&rsquo;t process liquidity signals fast enough. A Liquidity Stress-Testing Agent running 200 daily scenarios would have flagged the deposit-flight pattern <strong style="color: var(--accent-dark);">11 weeks before collapse</strong>. We&rsquo;ve back-tested it.&rdquo;</p>
       <div class="attr">&mdash; Ethias AI Internal Analysis, SVB Retrospective</div>
     </div>
@@ -932,13 +1119,13 @@
 
 <!-- ═══════════════════ MARKET OPPORTUNITY ═══════════════════ -->
 <section id="market" class="s" style="background: var(--white);">
-  <div class="s-header">
+  <div class="s-header reveal">
     <div class="s-eye">Market Intelligence</div>
     <h2 class="s-title">The $35B Banking AI Opportunity</h2>
     <p class="s-sub">92% of banking AI spend is still on chatbots and basic automation. Agentic AI&mdash;true autonomous decision-making&mdash;represents less than 4% today, growing at 48% CAGR. The market is wide open.</p>
   </div>
 
-  <div class="cards-4" style="margin-bottom: 48px;">
+  <div class="cards-4 stagger" style="margin-bottom: 48px;">
     <div class="card" style="text-align: center; border-top: 4px solid var(--accent);">
       <div class="card-num accent">$35B</div>
       <p style="margin: 0; font-weight: 600;">US Banking AI TAM 2026</p>
@@ -961,7 +1148,7 @@
     </div>
   </div>
 
-  <div class="provocation">
+  <div class="provocation reveal">
     <div class="prov-text">
       <p><strong>73% of banks are &ldquo;piloting AI agents.&rdquo;</strong> Only 6% have anything in production. Why? Three reasons:</p>
       <p><strong>1. No governance layer.</strong> CROs kill projects that can&rsquo;t explain decisions to examiners. The compliance team says &ldquo;interesting pilot&rdquo; and the risk committee says &ldquo;not production-ready.&rdquo;</p>
@@ -986,7 +1173,7 @@
 <!-- ═══════════════════ ARCHITECTURE ═══════════════════ -->
 <section id="architecture" class="s-full s-dark">
   <div style="max-width: 1200px; margin: 0 auto;">
-    <div class="s-header">
+    <div class="s-header reveal">
       <div class="s-eye gold">Architecture</div>
       <h2 class="s-title">Governance-First Agent Architecture</h2>
       <p class="s-sub">This is not 20 independent tools. It&rsquo;s an interconnected intelligence network. Each agent makes every other agent smarter. The Audit-Trail Architect watches everything.</p>
@@ -1000,7 +1187,7 @@
     </div>
 
     <!-- 5 Lanes -->
-    <div class="cards-5" style="margin-bottom: 48px;">
+    <div class="cards-5 stagger" style="margin-bottom: 48px;">
       <div class="card-dark" style="text-align: center; border-top: 3px solid var(--accent);">
         <div style="font-size: 24px; margin-bottom: 8px;">&#128202;</div>
         <h4 style="font-size: 13px; color: var(--accent-bright);">Credit Risk &amp; Mortgage</h4>
@@ -1031,7 +1218,7 @@
     <!-- Synergy -->
     <div style="max-width: 1100px; margin: 0 auto;">
       <h3 style="font-size: 12px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); text-align: center; margin-bottom: 24px; font-weight: 700;">The Compound Intelligence Effect &mdash; Why 20 &gt; 20 &times; 1</h3>
-      <div class="cards-3">
+      <div class="cards-3 stagger">
         <div class="card-dark">
           <h4 style="color: var(--accent-bright); font-size: 13px;">Credit + Treasury Synergy</h4>
           <p>The Cash Flow Forecasting Agent detects a borrower&rsquo;s revenue decline 6 weeks before it shows in financials. It signals the Dynamic Limit Adjuster to tighten exposure&mdash;and the Collateral Agent to re-evaluate LTV. <strong style="color: var(--white);">Three agents preventing one loss, simultaneously.</strong></p>
@@ -1052,7 +1239,7 @@
 <!-- ═══════════════════ THE 20 AGENTS ═══════════════════ -->
 <section id="agents" class="s-full" style="background: linear-gradient(180deg, #fafaf8, #f0efe8);">
   <div style="max-width: 1200px; margin: 0 auto;">
-    <div class="s-header">
+    <div class="s-header reveal">
       <div class="s-eye">The 20 Agents</div>
       <h2 class="s-title">Every Agent, Explored</h2>
       <p class="s-sub">Click any lifecycle stage to explore its four specialized agents&mdash;each production-ready, governance-compliant, and designed to compound value with every other agent in the suite.</p>
@@ -1072,7 +1259,7 @@
         <h3 style="font-family: inherit; font-size: 28px; margin-bottom: 8px;">Credit Risk &amp; Mortgage Underwriting</h3>
         <p style="font-size: 15px; color: var(--text-light);">The $8.2T US mortgage market processes 12M applications annually. Average cost-per-origination: $13,000. We cut that by 38% while improving approval accuracy.</p>
       </div>
-      <div class="agent-grid">
+      <div class="agent-grid stagger">
         <div class="agent-card">
           <div class="agent-card-num emerald">01</div>
           <h5>Autonomous Credit Underwriter</h5>
@@ -1132,7 +1319,7 @@
         <h3 style="font-family: inherit; font-size: 28px; margin-bottom: 8px;">Treasury &amp; Liquidity Management</h3>
         <p style="font-size: 15px; color: var(--text-light);">SVB taught us the cost of slow treasury operations: $209B in assets, gone in 48 hours. This category prevents that&mdash;and unlocks $42.6M annually in smarter cash deployment.</p>
       </div>
-      <div class="agent-grid">
+      <div class="agent-grid stagger">
         <div class="agent-card">
           <div class="agent-card-num cyan">05</div>
           <h5>Cash Flow Forecasting Agent</h5>
@@ -1192,7 +1379,7 @@
         <h3 style="font-family: inherit; font-size: 28px; margin-bottom: 8px;">Operations, Audit &amp; Compliance</h3>
         <p style="font-size: 15px; color: var(--text-light);">Reducing the $28B annual US bank compliance spend with autonomous monitoring. The Audit-Trail Architect is the single most important agent in the entire suite.</p>
       </div>
-      <div class="agent-grid">
+      <div class="agent-grid stagger">
         <div class="agent-card" style="border: 0.5px solid rgba(191,155,94,0.3); background: linear-gradient(135deg, rgba(191,155,94,0.04), var(--white));">
           <div class="agent-card-num gold">09</div>
           <h5 style="color: #8a6d2f;">&#128737;&#65039; Audit-Trail Architect <span style="font-size: 10px; font-weight: 600; color: var(--gold); letter-spacing: 1px; text-transform: uppercase;">GOVERNANCE ANCHOR</span></h5>
@@ -1252,7 +1439,7 @@
         <h3 style="font-family: inherit; font-size: 28px; margin-bottom: 8px;">Branch &amp; Frontline Operations</h3>
         <p style="font-size: 15px; color: var(--text-light);">Transforming 72,000+ US bank branches from cost centers to AI-augmented revenue engines. Fastest payback category in the suite.</p>
       </div>
-      <div class="agent-grid">
+      <div class="agent-grid stagger">
         <div class="agent-card">
           <div class="agent-card-num rose">13</div>
           <h5>Branch Staffing Optimizer</h5>
@@ -1312,7 +1499,7 @@
         <h3 style="font-family: inherit; font-size: 28px; margin-bottom: 8px;">Wealth Management &amp; Advisory</h3>
         <p style="font-size: 15px; color: var(--text-light);">Augmenting 300,000+ US wealth advisors managing $38T in client assets. Every RM becomes a super-RM. Every client interaction becomes an opportunity.</p>
       </div>
-      <div class="agent-grid">
+      <div class="agent-grid stagger">
         <div class="agent-card">
           <div class="agent-card-num amber">17</div>
           <h5>RM Co-pilot</h5>
@@ -1370,7 +1557,7 @@
 
 <!-- ═══════════════════ HOW WE BUILD IT ═══════════════════ -->
 <section id="how" class="s" style="background: var(--white);">
-  <div class="s-header">
+  <div class="s-header reveal">
     <div class="s-eye">How We Build It</div>
     <h2 class="s-title">Five Humans from Ethias AI.<br>Your Subject Matter Experts.<br>Agents in Production.</h2>
     <p class="s-sub">
@@ -1401,7 +1588,7 @@
     <p style="font-size: 15px; color: var(--text-light); max-width: 700px; margin: 0 auto;">Each person provides irreplaceable human judgement. Claude Code provides everything else&mdash;at scale, speed, and consistency no human team can match. This is the same model we outlined in our <em>Five-Person Bank</em> thesis, now applied as a service.</p>
   </div>
 
-  <div class="team-grid">
+  <div class="team-grid stagger">
     <!-- CPO -->
     <div class="team-card">
       <div class="team-card-header">
@@ -1504,7 +1691,7 @@
     </div>
   </div>
 
-  <div class="quote-block" style="margin-top: 48px;">
+  <div class="quote-block reveal" style="margin-top: 48px;">
     <p>&ldquo;We don&rsquo;t outsource your agents and deliver a black box. Our five sit in your office, learn your systems, pair with your experts, and build agents that understand <em>your</em> institution&mdash;not a generic banking template. When we leave, the agents keep getting smarter because they&rsquo;re learning from your data, not ours.&rdquo;</p>
   </div>
 </section>
@@ -1512,7 +1699,7 @@
 <!-- ═══════════════════ AGENT DEVELOPMENT LIFECYCLE ═══════════════════ -->
 <section class="s-full s-accent">
   <div style="max-width: 1200px; margin: 0 auto;">
-    <div class="s-header">
+    <div class="s-header reveal">
       <div class="s-eye">The Agent SDLC</div>
       <h2 class="s-title">From 44-Week Projects to<br>Agents in Production in Days</h2>
       <p class="s-sub">Traditional banking technology takes 8,500 hours and 44 weeks per application. Our approach, powered by the same archetype-driven methodology from our <em>Five-Person Bank</em> framework, collapses that to days per agent.</p>
@@ -1564,7 +1751,7 @@
     <h3 style="text-align: center; font-family: inherit; font-size: 28px; margin-bottom: 8px;">One Agent: Intent to Production</h3>
     <p style="text-align: center; font-size: 14px; color: var(--text-light); margin-bottom: 32px;">Mid-complexity agent (e.g., Mortgage Document Orchestrator). Ethias team + your SMEs.</p>
 
-    <div class="sdlc-flow">
+    <div class="sdlc-flow stagger">
       <div class="sdlc-step">
         <div class="sdlc-step-num">1</div>
         <div class="sdlc-step-icon">&#128172;</div>
@@ -1638,13 +1825,13 @@
 
 <!-- ═══════════════════ THE PILOT ═══════════════════ -->
 <section id="pilot" class="s" style="background: var(--white);">
-  <div class="s-header">
+  <div class="s-header reveal">
     <div class="s-eye gold">The Pilot Proposal</div>
     <h2 class="s-title">90 Days. Four Agents. Proof of Everything.</h2>
     <p class="s-sub">We don&rsquo;t ask you to commit to all 20 agents on faith. We propose a 90-day pilot: deploy the Governance Anchor plus the three highest-ROI agents. By Day 90, you&rsquo;ll have production agents, a working audit trail, and hard numbers that make the full-suite decision obvious.</p>
   </div>
 
-  <div class="pilot-grid">
+  <div class="pilot-grid stagger">
     <!-- Pilot Agent 0: Governance -->
     <div class="pilot-card governance">
       <div class="pilot-card-num" style="color: var(--gold);">Week 1&ndash;3 &bull; Foundation</div>
@@ -1737,7 +1924,7 @@
     </div>
   </div>
 
-  <div class="quote-block" style="margin-top: 48px;">
+  <div class="quote-block reveal" style="margin-top: 48px;">
     <p>&ldquo;The pilot isn&rsquo;t designed to <em>convince</em> you. It&rsquo;s designed to make the full-suite decision <em>inevitable</em>. By Day 90, your board will have production data, your regulators will have audit trails, your frontline will have stories, and your CFO will have payback math. The 16 remaining agents aren&rsquo;t a question&mdash;they&rsquo;re a scheduling exercise.&rdquo;</p>
   </div>
 </section>
@@ -1745,13 +1932,13 @@
 <!-- ═══════════════════ ROI DASHBOARD ═══════════════════ -->
 <section id="roi" class="s-full s-dark">
   <div style="max-width: 1200px; margin: 0 auto;">
-    <div class="s-header">
+    <div class="s-header reveal">
       <div class="s-eye">Financial Impact</div>
       <h2 class="s-title">Consolidated ROI Dashboard</h2>
       <p class="s-sub">Full-suite model for a Top-20 US bank ($500B+ assets). Every number derived from published industry benchmarks, real bank P&amp;L structures, and validated technology cost models.</p>
     </div>
 
-    <div class="roi-cards">
+    <div class="roi-cards stagger">
       <div class="roi-card">
         <div class="roi-card-value">$15.81M</div>
         <div class="roi-card-label">Total Investment</div>
@@ -1826,13 +2013,13 @@
 
 <!-- ═══════════════════ GOVERNANCE DIFFERENTIATOR ═══════════════════ -->
 <section class="s" style="background: var(--white);">
-  <div class="s-header">
+  <div class="s-header reveal">
     <div class="s-eye gold">Key Differentiator</div>
     <h2 class="s-title">Solving the &ldquo;Black Box&rdquo; Problem</h2>
     <p class="s-sub">67% of bank CROs cite explainability as the #1 blocker to scaling AI. This isn&rsquo;t a feature&mdash;it&rsquo;s the reason every other AI vendor gets stuck in pilot purgatory.</p>
   </div>
 
-  <div class="vs-strip">
+  <div class="vs-strip reveal-scale">
     <div class="vs-side vs-old">
       <div class="vs-number">67%</div>
       <div class="vs-label">CROs Blocked by &ldquo;Black Box&rdquo;</div>
@@ -1856,7 +2043,7 @@
     </div>
   </div>
 
-  <div class="quote-block">
+  <div class="quote-block reveal">
     <p>&ldquo;Every AI vendor says &lsquo;trust our model.&rsquo; We say: &lsquo;Read the audit trail yourself.&rsquo; That one sentence is worth more than any benchmark. It&rsquo;s why our clients go from pilot to production in 90 days while their peers are still in committee review after 18 months.&rdquo;</p>
   </div>
 </section>
@@ -1864,13 +2051,13 @@
 <!-- ═══════════════════ EARLY ADOPTER ADVANTAGE ═══════════════════ -->
 <section id="advantage" class="s-full s-accent">
   <div style="max-width: 1200px; margin: 0 auto;">
-    <div class="s-header">
+    <div class="s-header reveal">
       <div class="s-eye">Strategic Insight</div>
       <h2 class="s-title">The Early Adopter Advantage<br>Is Exponential</h2>
       <p class="s-sub">Agentic AI creates winner-take-most dynamics. The first institution to deploy builds compounding advantages that late movers cannot replicate at any price.</p>
     </div>
 
-    <div class="provocation">
+    <div class="provocation reveal">
       <div style="display: flex; flex-direction: column; gap: 20px;">
         <div class="card" style="border-left: 4px solid var(--accent);">
           <h4>01. Institutional Memory Compounds Daily</h4>
@@ -1903,13 +2090,13 @@
 
 <!-- ═══════════════════ COST OF INACTION ═══════════════════ -->
 <section class="s" style="background: var(--white);">
-  <div class="s-header">
+  <div class="s-header reveal">
     <div class="s-eye red">Risk Assessment</div>
     <h2 class="s-title">The Cost of Waiting</h2>
     <p class="s-sub">Every quarter of delay has a quantifiable cost. This is not fear-mongering&mdash;it&rsquo;s financial math.</p>
   </div>
 
-  <div class="cards-3" style="margin-bottom: 48px;">
+  <div class="cards-3 stagger" style="margin-bottom: 48px;">
     <div class="card" style="text-align: center; border-top: 4px solid var(--red);">
       <div class="card-num red">$40.8M</div>
       <h4>Foregone Per Year of Delay</h4>
@@ -1927,7 +2114,7 @@
     </div>
   </div>
 
-  <div class="timeline-compare">
+  <div class="timeline-compare reveal">
     <div class="timeline-col bad">
       <h4>&#10007; &ldquo;Wait and See&rdquo;</h4>
       <div class="timeline-item">
@@ -1972,14 +2159,14 @@
 <!-- ═══════════════════ ROADMAP ═══════════════════ -->
 <section id="roadmap" class="s-full s-accent">
   <div style="max-width: 1200px; margin: 0 auto;">
-    <div class="s-header">
+    <div class="s-header reveal">
       <div class="s-eye">Roadmap</div>
       <h2 class="s-title">24-Month Deployment Roadmap</h2>
       <p class="s-sub">Governance first, quick wins second, compound intelligence third. Every phase is self-funding&mdash;Phase 1 value covers Phase 2 investment.</p>
     </div>
 
     <div class="rm-container">
-      <div class="rm-phase">
+      <div class="rm-phase reveal">
         <div class="rm-marker">1</div>
         <div class="rm-content">
           <div class="rm-time">Months 1&ndash;6 &bull; $4.2M Investment</div>
@@ -1994,7 +2181,7 @@
         </div>
       </div>
 
-      <div class="rm-phase">
+      <div class="rm-phase reveal">
         <div class="rm-marker">2</div>
         <div class="rm-content">
           <div class="rm-time">Months 7&ndash;12 &bull; $5.8M Investment</div>
@@ -2010,7 +2197,7 @@
         </div>
       </div>
 
-      <div class="rm-phase">
+      <div class="rm-phase reveal">
         <div class="rm-marker">3</div>
         <div class="rm-content">
           <div class="rm-time">Months 13&ndash;18 &bull; $3.9M Investment</div>
@@ -2026,7 +2213,7 @@
         </div>
       </div>
 
-      <div class="rm-phase">
+      <div class="rm-phase reveal">
         <div class="rm-marker">4</div>
         <div class="rm-content">
           <div class="rm-time">Months 19&ndash;24 &bull; $1.9M Investment</div>
@@ -2064,13 +2251,13 @@
 <!-- ═══════════════════ LIVE DEMOS ═══════════════════ -->
 <section id="demos" class="s-full s-mid">
   <div style="max-width: 1200px; margin: 0 auto;">
-    <div class="s-header">
+    <div class="s-header reveal">
       <div class="s-eye">Live Demos</div>
       <h2 class="s-title">Don&rsquo;t Take Our Word for It.<br>Experience the Agents.</h2>
       <p class="s-sub">We&rsquo;ve built working prototypes of seven agents across the suite. These aren&rsquo;t mockups&mdash;they&rsquo;re interactive applications you can explore right now. Click any card to launch the demo.</p>
     </div>
 
-    <div class="demo-grid">
+    <div class="demo-grid stagger">
 
       <!-- 1. LendFlow -->
       <div class="demo-card">
@@ -2244,7 +2431,7 @@
       <p style="font-size: 14px; color: rgba(255,255,255,0.4); max-width: 600px; margin: 0 auto; line-height: 1.7;">These prototypes demonstrate agent capabilities across Credit, Treasury, Compliance, Branch, and Wealth. Each demo is a self-contained interactive application&mdash;open them, explore, and see the future of autonomous banking operations.</p>
     </div>
 
-    <div class="quote-block-dark" style="margin-top: 48px;">
+    <div class="quote-block-dark reveal" style="margin-top: 48px;">
       <p>&ldquo;Slides describe the vision. Demos prove it&rsquo;s real. Every application you just saw was built using the same agents.md archetype approach and five-person team model we&rsquo;re proposing for your institution. The question isn&rsquo;t whether we <em>can</em> build these agents. It&rsquo;s which ones we build <em>first</em>.&rdquo;</p>
     </div>
   </div>
@@ -2330,6 +2517,11 @@
   </div>
 </div>
 
+<!-- Scroll to Top -->
+<button class="scroll-top" id="scroll-top" aria-label="Scroll to top">
+  <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"></polyline></svg>
+</button>
+
 <!-- ═══════════════════ FOOTER ═══════════════════ -->
 <footer class="footer">
   <div class="footer-left">
@@ -2340,38 +2532,221 @@
 </footer>
 
 <script>
-function showCategory(cat) {
-  document.querySelectorAll('.agent-category').forEach(c => c.classList.remove('active'));
-  document.querySelectorAll('.agent-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('cat-' + cat).classList.add('active');
-  event.currentTarget.classList.add('active');
-}
+(function() {
+  'use strict';
 
-function handleSubmit(e) {
-  e.preventDefault();
-  var form = document.getElementById('contact-form');
-  var success = document.getElementById('form-success');
-  form.style.display = 'none';
-  document.querySelector('.modal-header').style.display = 'none';
-  success.style.display = 'block';
-}
-
-// Close modal on Escape key
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') {
-    var modal = document.getElementById('contact-modal');
-    if (modal.classList.contains('active')) {
-      modal.classList.remove('active');
-      // Reset form state after close
-      setTimeout(function() {
-        document.getElementById('contact-form').style.display = 'block';
-        document.querySelector('.modal-header').style.display = 'block';
-        document.getElementById('form-success').style.display = 'none';
-        document.getElementById('contact-form').reset();
-      }, 300);
+  /* ═══════════════════ AGENT TABS ═══════════════════ */
+  window.showCategory = function(cat) {
+    document.querySelectorAll('.agent-category').forEach(function(c) { c.classList.remove('active'); });
+    document.querySelectorAll('.agent-tab').forEach(function(t) { t.classList.remove('active'); });
+    document.getElementById('cat-' + cat).classList.add('active');
+    event.currentTarget.classList.add('active');
+    // Re-trigger stagger animations in newly visible category
+    var grid = document.querySelector('#cat-' + cat + ' .agent-grid');
+    if (grid) {
+      grid.classList.remove('visible');
+      void grid.offsetWidth;
+      grid.classList.add('visible');
     }
+  };
+
+  /* ═══════════════════ FORM HANDLING ═══════════════════ */
+  window.handleSubmit = function(e) {
+    e.preventDefault();
+    document.getElementById('contact-form').style.display = 'none';
+    document.querySelector('.modal-header').style.display = 'none';
+    document.getElementById('form-success').style.display = 'block';
+  };
+
+  /* ═══════════════════ MODAL (Escape key) ═══════════════════ */
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      var modal = document.getElementById('contact-modal');
+      if (modal.classList.contains('active')) {
+        modal.classList.remove('active');
+        setTimeout(function() {
+          document.getElementById('contact-form').style.display = 'block';
+          document.querySelector('.modal-header').style.display = 'block';
+          document.getElementById('form-success').style.display = 'none';
+          document.getElementById('contact-form').reset();
+        }, 300);
+      }
+      // Also close mobile menu on Escape
+      var toggle = document.querySelector('.nav-toggle');
+      if (toggle && toggle.classList.contains('active')) {
+        toggle.classList.remove('active');
+        toggle.setAttribute('aria-expanded', 'false');
+        document.querySelector('.nav-links').classList.remove('open');
+      }
+    }
+  });
+
+  /* ═══════════════════ HAMBURGER MENU ═══════════════════ */
+  var navToggle = document.querySelector('.nav-toggle');
+  var navLinks = document.querySelector('.nav-links');
+  if (navToggle && navLinks) {
+    navToggle.addEventListener('click', function() {
+      var isOpen = navToggle.classList.toggle('active');
+      navLinks.classList.toggle('open');
+      navToggle.setAttribute('aria-expanded', String(isOpen));
+    });
+    // Close menu when a link is clicked
+    navLinks.querySelectorAll('a').forEach(function(link) {
+      link.addEventListener('click', function() {
+        navToggle.classList.remove('active');
+        navLinks.classList.remove('open');
+        navToggle.setAttribute('aria-expanded', 'false');
+      });
+    });
   }
-});
+
+  /* ═══════════════════ SCROLL REVEAL (IntersectionObserver) ═══════════════════ */
+  var revealTargets = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale, .stagger');
+
+  if ('IntersectionObserver' in window) {
+    var revealObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          revealObserver.unobserve(entry.target); // Animate once
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+    revealTargets.forEach(function(el) { revealObserver.observe(el); });
+  } else {
+    // Fallback: show everything immediately
+    revealTargets.forEach(function(el) { el.classList.add('visible'); });
+  }
+
+  /* ═══════════════════ ANIMATED COUNTERS ═══════════════════ */
+  function animateCounter(el) {
+    var text = el.textContent.trim();
+    // Match numbers like $163.3M, 9.8mo, 26:1, 100%, 20, $4.7T
+    var match = text.match(/^([^0-9]*?)([\d,]+\.?\d*)(.*?)$/);
+    if (!match) return;
+    var prefix = match[1];
+    var target = parseFloat(match[2].replace(/,/g, ''));
+    var suffix = match[3];
+    var isDecimal = match[2].indexOf('.') !== -1;
+    var decimals = isDecimal ? (match[2].split('.')[1] || '').length : 0;
+    var duration = 1200;
+    var start = performance.now();
+
+    function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+
+    function tick(now) {
+      var elapsed = now - start;
+      var progress = Math.min(elapsed / duration, 1);
+      var current = target * easeOut(progress);
+      if (decimals > 0) {
+        el.textContent = prefix + current.toFixed(decimals) + suffix;
+      } else {
+        el.textContent = prefix + Math.round(current).toLocaleString() + suffix;
+      }
+      if (progress < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  var counterTargets = document.querySelectorAll('.hero-metric-value, .card-num, .roi-card-value, .vs-number, .prov-callout-num');
+  if ('IntersectionObserver' in window) {
+    var counterObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          animateCounter(entry.target);
+          counterObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+    counterTargets.forEach(function(el) { counterObserver.observe(el); });
+  }
+
+  /* ═══════════════════ ACTIVE NAV LINK HIGHLIGHTING ═══════════════════ */
+  var sections = document.querySelectorAll('section[id]');
+  var navAnchors = document.querySelectorAll('.nav-links a[href^="#"]');
+
+  if ('IntersectionObserver' in window && sections.length) {
+    var navObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          var id = entry.target.getAttribute('id');
+          navAnchors.forEach(function(a) {
+            a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, { rootMargin: '-40% 0px -55% 0px' });
+    sections.forEach(function(s) { navObserver.observe(s); });
+  }
+
+  /* ═══════════════════ READING PROGRESS BAR ═══════════════════ */
+  var progressBar = document.getElementById('reading-progress');
+  if (progressBar) {
+    var ticking = false;
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        requestAnimationFrame(function() {
+          var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+          var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+          progressBar.style.width = (docHeight > 0 ? (scrollTop / docHeight) * 100 : 0) + '%';
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+  }
+
+  /* ═══════════════════ SCROLL TO TOP BUTTON ═══════════════════ */
+  var scrollTopBtn = document.getElementById('scroll-top');
+  if (scrollTopBtn) {
+    var scrollTicking = false;
+    window.addEventListener('scroll', function() {
+      if (!scrollTicking) {
+        requestAnimationFrame(function() {
+          scrollTopBtn.classList.toggle('visible', window.pageYOffset > 600);
+          scrollTicking = false;
+        });
+        scrollTicking = true;
+      }
+    }, { passive: true });
+    scrollTopBtn.addEventListener('click', function() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  /* ═══════════════════ HERO ORB PARALLAX ON MOUSE ═══════════════════ */
+  var hero = document.querySelector('.hero');
+  if (hero && window.matchMedia('(pointer: fine)').matches) {
+    var orbs = hero.querySelectorAll('.hero-orb');
+    hero.addEventListener('mousemove', function(e) {
+      var rect = hero.getBoundingClientRect();
+      var x = (e.clientX - rect.left) / rect.width - 0.5;
+      var y = (e.clientY - rect.top) / rect.height - 0.5;
+      orbs.forEach(function(orb, i) {
+        var intensity = (i + 1) * 15;
+        orb.style.transform = 'translate(' + (x * intensity) + 'px, ' + (y * intensity) + 'px)';
+      });
+    });
+  }
+
+  /* ═══════════════════ ROI BAR FILL ANIMATION ═══════════════════ */
+  var roiBars = document.querySelectorAll('.roi-bar-fill');
+  if ('IntersectionObserver' in window && roiBars.length) {
+    roiBars.forEach(function(bar) {
+      var targetWidth = bar.style.width;
+      bar.style.width = '0%';
+      var barObserver = new IntersectionObserver(function(entries) {
+        if (entries[0].isIntersecting) {
+          bar.style.width = targetWidth;
+          barObserver.unobserve(bar);
+        }
+      }, { threshold: 0.3 });
+      barObserver.observe(bar);
+    });
+  }
+
+})();
 </script>
 </body>
 </html>
